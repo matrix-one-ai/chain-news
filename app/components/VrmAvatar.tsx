@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { GLTF } from "three/addons/loaders/GLTFLoader.js";
 
-export default function VrmAvatar() {
+export default function VrmAvatar({
+  onLoadingProgress,
+}: Readonly<{ onLoadingProgress: (progress: number) => void }>) {
   const [gltf, setGltf] = useState<GLTF | null>(null);
 
   useEffect(() => {
@@ -29,15 +31,21 @@ export default function VrmAvatar() {
           });
         });
 
-        loader.load("/vrms/haiku.vrm", (gltf) => {
-          gltf.scene.rotation.y = Math.PI;
-          setGltf(gltf);
-        });
+        loader.load(
+          "/vrms/haiku.vrm",
+          (gltf) => {
+            gltf.scene.rotation.y = Math.PI;
+            setGltf(gltf);
+          },
+          (event) => {
+            onLoadingProgress((event.loaded / event.total) * 100);
+          }
+        );
       }
     };
 
     loadModel();
-  }, []);
+  }, [onLoadingProgress]);
 
   return gltf ? <primitive object={gltf.scene} /> : null;
 }
