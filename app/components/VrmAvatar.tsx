@@ -1,33 +1,43 @@
 "use client";
 
-import { GLTF, GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { MToonMaterialLoaderPlugin, VRMLoaderPlugin } from "@pixiv/three-vrm";
-import { MToonNodeMaterial } from "@pixiv/three-vrm/nodes";
 import { useEffect, useState } from "react";
+import { GLTF } from "three/addons/loaders/GLTFLoader.js";
 
-const VrmAvatar = () => {
+export default function VrmAvatar() {
   const [gltf, setGltf] = useState<GLTF | null>(null);
 
   useEffect(() => {
-    const loader = new GLTFLoader();
+    const loadModel = async () => {
+      if (typeof window !== "undefined") {
+        const { GLTFLoader } = await import(
+          "three/addons/loaders/GLTFLoader.js"
+        );
+        const { MToonMaterialLoaderPlugin, VRMLoaderPlugin } = await import(
+          "@pixiv/three-vrm"
+        );
+        const { MToonNodeMaterial } = await import("@pixiv/three-vrm/nodes");
 
-    loader.register((parser) => {
-      const mtoonMaterialPlugin = new MToonMaterialLoaderPlugin(parser, {
-        materialType: MToonNodeMaterial,
-      });
+        const loader = new GLTFLoader();
 
-      return new VRMLoaderPlugin(parser, {
-        mtoonMaterialPlugin,
-      });
-    });
+        loader.register((parser) => {
+          const mtoonMaterialPlugin = new MToonMaterialLoaderPlugin(parser, {
+            materialType: MToonNodeMaterial,
+          });
 
-    loader.load("/vrms/haiku.vrm", (gltf) => {
-      gltf.scene.rotation.y = Math.PI;
-      setGltf(gltf);
-    });
+          return new VRMLoaderPlugin(parser, {
+            mtoonMaterialPlugin,
+          });
+        });
+
+        loader.load("/vrms/haiku.vrm", (gltf) => {
+          gltf.scene.rotation.y = Math.PI;
+          setGltf(gltf);
+        });
+      }
+    };
+
+    loadModel();
   }, []);
 
   return gltf ? <primitive object={gltf.scene} /> : null;
-};
-
-export default VrmAvatar;
+}
