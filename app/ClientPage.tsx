@@ -34,7 +34,7 @@ export default function ClientHome() {
         <VrmAvatar onLoadingProgress={setProgress} />
 
         <CameraSetup />
-        <OrbitControls target={[0, 1, 0]} maxDistance={1.5} autoRotate />
+        <OrbitControls target={[0, 1, 0]} maxDistance={1.5} />
       </Canvas>
       {progress < 100 && (
         <div
