@@ -5,6 +5,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
+import TextToSpeech from "./components/TTS";
 
 const CameraSetup = () => {
   const { camera } = useThree();
@@ -49,6 +50,7 @@ export default function ClientHome() {
           <LoadingBar progress={progress} />
         </div>
       )}
+      <TextToSpeech />
     </>
   );
 }
