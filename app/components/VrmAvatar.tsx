@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import * as THREE from "three/webgpu";
 import { GLTF, GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { loadMixamoAnimation } from "../helpers/loadMixamoAnimation";
 import {
