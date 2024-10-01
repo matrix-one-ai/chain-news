@@ -11,58 +11,86 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No text provided" }, { status: 400 });
     }
 
-    const speechConfig = sdk.SpeechConfig.fromSubscription(
-      process.env.AZURE_SUBSCRIPTION_KEY!,
-      process.env.AZURE_SERVICE_REGION!
-    );
-    speechConfig.speechSynthesisVoiceName = "en-US-NovaMultilingualNeuralHD";
+    const subscriptionKey = process.env.AZURE_SUBSCRIPTION_KEY;
+    const serviceRegion = process.env.AZURE_SERVICE_REGION;
 
+    if (!subscriptionKey || !serviceRegion) {
+      return NextResponse.json(
+        { error: "Azure subscription key or service region is missing" },
+        { status: 500 }
+      );
+    }
+
+    const speechConfig = sdk.SpeechConfig.fromSubscription(
+      subscriptionKey,
+      serviceRegion
+    );
+    speechConfig.speechSynthesisVoiceName = "en-US-AvaMultilingualNeural";
     speechConfig.speechSynthesisOutputFormat =
       sdk.SpeechSynthesisOutputFormat.Ogg48Khz16BitMonoOpus;
 
     const audioOutputStream = sdk.AudioOutputStream.createPullStream();
-
     const audioConfig = sdk.AudioConfig.fromStreamOutput(audioOutputStream);
-
     const synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
 
-    const stream = new ReadableStream({
-      async pull(controller) {
-        try {
-          const buffer = new ArrayBuffer(4096);
-          const bytesRead = await audioOutputStream.read(buffer);
-          if (bytesRead > 0) {
-            const uint8Array = new Uint8Array(buffer, 0, bytesRead);
-            controller.enqueue(uint8Array);
+    const audioChunks: Buffer[] = [];
+    const blendShapes: any[] = [];
+
+    synthesizer.visemeReceived = (
+      _sender: sdk.SpeechSynthesizer,
+      event: sdk.SpeechSynthesisVisemeEventArgs
+    ) => {
+      blendShapes.push(JSON.parse(event.animation));
+    };
+
+    const ssml = `
+      <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis"
+             xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
+        <voice name="en-US-AvaMultilingualNeural">
+          <mstts:viseme type="FacialExpression"/>
+          ${text}
+        </voice>
+      </speak>`;
+
+    await new Promise<void>((resolve, reject) => {
+      synthesizer.speakSsmlAsync(
+        ssml,
+        (result) => {
+          if (result.errorDetails) {
+            reject(new Error(result.errorDetails));
           } else {
-            controller.close();
+            resolve();
           }
-        } catch (error) {
-          console.error("Error reading from audio stream:", error);
-          controller.error(error);
+          synthesizer.close();
+        },
+        (error) => {
+          reject(error);
+          synthesizer.close();
         }
-      },
-      cancel() {
-        synthesizer.close();
-      },
+      );
     });
 
-    synthesizer.visemeReceived = (event) => {
-      console.log("Viseme received:", event);
-    };
+    let bytesRead = 0;
+    const chunkSize = 4096;
+    do {
+      const buffer = new ArrayBuffer(chunkSize);
+      bytesRead = await audioOutputStream.read(buffer);
+      if (bytesRead > 0) {
+        const audioChunk = Buffer.from(buffer).slice(0, bytesRead);
+        audioChunks.push(audioChunk);
+      }
+    } while (bytesRead > 0);
 
-    synthesizer.speakTextAsync(text);
+    const audioBuffer = Buffer.concat(audioChunks);
 
-    synthesizer.synthesisCompleted = () => {
-      audioOutputStream.close();
-    };
+    const audioBase64 = audioBuffer.toString("base64");
 
-    return new Response(stream, {
-      headers: {
-        "Content-Type": "audio/ogg",
-      },
+    return NextResponse.json({
+      audioData: audioBase64,
+      blendShapes: blendShapes,
     });
   } catch (error) {
+    console.error("Error:", error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
