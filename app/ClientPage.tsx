@@ -1,5 +1,3 @@
-// ClientHome.tsx
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -22,8 +20,12 @@ export default function ClientHome() {
   const [progress, setProgress] = useState<number>(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [blendShapes, setBlendShapes] = useState<any[]>([]);
+  const [inputText, setInputText] = useState<string>(
+    "Hello World! Welcome to CryptoNews.One, stay tuned for the latest news in the blockchain world. Powered by Matrix One."
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchAudio = async () => {
+  const fetchAudio = async (text: string) => {
     try {
       const response = await fetch("/api/speech", {
         method: "POST",
@@ -31,7 +33,7 @@ export default function ClientHome() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          text: "Short stories have no set length. In terms of word count, there is no official demarcation between an anecdote, a short story, and a novel. Rather, the form's parameters are given by the rhetorical and practical context in which a given story is produced and considered so that what constitutes a short story may differ between genres, countries, eras, and commentators.",
+          text,
         }),
       });
 
@@ -54,7 +56,15 @@ export default function ClientHome() {
       setBlendShapes(blendShapes);
     } catch (error) {
       console.error("Error fetching audio:", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
+    fetchAudio(inputText);
   };
 
   return (
@@ -84,6 +94,7 @@ export default function ClientHome() {
           minDistance={0.5}
         />
       </Canvas>
+
       {progress < 100 && (
         <div
           style={{
@@ -100,12 +111,36 @@ export default function ClientHome() {
       <div
         style={{
           position: "fixed",
-          bottom: 0,
-          right: 0,
+          bottom: 10,
+          left: 0,
           zIndex: 1000,
         }}
       >
-        <button onClick={fetchAudio}>Fetch Audio</button>
+        <form onSubmit={handleSubmit}>
+          <textarea
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            placeholder="Enter text for voice demo"
+            rows={6}
+            style={{
+              width: "100%",
+              padding: "10px",
+              fontSize: "16px",
+              boxSizing: "border-box",
+            }}
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              marginTop: "10px",
+              padding: "10px 20px",
+              fontSize: "16px",
+            }}
+          >
+            {isLoading ? "Loading..." : "Talk"}
+          </button>
+        </form>
       </div>
       <audio ref={audioRef} />
     </>
