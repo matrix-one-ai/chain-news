@@ -9,6 +9,7 @@ import {
   MToonMaterialLoaderPlugin,
   VRM,
   VRMLoaderPlugin,
+  VRMUtils,
 } from "@pixiv/three-vrm";
 
 const azureToVrmBlendShapeMapping = [
@@ -162,7 +163,17 @@ function VrmAvatar({
         loader.load(
           "/vrms/haiku.vrm",
           async (gltf) => {
-            gltf.scene.rotation.y = Math.PI;
+            VRMUtils.removeUnnecessaryVertices(gltf.scene);
+            VRMUtils.removeUnnecessaryJoints(gltf.scene, {
+              experimentalSameBoneCounts: true,
+            });
+
+            gltf.userData.vrm.scene.traverse((obj: any) => {
+              obj.frustumCulled = false;
+            });
+
+            VRMUtils.rotateVRM0(gltf.userData.vrm);
+
             setGltf(gltf);
 
             const mixer = new THREE.AnimationMixer(gltf.scene);
@@ -296,9 +307,7 @@ function VrmAvatar({
           blendShapeValues.forEach((value: number, index: number) => {
             const blendShapeName = getBlendShapeKey(index + 1);
             if (blendShapeName) {
-              // Scale the value if necessary
-              const scaledValue = Math.min(Math.max(value * 1, 0), 1); // Adjust scaling factor as needed
-              expressionManager.setValue(blendShapeName, scaledValue);
+              expressionManager.setValue(blendShapeName, value);
             }
           });
 
