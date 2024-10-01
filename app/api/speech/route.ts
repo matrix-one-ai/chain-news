@@ -5,10 +5,14 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const { text } = await request.json();
+    const { text, voice } = await request.json();
 
     if (!text) {
       return NextResponse.json({ error: "No text provided" }, { status: 400 });
+    }
+
+    if (!voice) {
+      return NextResponse.json({ error: "No voice provided" }, { status: 400 });
     }
 
     const subscriptionKey = process.env.AZURE_SUBSCRIPTION_KEY;
@@ -25,7 +29,7 @@ export async function POST(request: Request) {
       subscriptionKey,
       serviceRegion
     );
-    speechConfig.speechSynthesisVoiceName = "en-US-AvaMultilingualNeural";
+    speechConfig.speechSynthesisVoiceName = voice;
     speechConfig.speechSynthesisOutputFormat =
       sdk.SpeechSynthesisOutputFormat.Ogg48Khz16BitMonoOpus;
 
@@ -46,7 +50,7 @@ export async function POST(request: Request) {
     const ssml = `
       <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis"
              xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
-        <voice name="en-US-AvaMultilingualNeural">
+        <voice name="${voice}">
           <mstts:viseme type="FacialExpression"/>
           ${text}
         </voice>
