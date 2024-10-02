@@ -185,10 +185,7 @@ function VrmAvatar({
               "/animations/idle-2.fbx",
               "/animations/kick-foot.fbx",
               "/animations/look-hand.fbx",
-              "/animations/ninja.fbx",
-              "/animations/snake-dance.fbx",
-              "/animations/booty-dance.fbx",
-              "/animations/belly-dance.fbx",
+              "/animations/idle-1.fbx",
               "/animations/happy-idle.fbx",
             ];
 
