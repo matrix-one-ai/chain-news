@@ -10,3 +10,21 @@ datasource db {
 model Test {
   id Int @id @default(autoincrement())
 }
+
+model News {
+  id                  Int      @id @default(autoincrement())
+  provider            String
+  providerTitle       String
+  providerDescription String
+  providerUrl         String
+  isRSS               Boolean
+  rssUrl              String?
+  title               String
+  description         String
+  source              String
+  url                 String
+  imageUrl            String?
+  content             String
+  datePublished       DateTime
+  createdAt           DateTime @default(now())
+}
