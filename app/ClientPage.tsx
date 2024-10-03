@@ -188,7 +188,6 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
         />
 
         {selectedNews && (
-          // eslint-disable-next-line jsx-a11y/alt-text
           <Suspense fallback={null}>
             <Image
               url={`/api/image?url=${encodeURIComponent(
@@ -198,7 +197,9 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
               opacity={1}
               position={[-0.3, 1.8, -1]}
               rotation={[0, Math.PI / 20, 0]}
-            />
+            >
+              <planeGeometry args={[3, 1.5]} />
+            </Image>
           </Suspense>
         )}
 
