@@ -7,6 +7,7 @@ import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
 import { useChat } from "ai/react";
 import { azureVoices } from "./helpers/azureVoices";
+import { News } from "@prisma/client";
 
 const CameraSetup = () => {
   const { camera } = useThree();
@@ -17,7 +18,25 @@ const CameraSetup = () => {
   return null;
 };
 
-export default function ClientHome() {
+const NewsCard = ({
+  newsItem,
+  onClick,
+}: {
+  newsItem: News;
+  onClick: (newsItem: News) => void;
+}) => {
+  return (
+    <div onClick={() => onClick(newsItem)} className="news-card">
+      {newsItem.imageUrl && (
+        <img src={newsItem.imageUrl} alt={newsItem.title} />
+      )}
+      <h3>{newsItem.title}</h3>
+      <p>{newsItem.providerTitle}</p>
+    </div>
+  );
+};
+
+export default function ClientHome({ newsData }: { newsData: News[] }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [progress, setProgress] = useState<number>(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -27,18 +46,24 @@ export default function ClientHome() {
 
   let startTime: number;
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      onFinish(message, options) {
-        console.log(message, options);
-        setIsAudioLoading(true);
-        fetchAudio(message.content).then(() => {
-          const endTime = performance.now();
-          const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
-          setResponseTime(timeTaken);
-        });
-      },
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    append,
+  } = useChat({
+    onFinish(message, options) {
+      console.log(message, options);
+      setIsAudioLoading(true);
+      fetchAudio(message.content).then(() => {
+        const endTime = performance.now();
+        const timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+        setResponseTime(timeTaken);
+      });
+    },
+  });
 
   const [selectedVoice, setSelectedVoice] = useState<string>(
     azureVoices[0].value
@@ -63,7 +88,6 @@ export default function ClientHome() {
 
       const data = await response.json();
 
-      // Decode audio data from base64
       const audioData = data.audioData;
       const blendShapes = data.blendShapes;
 
@@ -84,6 +108,47 @@ export default function ClientHome() {
   const handleSubmitWithTimer = (event: React.FormEvent) => {
     startTime = performance.now();
     handleSubmit(event);
+  };
+
+  const [randomNewsItems, setRandomNewsItems] = useState<News[]>([]);
+
+  useEffect(() => {
+    if (newsData && newsData.length > 0) {
+      const shuffled = [...newsData].sort(() => 0.5 - Math.random());
+      setRandomNewsItems(shuffled.slice(0, 5));
+    }
+  }, [newsData]);
+
+  const handleNewsClick = (newsItem: News) => {
+    startTime = performance.now();
+
+    const prompt = `
+      You name is Haiku, host of CryptoNews.One.
+      Your job is to deliver the latest news in the world of cryptocurrency.
+      Your audience is watching on live stream.
+
+      The news item you have selected is:
+      Title: ${newsItem.title}
+      Description: ${newsItem.description}
+      Source: ${newsItem.source}
+
+      The content of the news source is:
+      ${newsItem.content}
+
+      Please deliver the news to your audience.
+      At the end of the news, you can ask your audience for their thoughts.
+      Shout out to your audience and ask them to subscribe to your channel.
+      Promo the news provider and the source.
+      The provider of the news is ${newsItem.providerTitle}.
+
+      Keep it under 30 seconds.
+      Don't add weird characters or sounds. Pure text for speech.
+`;
+
+    append({
+      role: "user",
+      content: prompt,
+    });
   };
 
   return (
@@ -204,6 +269,28 @@ export default function ClientHome() {
           </div>
         </form>
       </div>
+
+      {/* News Cards UI */}
+      <div
+        style={{
+          position: "fixed",
+          top: 10,
+          right: 10,
+          zIndex: 1000,
+          width: "25%",
+          maxHeight: "90%",
+          overflowY: "auto",
+        }}
+      >
+        {randomNewsItems.map((newsItem) => (
+          <NewsCard
+            key={newsItem.id}
+            newsItem={newsItem}
+            onClick={handleNewsClick}
+          />
+        ))}
+      </div>
+
       <audio ref={audioRef} />
     </>
   );
