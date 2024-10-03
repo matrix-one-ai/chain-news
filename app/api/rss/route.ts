@@ -4,7 +4,11 @@ import RSSParser from "rss-parser";
 
 export const runtime = "nodejs";
 
-const rssParser = new RSSParser();
+const rssParser = new RSSParser({
+  customFields: {
+    item: ["media:content"],
+  },
+});
 
 const prisma = new PrismaClient();
 
@@ -21,7 +25,7 @@ const mapChainwireRSSNews = (feed: any, provider: string, rssUrl: string) => {
       description: item.contentSnippet,
       source: item.creator || item["dc:creator"],
       url: item.link,
-      imageUrl: null,
+      imageUrl: JSON.parse(JSON.stringify(item["media:content"]))?.["$"]?.url,
       content: item["content:encodedSnippet"],
       datePublished: item.pubDate,
     })),

@@ -10,6 +10,15 @@ const pigmentConfig = {
   theme: createTheme(),
 };
 
-const nextConfig = {};
+const nextConfig = {images: {
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "app.chainwire.org",
+      port: "",
+      pathname: "/**",
+    },
+  ],
+},};
 
 export default withPigment(nextConfig, pigmentConfig);

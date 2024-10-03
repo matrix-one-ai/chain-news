@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Image } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
 import { useChat } from "ai/react";
@@ -28,7 +28,11 @@ const NewsCard = ({
   return (
     <div onClick={() => onClick(newsItem)} className="news-card">
       {newsItem.imageUrl && (
-        <img src={newsItem.imageUrl} alt={newsItem.title} />
+        <img
+          src={newsItem.imageUrl}
+          alt={newsItem.title}
+          style={{ height: "200px" }}
+        />
       )}
       <h3>{newsItem.title}</h3>
       <p>{newsItem.providerTitle}</p>
@@ -43,6 +47,9 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
   const [blendShapes, setBlendShapes] = useState<any[]>([]);
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
   const [responseTime, setResponseTime] = useState<string>("");
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
+
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   let startTime: number;
 
@@ -115,12 +122,14 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
   useEffect(() => {
     if (newsData && newsData.length > 0) {
       const shuffled = [...newsData].sort(() => 0.5 - Math.random());
-      setRandomNewsItems(shuffled.slice(0, 5));
+      setRandomNewsItems(shuffled.slice(0, 10));
     }
   }, [newsData]);
 
   const handleNewsClick = (newsItem: News) => {
     startTime = performance.now();
+
+    setSelectedNews(newsItem);
 
     const prompt = `
       You name is Haiku, host of CryptoNews.One.
@@ -151,6 +160,13 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
     });
   };
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <>
       <Canvas>
@@ -170,6 +186,17 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
           audioBlob={audioBlob}
           blendShapes={blendShapes}
         />
+{/* 
+        {selectedNews && (
+          // eslint-disable-next-line jsx-a11y/alt-text
+          <Image
+            url={selectedNews.imageUrl as string}
+            transparent
+            opacity={0.5}
+            position={[0.25, 1.8, -1]}
+            rotation={[0, -Math.PI / 20, 0]}
+          />
+        )} */}
 
         <CameraSetup />
         <OrbitControls
@@ -205,8 +232,9 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
         }}
       >
         <div
+          ref={chatContainerRef}
           style={{
-            maxHeight: "300px",
+            maxHeight: "500px",
             overflowY: "auto",
             backgroundColor: "#f0f0f0",
             padding: "10px",
@@ -278,7 +306,7 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
           right: 10,
           zIndex: 1000,
           width: "25%",
-          maxHeight: "90%",
+          maxHeight: "100%",
           overflowY: "auto",
         }}
       >
