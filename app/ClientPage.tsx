@@ -239,7 +239,7 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
         <div
           ref={chatContainerRef}
           style={{
-            maxHeight: "500px",
+            maxHeight: "300px",
             overflowY: "auto",
             backgroundColor: "#f0f0f0",
             padding: "10px",
