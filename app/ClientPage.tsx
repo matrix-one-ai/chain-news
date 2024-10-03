@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Image } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
 import { useChat } from "ai/react";
