@@ -311,6 +311,7 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
           right: 10,
           zIndex: 1000,
           width: "25%",
+          maxWidth: "400px",
           maxHeight: "100%",
           overflowY: "auto",
         }}
