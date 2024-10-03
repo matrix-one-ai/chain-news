@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Image } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
 import { useChat } from "ai/react";
@@ -186,17 +186,21 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
           audioBlob={audioBlob}
           blendShapes={blendShapes}
         />
-{/* 
+
         {selectedNews && (
           // eslint-disable-next-line jsx-a11y/alt-text
-          <Image
-            url={selectedNews.imageUrl as string}
-            transparent
-            opacity={0.5}
-            position={[0.25, 1.8, -1]}
-            rotation={[0, -Math.PI / 20, 0]}
-          />
-        )} */}
+          <Suspense fallback={null}>
+            <Image
+              url={`/api/image?url=${encodeURIComponent(
+                selectedNews.imageUrl as string
+              )}`}
+              transparent
+              opacity={1}
+              position={[-0.3, 1.8, -1]}
+              rotation={[0, Math.PI / 20, 0]}
+            />
+          </Suspense>
+        )}
 
         <CameraSetup />
         <OrbitControls
