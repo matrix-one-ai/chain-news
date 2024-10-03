@@ -7,6 +7,7 @@ import VrmAvatar from "./components/VrmAvatar";
 import LoadingBar from "./components/LoadingBar";
 import { useChat } from "ai/react";
 import { azureVoices } from "./helpers/azureVoices";
+import { hexStringToArrayBuffer } from "./helpers/crypto";
 import { News } from "@prisma/client";
 
 const CameraSetup = () => {
@@ -48,10 +49,67 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
   const [responseTime, setResponseTime] = useState<string>("");
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
+  const [decryptedVrm, setDecryptedVrm] = useState<string | null>(null);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   let startTime: number;
+
+  useEffect(() => {
+    async function decryptVRM(
+      encryptedData: ArrayBuffer,
+      key: ArrayBuffer,
+      iv: ArrayBuffer
+    ) {
+      try {
+        const algorithm = { name: "AES-CBC", iv };
+
+        const cryptoKey = await window.crypto.subtle.importKey(
+          "raw",
+          key,
+          algorithm,
+          false,
+          ["decrypt"]
+        );
+        const decrypted = await window.crypto.subtle.decrypt(
+          algorithm,
+          cryptoKey,
+          encryptedData
+        );
+
+        return new Uint8Array(decrypted);
+      } catch (error) {
+        console.error("Error during decryption:", error);
+        throw error;
+      }
+    }
+
+    async function fetchAndDecryptVRM() {
+      try {
+        const response = await fetch(`/api/vrm/decrypt?file=haiku`, {
+          method: "GET",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const encryptedData = await response.arrayBuffer();
+
+        const keyHex = process.env.NEXT_PUBLIC_VRM_KEY as string;
+        const ivHex = process.env.NEXT_PUBLIC_VRM_IV as string;
+
+        const key = hexStringToArrayBuffer(keyHex);
+        const iv = hexStringToArrayBuffer(ivHex);
+
+        const decryptedData = await decryptVRM(encryptedData, key, iv);
+
+        setDecryptedVrm(URL.createObjectURL(new Blob([decryptedData.buffer])));
+      } catch (error) {
+        console.error("Error decrypting VRM:", error);
+      }
+    }
+
+    fetchAndDecryptVRM();
+  }, []);
 
   const {
     messages,
@@ -180,12 +238,18 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
         />
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
 
-        <VrmAvatar
-          audioRef={audioRef}
-          onLoadingProgress={setProgress}
-          audioBlob={audioBlob}
-          blendShapes={blendShapes}
-        />
+        {decryptedVrm && (
+          <VrmAvatar
+            position={[0, 0, 0]}
+            scale={[1, 1, 1]}
+            // vrmUrl={"https://fnfscfgwilvky5z8.public.blob.vercel-storage.com/haiku-L59MpJYQ9MhGJlrNWrOEUHdB74CshX.vrm"}
+            vrmUrl={decryptedVrm}
+            audioRef={audioRef}
+            onLoadingProgress={setProgress}
+            audioBlob={audioBlob}
+            blendShapes={blendShapes}
+          />
+        )}
 
         {selectedNews && (
           <Suspense fallback={null}>

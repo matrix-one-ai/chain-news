@@ -114,6 +114,9 @@ interface VrmAvatarProps {
   onLoadingProgress: (progress: number) => void;
   audioBlob: Blob | null;
   blendShapes: any[];
+  vrmUrl: string;
+  position: [number, number, number];
+  scale: [number, number, number];
 }
 
 function VrmAvatar({
@@ -121,6 +124,9 @@ function VrmAvatar({
   onLoadingProgress,
   audioBlob,
   blendShapes,
+  vrmUrl,
+  position,
+  scale,
 }: VrmAvatarProps) {
   const [gltf, setGltf] = useState<GLTF | null>(null);
   const [mixer, setMixer] = useState<THREE.AnimationMixer | null>(null);
@@ -161,7 +167,7 @@ function VrmAvatar({
         });
 
         loader.load(
-          "/vrms/haiku.vrm",
+          vrmUrl,
           async (gltf) => {
             VRMUtils.removeUnnecessaryVertices(gltf.scene);
             VRMUtils.removeUnnecessaryJoints(gltf.scene, {
@@ -211,7 +217,7 @@ function VrmAvatar({
     };
 
     loadModel();
-  }, [onLoadingProgress]);
+  }, [onLoadingProgress, vrmUrl]);
 
   useEffect(() => {
     if (audioBlob && blendShapes.length > 0 && gltf) {
@@ -324,7 +330,9 @@ function VrmAvatar({
     }
   });
 
-  return gltf && actions.length > 0 ? <primitive object={gltf.scene} /> : null;
+  return gltf && actions.length > 0 ? (
+    <primitive object={gltf.scene} position={position} scale={scale} />
+  ) : null;
 }
 
 export default VrmAvatar;
