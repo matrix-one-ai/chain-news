@@ -14,7 +14,7 @@ export default function LoadingBar({
           pb: 1,
         }}
       >
-        {progress.toFixed(2)}%
+        {progress.toFixed(0)}%
       </Typography>
       <LinearProgress variant="determinate" value={progress} />
     </Stack>

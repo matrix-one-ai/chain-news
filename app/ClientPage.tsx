@@ -9,6 +9,8 @@ import { useChat } from "ai/react";
 import { azureVoices } from "./helpers/azureVoices";
 import { hexStringToArrayBuffer } from "./helpers/crypto";
 import { News } from "@prisma/client";
+import { fetchWithProgress } from "./helpers/fetchWithProgress";
+import { throttle } from "./helpers/throttle";
 
 const CameraSetup = () => {
   const { camera } = useThree();
@@ -86,13 +88,14 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
 
     async function fetchAndDecryptVRM() {
       try {
-        const response = await fetch(`/api/vrm/decrypt?file=haiku`, {
-          method: "GET",
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const encryptedData = await response.arrayBuffer();
+        setProgress(0);
+
+        const encryptedData = await fetchWithProgress(
+          `/api/vrm/decrypt?file=haiku`,
+          throttle((progress: number) => {
+            setProgress(progress);
+          }, 250)
+        );
 
         const keyHex = process.env.NEXT_PUBLIC_VRM_KEY as string;
         const ivHex = process.env.NEXT_PUBLIC_VRM_IV as string;
@@ -103,8 +106,10 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
         const decryptedData = await decryptVRM(encryptedData, key, iv);
 
         setDecryptedVrm(URL.createObjectURL(new Blob([decryptedData.buffer])));
+        setProgress(100);
       } catch (error) {
         console.error("Error decrypting VRM:", error);
+        setProgress(0);
       }
     }
 
@@ -242,7 +247,6 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
           <VrmAvatar
             position={[0, 0, 0]}
             scale={[1, 1, 1]}
-            // vrmUrl={"https://fnfscfgwilvky5z8.public.blob.vercel-storage.com/haiku-L59MpJYQ9MhGJlrNWrOEUHdB74CshX.vrm"}
             vrmUrl={decryptedVrm}
             audioRef={audioRef}
             onLoadingProgress={setProgress}
@@ -282,7 +286,7 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
             bottom: 0,
             left: 0,
             right: 0,
-            zIndex: 1000,
+            zIndex: 1002,
           }}
         >
           <LoadingBar progress={progress} />
@@ -368,26 +372,29 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
       </div>
 
       {/* News Cards UI */}
-      <div
-        style={{
-          position: "fixed",
-          top: 10,
-          right: 10,
-          zIndex: 1000,
-          width: "25%",
-          maxWidth: "400px",
-          maxHeight: "100%",
-          overflowY: "auto",
-        }}
-      >
-        {randomNewsItems.map((newsItem) => (
-          <NewsCard
-            key={newsItem.id}
-            newsItem={newsItem}
-            onClick={handleNewsClick}
-          />
-        ))}
-      </div>
+
+      {progress === 100 && decryptedVrm && (
+        <div
+          style={{
+            position: "fixed",
+            top: 10,
+            right: 10,
+            zIndex: 1000,
+            width: "25%",
+            maxWidth: "400px",
+            maxHeight: "100%",
+            overflowY: "auto",
+          }}
+        >
+          {randomNewsItems.map((newsItem) => (
+            <NewsCard
+              key={newsItem.id}
+              newsItem={newsItem}
+              onClick={handleNewsClick}
+            />
+          ))}
+        </div>
+      )}
 
       <audio ref={audioRef} />
     </>
