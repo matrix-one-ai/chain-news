@@ -11,6 +11,7 @@ import { hexStringToArrayBuffer } from "./helpers/crypto";
 import { News } from "@prisma/client";
 import { fetchWithProgress } from "./helpers/fetchWithProgress";
 import { throttle } from "./helpers/throttle";
+import { cacheVRM, getCachedVRM } from "./helpers/indexedDb";
 
 const CameraSetup = () => {
   const { camera } = useThree();
@@ -87,15 +88,28 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
     }
 
     async function fetchAndDecryptVRM() {
+      const VRM_KEY = "haiku";
+
       try {
         setProgress(0);
 
-        const encryptedData = await fetchWithProgress(
-          `/api/vrm/decrypt?file=haiku`,
-          throttle((progress: number) => {
-            setProgress(progress);
-          }, 250)
-        );
+        // Check if the encrypted VRM is cached
+        let encryptedData = await getCachedVRM(VRM_KEY);
+
+        if (!encryptedData) {
+          // If not cached, fetch from network
+          encryptedData = await fetchWithProgress(
+            `/api/vrm/decrypt?file=${VRM_KEY}`,
+            throttle((progress: number) => {
+              setProgress(progress);
+            }, 250)
+          );
+
+          // Cache the fetched encrypted VRM
+          await cacheVRM(VRM_KEY, encryptedData);
+        } else {
+          console.log("Loaded VRM from cache");
+        }
 
         const keyHex = process.env.NEXT_PUBLIC_VRM_KEY as string;
         const ivHex = process.env.NEXT_PUBLIC_VRM_IV as string;
@@ -115,7 +129,6 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
 
     fetchAndDecryptVRM();
   }, []);
-
   const {
     messages,
     input,
