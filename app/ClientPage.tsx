@@ -386,7 +386,7 @@ export default function ClientHome({ newsData }: { newsData: News[] }) {
 
       {/* News Cards UI */}
 
-      {progress === 100 && decryptedVrm && (
+      {decryptedVrm && (
         <div
           style={{
             position: "fixed",
