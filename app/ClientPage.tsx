@@ -19,6 +19,27 @@ import { News } from "@prisma/client";
 import { fetchWithProgress } from "./helpers/fetchWithProgress";
 import { throttle } from "./helpers/throttle";
 import { cacheVRM, getCachedVRM } from "./helpers/indexedDb";
+import CryptoCandlestickChart from "./components/CryptoCandlestickChart";
+import { GridHelper } from "three";
+
+const sampleData = [
+  { date: "2024-09-25", open: 100, high: 110, low: 90, close: 105 },
+  { date: "2024-09-26", open: 105, high: 115, low: 95, close: 100 },
+  { date: "2024-09-27", open: 100, high: 120, low: 80, close: 110 },
+  { date: "2024-09-28", open: 110, high: 130, low: 100, close: 125 },
+  { date: "2024-09-29", open: 125, high: 140, low: 120, close: 135 },
+  { date: "2024-09-30", open: 135, high: 145, low: 130, close: 132 },
+  { date: "2024-10-01", open: 132, high: 137, low: 125, close: 127 },
+  { date: "2024-10-02", open: 127, high: 130, low: 115, close: 118 },
+  { date: "2024-10-03", open: 118, high: 125, low: 110, close: 120 },
+  { date: "2024-10-04", open: 120, high: 135, low: 115, close: 125 },
+  { date: "2024-10-05", open: 125, high: 140, low: 110, close: 115 },
+  { date: "2024-10-06", open: 115, high: 120, low: 100, close: 105 },
+  { date: "2024-10-07", open: 105, high: 110, low: 90, close: 95 },
+  { date: "2024-10-08", open: 95, high: 105, low: 85, close: 100 },
+  { date: "2024-10-09", open: 100, high: 115, low: 90, close: 110 },
+  { date: "2024-10-10", open: 110, high: 125, low: 105, close: 120 },
+];
 
 // Constants
 const VRM_KEY = "haiku";
@@ -168,6 +189,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     </form>
   </div>
 );
+
+const GridFloor: React.FC = () => {
+  const gridHelper = new GridHelper(20, 40, 0x888888, 0x444444); // Grid of 10x10 units, 20 divisions
+  gridHelper.position.set(0, 0, 0); // Adjust position to be under the avatar
+  return <primitive object={gridHelper} />;
+};
 
 // Main ClientHome Component
 const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
@@ -388,6 +415,8 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     [randomNewsItems]
   );
 
+  const maxPrice = Math.max(...sampleData.map((d) => d.high));
+
   return (
     <>
       <Canvas>
@@ -400,6 +429,20 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
           intensity={Math.PI}
         />
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+
+        <GridFloor />
+
+        {!selectedNews && (
+          <Suspense fallback={null}>
+            <CryptoCandlestickChart
+              data={sampleData}
+              maxPrice={maxPrice}
+              spacing={0.5}
+              position={[-5, -5, -5]} // Move back by 5 units on the Z-axis
+              scaleY={10} // This will exaggerate the candle height by 10x
+            />
+          </Suspense>
+        )}
 
         {decryptedVrm && (
           <VrmAvatar
