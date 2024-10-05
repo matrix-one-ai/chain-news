@@ -438,8 +438,9 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
               data={sampleData}
               maxPrice={maxPrice}
               spacing={0.5}
-              position={[-5, -5, -5]} // Move back by 5 units on the Z-axis
-              scaleY={10} // This will exaggerate the candle height by 10x
+              position={[-2, -1.75, -4]} // Move back by 5 units on the Z-axis
+              scaleY={5} // This will exaggerate the candle height by 10x
+              scaleX={0.7}
             />
           </Suspense>
         )}
