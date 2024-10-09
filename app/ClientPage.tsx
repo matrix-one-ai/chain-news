@@ -88,7 +88,7 @@ interface ClientHomeProps {
 }
 
 interface NewsCardProps {
-  newsItem: News & { category: NewsCategory }; // Ensure category is of type NewsCategory
+  newsItem: News;
   onClick: (newsItem: News) => void;
 }
 
@@ -126,7 +126,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
       {newsItem.category && (
         <Chip
           label={newsItem.category}
-          icon={categoryIcons[newsItem.category]}
+          icon={categoryIcons[newsItem.category as NewsCategory]}
           style={{ marginRight: "5px", padding: "2px 10px" }}
         />
       )}
