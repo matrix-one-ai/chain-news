@@ -9,6 +9,7 @@ export async function GET() {
   try {
     const feed = await prisma.news.findMany({
       select: {
+        providerTitle: true,
         category: true,
         title: true,
         description: true,

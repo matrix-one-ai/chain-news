@@ -406,7 +406,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   useEffect(() => {
     if (newsData && newsData.length > 0) {
       const shuffled = [...newsData].sort(() => 0.5 - Math.random());
-      setRandomNewsItems(shuffled.slice(0, 20));
+      setRandomNewsItems(shuffled);
     }
   }, [newsData]);
 
