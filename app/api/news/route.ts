@@ -17,6 +17,7 @@ export async function GET() {
         url: true,
         imageUrl: true,
         datePublished: true,
+        content: true,
       },
       orderBy: { datePublished: "desc" },
     });
