@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/azure": "^0.0.45",
+    "@mui/icons-material": "^6.1.2",
     "@mui/material": "^6.1.2",
     "@mui/material-pigment-css": "^6.1.2",
     "@pixiv/three-vrm": "^3.1.2",

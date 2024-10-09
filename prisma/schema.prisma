@@ -15,6 +15,7 @@ model News {
   providerUrl         String
   isRSS               Boolean
   rssUrl              String?
+  category            String
   title               String
   description         String
   source              String

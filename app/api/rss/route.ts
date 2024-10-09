@@ -2,6 +2,13 @@ import { News, PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import RSSParser from "rss-parser";
 import { htmlToText } from "html-to-text";
+import { generateText } from "ai";
+import { createAzure } from "@ai-sdk/azure";
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_OPENAI_RESOURCE!,
+  apiKey: process.env.AZURE_OPENAI_KEY!,
+});
 
 export const runtime = "nodejs";
 
@@ -22,6 +29,7 @@ const mapChainwireRSSNews = (feed: any, provider: string, rssUrl: string) => {
     isRSS: true,
     rssUrl: rssUrl,
     items: feed.items.map((item: any) => ({
+      category: "",
       title: item.title.trim(),
       description: item.contentSnippet.trim(),
       source: item.creator || item["dc:creator"],
@@ -42,6 +50,7 @@ const mapCoinTelegraphNews = (feed: any, provider: string, rssUrl: string) => {
     isRSS: true,
     rssUrl: rssUrl,
     items: feed.items.map((item: any) => ({
+      category: "",
       title: item.title.trim(),
       description: htmlToText(item.description || "", {
         wordwrap: false,
@@ -83,6 +92,27 @@ export async function GET() {
         provider.rssUrl
       );
 
+      const { text } = await generateText({
+        model: azure("gpt-4o-mini"),
+        prompt: `
+          Categorize the following news articles from ${parsedNews.provider}:
+          The categories are: NFTs, DeFi, Memes, DePIN, AI, Solana, Gaming, Ethereum, Bitcoin, and General.
+          ${parsedNews.items
+            .map((item: News, index: number) => `${index}: ${item.title}`)
+            .join("\n")}
+          Return a flat JSON object with the categories for each article.
+          Example output: { "0": "NFTs", "1": "DeFi", "2": "General" }
+          Do not include any other information in the response.
+          Do not use any markdown text.
+        `,
+      });
+
+      const categories = JSON.parse(text);
+
+      parsedNews.items.forEach((item: News, index: number) => {
+        item.category = categories[index];
+      });
+
       await prisma.news.deleteMany({
         where: {
           provider: provider.provider,
@@ -97,6 +127,7 @@ export async function GET() {
           providerUrl: parsedNews.providerUrl,
           isRSS: parsedNews.isRSS,
           rssUrl: parsedNews.rssUrl,
+          category: item.category,
           title: item.title,
           description: item.description,
           source: item.source,

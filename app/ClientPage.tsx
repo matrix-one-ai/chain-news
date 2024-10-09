@@ -21,6 +21,42 @@ import { throttle } from "./helpers/throttle";
 import { cacheVRM, getCachedVRM } from "./helpers/indexedDb";
 import CryptoCandlestickChart from "./components/CryptoCandlestickChart";
 import { GridHelper } from "three";
+import {
+  EmojiEvents,
+  AccessAlarm,
+  AttachMoney,
+  MonetizationOn,
+  NewspaperOutlined,
+  ComputerOutlined,
+  TokenOutlined,
+  GamesOutlined,
+} from "@mui/icons-material";
+import { Chip } from "@mui/material";
+
+type NewsCategory =
+  | "Memes"
+  | "Ethereum"
+  | "Solana"
+  | "Bitcoin"
+  | "AI"
+  | "DePIN"
+  | "NFTs"
+  | "DeFi"
+  | "General"
+  | "Gaming";
+
+const categoryIcons: Record<NewsCategory, JSX.Element> = {
+  Memes: <EmojiEvents />,
+  Bitcoin: <TokenOutlined />,
+  Ethereum: <TokenOutlined />,
+  Solana: <TokenOutlined />,
+  AI: <ComputerOutlined />,
+  DePIN: <AccessAlarm />,
+  NFTs: <AttachMoney />,
+  DeFi: <MonetizationOn />,
+  General: <NewspaperOutlined />,
+  Gaming: <GamesOutlined />,
+};
 
 const sampleData = [
   { date: "2024-09-25", open: 100, high: 110, low: 90, close: 105 },
@@ -52,7 +88,7 @@ interface ClientHomeProps {
 }
 
 interface NewsCardProps {
-  newsItem: News;
+  newsItem: News & { category: NewsCategory }; // Ensure category is of type NewsCategory
   onClick: (newsItem: News) => void;
 }
 
@@ -85,6 +121,16 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
     )}
     <h3>{newsItem.title}</h3>
     <p>{newsItem.providerTitle}</p>
+
+    <div style={{ marginTop: "10px" }}>
+      {newsItem.category && (
+        <Chip
+          label={newsItem.category}
+          icon={categoryIcons[newsItem.category]}
+          style={{ marginRight: "5px", padding: "2px 10px" }}
+        />
+      )}
+    </div>
   </div>
 );
 
