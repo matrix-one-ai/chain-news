@@ -435,7 +435,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         Promo the news provider and the source.
         The provider of the news is ${newsItem.providerTitle}.
 
-        Keep it under 30 seconds.
+        Keep it under 1 minute of text.
         Don't add weird characters or sounds. Pure text for speech.
       `;
 
