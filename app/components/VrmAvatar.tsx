@@ -349,6 +349,20 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
           audio.src = "";
         }
       };
+    } else {
+      setAudioReady(false);
+      if (gltf) {
+        const expressionManager = (gltf.userData.vrm as VRM).expressionManager;
+        if (expressionManager) {
+          const array = new Array(54).fill(0);
+
+          array.forEach((a, index) => {
+            const blendShapeName = getBlendShapeKey(index + 1);
+            expressionManager.setValue(blendShapeName, 0);
+          });
+          expressionManager.update();
+        }
+      }
     }
   }, [audioBlob, blendShapes, gltf, audioRef]);
 

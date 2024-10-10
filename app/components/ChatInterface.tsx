@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useRef } from "react";
 import { azureVoices } from "../helpers/azureVoices";
-import { useChat } from "ai/react";
+import { Message, useChat } from "ai/react";
 
 interface ChatInterfaceProps {
+  isStreaming: boolean;
   prompt: string;
   startTimeRef: React.MutableRefObject<number>;
   isAudioLoading: boolean;
   responseTime: string;
   selectedVoice: string;
   setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
-  handleOnFinish: (message: any, options: any) => void;
+  handleOnFinish: (message: Message, options: any) => void;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
+  isStreaming,
   prompt,
   startTimeRef,
   isAudioLoading,
@@ -30,6 +32,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     handleSubmit,
     isLoading,
     append,
+    stop,
   } = useChat({
     onFinish: handleOnFinish,
   });
@@ -37,6 +40,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     if (prompt) {
       append({ role: "user", content: prompt });
+    } else {
+      stop();
     }
   }, [prompt]);
 
@@ -56,7 +61,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   }, [chatContainerRef, messages]);
 
-  return (
+  return !isStreaming ? (
     <div
       style={{
         position: "fixed",
@@ -133,7 +138,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </form>
     </div>
-  );
+  ) : null;
 };
 
 export default ChatInterface;

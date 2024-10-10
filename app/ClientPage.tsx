@@ -65,11 +65,13 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
 
       <Overlay
         newsItems={newsData}
+        audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
         fetchAudio={fetchAudio}
         setIsAudioLoading={setIsAudioLoading}
         setSelectedNews={setSelectedNews}
+        setAudioBlob={setAudioBlob}
       />
 
       <audio ref={audioRef} />
