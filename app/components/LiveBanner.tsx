@@ -139,6 +139,7 @@ const LiveBanner = () => {
             <Box className="logo-gradient" />
             <Image
               src="/images/logo-border.svg"
+              alt="Chain News Logo"
               width={150}
               height={150}
               style={{
@@ -151,6 +152,7 @@ const LiveBanner = () => {
           </Box>
           <Image
             src="/images/chain-news-watermark.svg"
+            alt="Chain News"
             width={200}
             height={100}
             style={{
