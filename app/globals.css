@@ -74,3 +74,72 @@ a {
   margin: 0;
   color: #666;
 }
+
+@-webkit-keyframes AnimationName {
+  0% {
+    background-position: 0% 71%;
+  }
+  50% {
+    background-position: 100% 30%;
+  }
+  100% {
+    background-position: 0% 71%;
+  }
+}
+@-moz-keyframes AnimationName {
+  0% {
+    background-position: 0% 71%;
+  }
+  50% {
+    background-position: 100% 30%;
+  }
+  100% {
+    background-position: 0% 71%;
+  }
+}
+@keyframes AnimationName {
+  0% {
+    background-position: 0% 71%;
+  }
+  50% {
+    background-position: 100% 30%;
+  }
+  100% {
+    background-position: 0% 71%;
+  }
+}
+
+.logo-gradient {
+  height: 70px;
+  width: 155px;
+  border-radius: 50px;
+  z-index: 999;
+
+  background: linear-gradient(300deg, #00d1ff, #98f040);
+
+  -webkit-animation: AnimationName 10s ease infinite;
+  -moz-animation: AnimationName 10s ease infinite;
+  animation: AnimationName 10s ease infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.live-light {
+  width: 10px;
+  height: 10px;
+  background-color: #a6ed7a;
+  border-radius: 50%;
+  top: 20px;
+  left: 18px;
+  transform: translateY(-50%);
+  animation: blink 4s infinite;
+  position: absolute;
+}

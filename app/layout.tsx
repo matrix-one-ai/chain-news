@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { IBM_Plex_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import "@mui/material-pigment-css/styles.css";
@@ -15,6 +16,12 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const ibmPlexSans = IBM_Plex_Sans({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-ibm-plex-sans",
+});
+
 export const metadata: Metadata = {
   title: "Crypto News",
   description:
@@ -28,7 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSans.variable}`}
+      >
         {children}
         <Analytics />
       </body>

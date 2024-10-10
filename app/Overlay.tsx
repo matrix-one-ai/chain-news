@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import Marquee from "react-fast-marquee";
+import LiveBanner from "./components/LiveBanner";
 
 interface OverlayProps {
   newsItems: News[];
@@ -271,77 +272,7 @@ const Overlay = ({
             </Button>
           </Box>
 
-          {selectedNews && (
-            <>
-              <Box
-                sx={{
-                  zIndex: 1000,
-                  position: "absolute",
-                  bottom: {
-                    xs: 70,
-                  },
-                  left: 0,
-                  minWidth: {
-                    xs: "15rem",
-                    md: "22rem",
-                  },
-                  pointerEvents: "none",
-                  backgroundColor: "#FE3132",
-                  padding: "0.5rem 1rem",
-                  textTransform: "uppercase",
-                  clipPath: "polygon(0 0, 95% 0, 100% 100%, 0% 100%)",
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontWeight: "bold",
-                    transform: "skewX(-20deg)",
-                    fontSize: {
-                      xs: "1rem",
-                      md: "1.75rem",
-                    },
-                  }}
-                >
-                  Breaking News
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  zIndex: 1000,
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  width: "85%",
-                  pointerEvents: "none",
-                  backdropFilter: "blur(10px)",
-                  backgroundColor: "white",
-                  color: "black",
-                  py: "0.5rem",
-                }}
-              >
-                <Marquee speed={50}>
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      fontWeight: "bold",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      textTransform: "uppercase",
-                      fontSize: {
-                        xs: "1.5rem",
-                        md: "3rem",
-                      },
-                    }}
-                  >
-                    {`${selectedNews.title} ${selectedNews.description}` ||
-                      "No news yet..."}
-                  </Typography>
-                </Marquee>
-              </Box>
-            </>
-          )}
+          <LiveBanner />
         </>
       )}
     </div>
