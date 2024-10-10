@@ -335,7 +335,7 @@ const Overlay = ({
                       },
                     }}
                   >
-                    {selectedNews.title + selectedNews.description ||
+                    {`${selectedNews.title} ${selectedNews.description}` ||
                       "No news yet..."}
                   </Typography>
                 </Marquee>
