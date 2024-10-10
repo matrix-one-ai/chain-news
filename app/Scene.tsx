@@ -52,7 +52,7 @@ const Scene = ({
       <GridFloor />
 
       <VrmAvatar
-        avatarKey="vivian"
+        avatarKey="haiku"
         position={[0, 0, 0]}
         scale={[1, 1, 1]}
         audioRef={audioRef}
@@ -69,7 +69,7 @@ const Scene = ({
             )}`}
             transparent
             opacity={1}
-            position={[-0.3, 1.8, -1]}
+            position={[-0.3, 1.5, -1]}
             rotation={[0, Math.PI / 20, 0]}
           >
             <planeGeometry args={[3, 1.5]} />
@@ -80,7 +80,7 @@ const Scene = ({
       <CameraSetup />
       <OrbitControls
         target={[0, 1.25, 0]}
-        maxDistance={1.5}
+        maxDistance={1}
         minDistance={0.5}
       />
     </Canvas>
