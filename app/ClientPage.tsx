@@ -21,42 +21,7 @@ import { throttle } from "./helpers/throttle";
 import { cacheVRM, getCachedVRM } from "./helpers/indexedDb";
 import CryptoCandlestickChart from "./components/CryptoCandlestickChart";
 import { GridHelper } from "three";
-import {
-  EmojiEvents,
-  AccessAlarm,
-  AttachMoney,
-  MonetizationOn,
-  NewspaperOutlined,
-  ComputerOutlined,
-  TokenOutlined,
-  GamesOutlined,
-} from "@mui/icons-material";
-import { Chip } from "@mui/material";
-
-type NewsCategory =
-  | "Memes"
-  | "Ethereum"
-  | "Solana"
-  | "Bitcoin"
-  | "AI"
-  | "DePIN"
-  | "NFTs"
-  | "DeFi"
-  | "General"
-  | "Gaming";
-
-const categoryIcons: Record<NewsCategory, JSX.Element> = {
-  Memes: <EmojiEvents />,
-  Bitcoin: <TokenOutlined />,
-  Ethereum: <TokenOutlined />,
-  Solana: <TokenOutlined />,
-  AI: <ComputerOutlined />,
-  DePIN: <AccessAlarm />,
-  NFTs: <AttachMoney />,
-  DeFi: <MonetizationOn />,
-  General: <NewspaperOutlined />,
-  Gaming: <GamesOutlined />,
-};
+import NewsCard from "./components/NewsCard";
 
 // Constants
 const VRM_KEY = "haiku";
@@ -66,11 +31,6 @@ const VRM_IV_HEX = process.env.NEXT_PUBLIC_VRM_IV as string;
 // Types
 interface ClientHomeProps {
   newsData: News[];
-}
-
-interface NewsCardProps {
-  newsItem: News;
-  onClick: (newsItem: News) => void;
 }
 
 interface DecryptedVRM {
@@ -89,31 +49,6 @@ const CameraSetup: React.FC = () => {
 
   return null;
 };
-
-// NewsCard Component
-const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
-  <div onClick={() => onClick(newsItem)} className="news-card">
-    {newsItem.imageUrl && (
-      <img
-        src={newsItem.imageUrl}
-        alt={newsItem.title}
-        style={{ height: "200px" }}
-      />
-    )}
-    <h3>{newsItem.title}</h3>
-    <p>{newsItem.providerTitle}</p>
-
-    <div style={{ marginTop: "10px" }}>
-      {newsItem.category && (
-        <Chip
-          label={newsItem.category}
-          icon={categoryIcons[newsItem.category as NewsCategory]}
-          style={{ marginRight: "5px", padding: "2px 10px" }}
-        />
-      )}
-    </div>
-  </div>
-);
 
 // ChatInterface Component
 interface ChatInterfaceProps {
