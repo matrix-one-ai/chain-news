@@ -13,13 +13,16 @@ import {
   FormControlLabel,
   FormGroup,
   Switch,
+  Typography,
 } from "@mui/material";
+import Marquee from "react-fast-marquee";
 
 interface OverlayProps {
   newsItems: News[];
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
   isAudioLoading: boolean;
+  selectedNews: News | null;
   fetchAudio: (text: string, voice: string) => Promise<void>;
   setIsAudioLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
@@ -31,6 +34,7 @@ const Overlay = ({
   audioRef,
   progress,
   isAudioLoading,
+  selectedNews,
   fetchAudio,
   setIsAudioLoading,
   setSelectedNews,
@@ -240,23 +244,96 @@ const Overlay = ({
       </Box>
 
       {isStreaming && (
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: 10,
-            left: 0,
-            right: 0,
-            zIndex: 1002,
-          }}
-        >
-          <Button
-            variant={isPlaying ? "outlined" : "contained"}
-            color="primary"
-            onClick={isPlaying ? handleStreamStop : handleStreamStart}
+        <>
+          <Box
+            sx={{
+              position: "fixed",
+              top: 10,
+              right: 10,
+              zIndex: 1002,
+            }}
           >
-            {isPlaying ? "Stop Stream" : "Start Stream"}
-          </Button>
-        </Box>
+            <Button
+              variant={isPlaying ? "outlined" : "contained"}
+              color="primary"
+              onClick={isPlaying ? handleStreamStop : handleStreamStart}
+            >
+              {isPlaying ? "Stop Stream" : "Start Stream"}
+            </Button>
+          </Box>
+
+          {selectedNews && (
+            <>
+              <Box
+                sx={{
+                  zIndex: 1000,
+                  position: "absolute",
+                  bottom: {
+                    xs: 70,
+                  },
+                  left: 0,
+                  minWidth: {
+                    xs: "15rem",
+                    md: "22rem",
+                  },
+                  pointerEvents: "none",
+                  backgroundColor: "#FE3132",
+                  padding: "0.5rem 1rem",
+                  textTransform: "uppercase",
+                  clipPath: "polygon(0 0, 95% 0, 100% 100%, 0% 100%)",
+                }}
+              >
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: "bold",
+                    transform: "skewX(-20deg)",
+                    fontSize: {
+                      xs: "1rem",
+                      md: "1.75rem",
+                    },
+                  }}
+                >
+                  Breaking News
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  zIndex: 1000,
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  width: "85%",
+                  pointerEvents: "none",
+                  backdropFilter: "blur(10px)",
+                  backgroundColor: "white",
+                  color: "black",
+                  py: "0.5rem",
+                }}
+              >
+                <Marquee speed={50}>
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      fontWeight: "bold",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      textTransform: "uppercase",
+                      fontSize: {
+                        xs: "1.5rem",
+                        md: "3rem",
+                      },
+                    }}
+                  >
+                    {selectedNews.title + selectedNews.description ||
+                      "No news yet..."}
+                  </Typography>
+                </Marquee>
+              </Box>
+            </>
+          )}
+        </>
       )}
     </div>
   );

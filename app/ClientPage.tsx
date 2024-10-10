@@ -68,6 +68,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
+        selectedNews={selectedNews}
         fetchAudio={fetchAudio}
         setIsAudioLoading={setIsAudioLoading}
         setSelectedNews={setSelectedNews}
