@@ -52,7 +52,7 @@ const Scene = ({
       <GridFloor />
 
       <VrmAvatar
-        avatarKey="haiku"
+        avatarKey="vivian"
         position={[0, 0, 0]}
         scale={[1, 1, 1]}
         audioRef={audioRef}
