@@ -23,9 +23,30 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Crypto News",
+  title: "Chain News",
   description:
     "Latest news and updates on cryptocurrencies, blockchain, and DeFi, hosted by AIs.",
+  openGraph: {
+    type: "website",
+    url: "https://www.chainnews.com",
+    title: "Chain News",
+    description:
+      "Latest news and updates on cryptocurrencies, blockchain, and DeFi, hosted by AIs.",
+    images: [
+      {
+        url: "https://www.chainnews.com/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Chain News OG Image",
+      },
+      {
+        url: "https://www.chainnews.com/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Chain News OG Image 2",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
