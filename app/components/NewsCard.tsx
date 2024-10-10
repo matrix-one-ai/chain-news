@@ -1,3 +1,5 @@
+"use client";
+
 import { Chip } from "@mui/material";
 import { News } from "@prisma/client";
 import {
@@ -10,6 +12,7 @@ import {
   TokenOutlined,
   GamesOutlined,
 } from "@mui/icons-material";
+import Image from "next/image";
 
 interface NewsCardProps {
   newsItem: News;
@@ -43,13 +46,13 @@ type NewsCategory =
 
 const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
   <div onClick={() => onClick(newsItem)} className="news-card">
-    {newsItem.imageUrl && (
-      <img
-        src={newsItem.imageUrl}
-        alt={newsItem.title}
-        style={{ height: "200px" }}
-      />
-    )}
+    <Image
+      src={newsItem.imageUrl as string}
+      alt={newsItem.title}
+      width={300}
+      height={200}
+    />
+
     <h3>{newsItem.title}</h3>
     <p>{newsItem.providerTitle}</p>
 

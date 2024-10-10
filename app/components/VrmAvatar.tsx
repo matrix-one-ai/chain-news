@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  Suspense,
+} from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTF, GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -12,6 +18,19 @@ import {
   VRMUtils,
 } from "@pixiv/three-vrm";
 import { azureToVrmBlendShapes } from "../helpers/azureToVrmBlendShapes";
+import { fetchWithProgress } from "../helpers/fetchWithProgress";
+import { throttle } from "../helpers/throttle";
+import { cacheVRM, getCachedVRM } from "../helpers/indexedDb";
+import { hexStringToArrayBuffer } from "../helpers/crypto";
+
+// Constants
+const VRM_KEY_HEX = process.env.NEXT_PUBLIC_VRM_KEY as string;
+const VRM_IV_HEX = process.env.NEXT_PUBLIC_VRM_IV as string;
+
+interface DecryptedVRM {
+  url: string;
+  blob: Blob;
+}
 
 // Utility function to process blend shapes data
 const processBlendShapesData = (
@@ -54,11 +73,11 @@ const getBlendShapeKey = (index: number): string => {
 
 // Type definitions for props
 interface VrmAvatarProps {
+  avatarKey: string;
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
   onLoadingProgress: (progress: number) => void;
   audioBlob: Blob | null;
   blendShapes: any[];
-  vrmUrl: string;
   position: [number, number, number];
   scale: [number, number, number];
 }
@@ -70,11 +89,11 @@ interface ProcessedFrame {
 }
 
 const VrmAvatar: React.FC<VrmAvatarProps> = ({
+  avatarKey,
   audioRef,
   onLoadingProgress,
   audioBlob,
   blendShapes,
-  vrmUrl,
   position,
   scale,
 }) => {
@@ -84,6 +103,82 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   const [actions, setActions] = useState<THREE.AnimationAction[]>([]);
   const [audioReady, setAudioReady] = useState(false);
   const [processedFrames, setProcessedFrames] = useState<ProcessedFrame[]>([]);
+  const [decryptedVrm, setDecryptedVrm] = useState<DecryptedVRM | null>(null);
+
+  // Decrypt VRM Function
+  const decryptVRM = useCallback(
+    async (
+      encryptedData: ArrayBuffer,
+      key: ArrayBuffer,
+      iv: ArrayBuffer
+    ): Promise<Uint8Array> => {
+      try {
+        const algorithm = { name: "AES-CBC", iv };
+        const cryptoKey = await window.crypto.subtle.importKey(
+          "raw",
+          key,
+          algorithm,
+          false,
+          ["decrypt"]
+        );
+        const decrypted = await window.crypto.subtle.decrypt(
+          algorithm,
+          cryptoKey,
+          encryptedData
+        );
+        return new Uint8Array(decrypted);
+      } catch (error) {
+        console.error("Error during decryption:", error);
+        throw error;
+      }
+    },
+    []
+  );
+
+  // Fetch and Decrypt VRM
+  const fetchAndDecryptVRM = useCallback(
+    async (avatarKey: string) => {
+      try {
+        onLoadingProgress(0);
+
+        // Retrieve encrypted VRM from cache or fetch it
+        let encryptedData = await getCachedVRM(avatarKey);
+        if (!encryptedData) {
+          encryptedData = await fetchWithProgress(
+            `/api/vrm/decrypt?file=${avatarKey}`,
+            throttle((prog: number) => onLoadingProgress(prog), 250)
+          );
+          await cacheVRM(avatarKey, encryptedData);
+        } else {
+          console.log("Loaded VRM from cache");
+        }
+
+        // Convert hex to ArrayBuffer
+        const key = hexStringToArrayBuffer(VRM_KEY_HEX);
+        const iv = hexStringToArrayBuffer(VRM_IV_HEX);
+
+        // Decrypt VRM
+        const decryptedData = await decryptVRM(encryptedData, key, iv);
+        const blob = new Blob([decryptedData.buffer], {
+          type: "application/octet-stream",
+        });
+        const url = URL.createObjectURL(blob);
+
+        setDecryptedVrm({ url, blob });
+        onLoadingProgress(100);
+      } catch (error) {
+        console.error("Error decrypting VRM:", error);
+        onLoadingProgress(0);
+      }
+    },
+    [decryptVRM, onLoadingProgress]
+  );
+
+  useEffect(() => {
+    if (avatarKey) {
+      fetchAndDecryptVRM(avatarKey);
+    }
+  }, [avatarKey, fetchAndDecryptVRM]);
 
   // Ref for audio event handlers to ensure cleanup
   const audioEventHandlersRef = useRef<{
@@ -100,101 +195,106 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   }, [blendShapes]);
 
   // Function to load VRM model
-  const loadModel = useCallback(async () => {
-    if (typeof window === "undefined") return;
+  const loadModel = useCallback(
+    async (vrmUrl: string) => {
+      if (typeof window === "undefined") return;
 
-    try {
-      // Dynamically import MToonNodeMaterial to reduce initial bundle size
-      const { MToonNodeMaterial } = await import("@pixiv/three-vrm/nodes");
+      try {
+        // Dynamically import MToonNodeMaterial to reduce initial bundle size
+        const { MToonNodeMaterial } = await import("@pixiv/three-vrm/nodes");
 
-      // Initialize GLTFLoader with VRM plugins
-      const loader = new GLTFLoader()
-        .register(
-          (parser) =>
-            new VRMLoaderPlugin(parser, {
-              autoUpdateHumanBones: true,
-            })
-        )
-        .register((parser) => {
-          const mtoonMaterialPlugin = new MToonMaterialLoaderPlugin(parser, {
-            materialType: MToonNodeMaterial,
+        // Initialize GLTFLoader with VRM plugins
+        const loader = new GLTFLoader()
+          .register(
+            (parser) =>
+              new VRMLoaderPlugin(parser, {
+                autoUpdateHumanBones: true,
+              })
+          )
+          .register((parser) => {
+            const mtoonMaterialPlugin = new MToonMaterialLoaderPlugin(parser, {
+              materialType: MToonNodeMaterial,
+            });
+
+            return new VRMLoaderPlugin(parser, {
+              mtoonMaterialPlugin,
+            });
           });
 
-          return new VRMLoaderPlugin(parser, {
-            mtoonMaterialPlugin,
-          });
-        });
+        // Load VRM model
+        loader.load(
+          vrmUrl,
+          async (loadedGltf) => {
+            const vrm: VRM = loadedGltf.userData.vrm;
 
-      // Load VRM model
-      loader.load(
-        vrmUrl,
-        async (loadedGltf) => {
-          const vrm: VRM = loadedGltf.userData.vrm;
+            // Optimize VRM scene
+            VRMUtils.removeUnnecessaryVertices(loadedGltf.scene);
+            VRMUtils.removeUnnecessaryJoints(loadedGltf.scene, {
+              experimentalSameBoneCounts: true,
+            });
 
-          // Optimize VRM scene
-          VRMUtils.removeUnnecessaryVertices(loadedGltf.scene);
-          VRMUtils.removeUnnecessaryJoints(loadedGltf.scene, {
-            experimentalSameBoneCounts: true,
-          });
+            // Disable frustum culling for all objects in the scene
+            loadedGltf.scene.traverse((obj: any) => {
+              obj.frustumCulled = false;
+            });
 
-          // Disable frustum culling for all objects in the scene
-          loadedGltf.scene.traverse((obj: any) => {
-            obj.frustumCulled = false;
-          });
+            // Rotate VRM to face the correct direction
+            VRMUtils.rotateVRM0(vrm);
 
-          // Rotate VRM to face the correct direction
-          VRMUtils.rotateVRM0(vrm);
+            setGltf(loadedGltf);
 
-          setGltf(loadedGltf);
+            // Initialize AnimationMixer
+            const newMixer = new THREE.AnimationMixer(loadedGltf.scene);
+            setMixer(newMixer);
 
-          // Initialize AnimationMixer
-          const newMixer = new THREE.AnimationMixer(loadedGltf.scene);
-          setMixer(newMixer);
+            // Load animations
+            const animationUrls = [
+              "/animations/idle-1.fbx",
+              "/animations/fan-face.fbx",
+              "/animations/idle-2.fbx",
+              "/animations/kick-foot.fbx",
+              "/animations/look-hand.fbx",
+              "/animations/idle-1.fbx",
+              "/animations/happy-idle.fbx",
+            ];
 
-          // Load animations
-          const animationUrls = [
-            "/animations/idle-1.fbx",
-            "/animations/fan-face.fbx",
-            "/animations/idle-2.fbx",
-            "/animations/kick-foot.fbx",
-            "/animations/look-hand.fbx",
-            "/animations/idle-1.fbx",
-            "/animations/happy-idle.fbx",
-          ];
+            const loadedActions = await Promise.all(
+              animationUrls.map(async (url) => {
+                const clip = await loadMixamoAnimation(url, vrm);
+                const action = newMixer.clipAction(clip);
+                return action;
+              })
+            );
 
-          const loadedActions = await Promise.all(
-            animationUrls.map(async (url) => {
-              const clip = await loadMixamoAnimation(url, vrm);
-              const action = newMixer.clipAction(clip);
-              return action;
-            })
-          );
+            setActions(loadedActions);
 
-          setActions(loadedActions);
-
-          // Play the first animation by default
-          if (loadedActions.length > 0) {
-            loadedActions[0].play();
+            // Play the first animation by default
+            if (loadedActions.length > 0) {
+              loadedActions[0].play();
+            }
+          },
+          (event) => {
+            // Update loading progress
+            const progress = (event.loaded / event.total) * 100;
+            onLoadingProgress(progress);
+          },
+          (error) => {
+            console.error("Error loading VRM model:", error);
           }
-        },
-        (event) => {
-          // Update loading progress
-          const progress = (event.loaded / event.total) * 100;
-          onLoadingProgress(progress);
-        },
-        (error) => {
-          console.error("Error loading VRM model:", error);
-        }
-      );
-    } catch (error) {
-      console.error("Error in loadModel:", error);
-    }
-  }, [vrmUrl, onLoadingProgress]);
+        );
+      } catch (error) {
+        console.error("Error in loadModel:", error);
+      }
+    },
+    [onLoadingProgress]
+  );
 
   // Effect to load VRM model on component mount
   useEffect(() => {
-    loadModel();
-  }, [loadModel]);
+    if (decryptedVrm?.url) {
+      loadModel(decryptedVrm?.url);
+    }
+  }, [decryptedVrm?.url, loadModel]);
 
   // Effect to handle audio loading and synchronization
   useEffect(() => {
@@ -326,7 +426,9 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   });
 
   return gltf && actions.length > 0 ? (
-    <primitive object={gltf.scene} position={position} scale={scale} />
+    <Suspense fallback={null}>
+      <primitive object={gltf.scene} position={position} scale={scale} />
+    </Suspense>
   ) : null;
 };
 

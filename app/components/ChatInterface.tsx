@@ -1,104 +1,139 @@
+import { useCallback, useEffect, useRef } from "react";
 import { azureVoices } from "../helpers/azureVoices";
+import { useChat } from "ai/react";
 
 interface ChatInterfaceProps {
-  messages: any[];
-  input: string;
-  handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  handleSubmit: (e: React.FormEvent) => void;
-  isLoading: boolean;
+  prompt: string;
+  startTimeRef: React.MutableRefObject<number>;
   isAudioLoading: boolean;
   responseTime: string;
   selectedVoice: string;
   setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
-  chatContainerRef: React.RefObject<HTMLDivElement>;
+  handleOnFinish: (message: any, options: any) => void;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
-  messages,
-  input,
-  handleInputChange,
-  handleSubmit,
-  isLoading,
+  prompt,
+  startTimeRef,
   isAudioLoading,
   responseTime,
   selectedVoice,
   setSelectedVoice,
-  chatContainerRef,
-}) => (
-  <div
-    style={{
-      position: "fixed",
-      bottom: 10,
-      left: 0,
-      zIndex: 1000,
-      width: "25%",
-      color: "black",
-    }}
-  >
+  handleOnFinish,
+}) => {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    append,
+  } = useChat({
+    onFinish: handleOnFinish,
+  });
+
+  useEffect(() => {
+    if (prompt) {
+      append({ role: "user", content: prompt });
+    }
+  }, [prompt]);
+
+  const handleSubmitWithTimer = useCallback(
+    (event: React.FormEvent) => {
+      event.preventDefault();
+      startTimeRef.current = performance.now();
+      handleSubmit(event);
+    },
+    [handleSubmit, startTimeRef]
+  );
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [chatContainerRef, messages]);
+
+  return (
     <div
-      ref={chatContainerRef}
       style={{
-        maxHeight: "300px",
-        overflowY: "auto",
-        backgroundColor: "#f0f0f0",
-        padding: "10px",
+        position: "fixed",
+        bottom: 10,
+        left: 0,
+        zIndex: 1000,
+        width: "25%",
+        color: "black",
       }}
     >
-      {messages.map((message, index) => (
-        <div key={index}>
-          <strong>{message.role === "user" ? "User" : "AI"}:</strong>{" "}
-          {message.content}
-        </div>
-      ))}
-    </div>
-    <form onSubmit={handleSubmit}>
-      <textarea
-        value={input}
-        onChange={handleInputChange}
-        placeholder="Enter your message"
-        rows={4}
+      <div
+        ref={chatContainerRef}
         style={{
-          width: "100%",
+          maxHeight: "300px",
+          overflowY: "auto",
+          backgroundColor: "#f0f0f0",
           padding: "10px",
-          fontSize: "16px",
         }}
-      />
-      <div>
-        <select
-          value={selectedVoice}
-          onChange={(e) => setSelectedVoice(e.target.value)}
+      >
+        {messages.map((message, index) => (
+          <div key={index}>
+            <strong>{message.role === "user" ? "User" : "AI"}:</strong>{" "}
+            {message.content}
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmitWithTimer}>
+        <textarea
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Enter your message"
+          rows={4}
           style={{
+            width: "100%",
             padding: "10px",
+            fontSize: "16px",
+          }}
+        />
+        <div>
+          <select
+            value={selectedVoice}
+            onChange={(e) => setSelectedVoice(e.target.value)}
+            style={{
+              padding: "10px",
+              fontSize: "16px",
+              width: "100%",
+            }}
+          >
+            {azureVoices.map((voice) => (
+              <option key={voice.value} value={voice.value}>
+                {voice.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || isAudioLoading}
+          style={{
+            marginTop: "10px",
+            padding: "10px 20px",
             fontSize: "16px",
             width: "100%",
           }}
         >
-          {azureVoices.map((voice) => (
-            <option key={voice.value} value={voice.value}>
-              {voice.label}
-            </option>
-          ))}
-        </select>
-      </div>
+          {isLoading || isAudioLoading ? "Loading..." : "Send"}
+        </button>
 
-      <button
-        type="submit"
-        disabled={isLoading || isAudioLoading}
-        style={{
-          marginTop: "10px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          width: "100%",
-        }}
-      >
-        {isLoading || isAudioLoading ? "Loading..." : "Send"}
-      </button>
-
-      <div style={{ whiteSpace: "nowrap", color: "white", paddingTop: "5px" }}>
-        Latency: {responseTime ? `${responseTime}s` : ""}
-      </div>
-    </form>
-  </div>
-);
+        <div
+          style={{ whiteSpace: "nowrap", color: "white", paddingTop: "5px" }}
+        >
+          Latency: {responseTime ? `${responseTime}s` : ""}
+        </div>
+      </form>
+    </div>
+  );
+};
 
 export default ChatInterface;

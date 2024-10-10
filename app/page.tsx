@@ -15,5 +15,7 @@ export default async function Home() {
 
   const data = await response.json();
 
+  data.sort(() => 0.5 - Math.random());
+
   return <ClientHome newsData={data} />;
 }
