@@ -115,7 +115,8 @@ a {
   border-radius: 50px;
   z-index: 999;
 
-  background: linear-gradient(300deg, #00d1ff, #98f040);
+  background: linear-gradient(275deg, #00d1ff, #98f040);
+  background-size: 200% 200%;
 
   -webkit-animation: AnimationName 10s ease infinite;
   -moz-animation: AnimationName 10s ease infinite;
