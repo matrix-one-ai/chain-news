@@ -1,23 +1,34 @@
 import React, { useMemo } from "react";
 import { Text } from "@react-three/drei";
 
-interface CandlestickData {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
-
 interface CryptoCandlestickChartProps {
-  data: CandlestickData[];
-  maxPrice: number;
   spacing: number;
   position?: [number, number, number];
   scaleY?: number; // Add scaleY for vertical exaggeration
   scaleX?: number; // Add scaleX for horizontal exaggeration
   token?: string; // Add token prop for ticker symbol
 }
+
+const data = [
+  { date: "2024-09-25", open: 100, high: 110, low: 90, close: 105 },
+  { date: "2024-09-26", open: 105, high: 115, low: 95, close: 100 },
+  { date: "2024-09-27", open: 100, high: 120, low: 80, close: 110 },
+  { date: "2024-09-28", open: 110, high: 130, low: 100, close: 125 },
+  { date: "2024-09-29", open: 125, high: 140, low: 120, close: 135 },
+  { date: "2024-09-30", open: 135, high: 145, low: 130, close: 132 },
+  { date: "2024-10-01", open: 132, high: 137, low: 125, close: 127 },
+  { date: "2024-10-02", open: 127, high: 130, low: 115, close: 118 },
+  { date: "2024-10-03", open: 118, high: 125, low: 110, close: 120 },
+  { date: "2024-10-04", open: 120, high: 135, low: 115, close: 125 },
+  { date: "2024-10-05", open: 125, high: 140, low: 110, close: 115 },
+  { date: "2024-10-06", open: 115, high: 120, low: 100, close: 105 },
+  { date: "2024-10-07", open: 105, high: 110, low: 90, close: 95 },
+  { date: "2024-10-08", open: 95, high: 105, low: 85, close: 100 },
+  { date: "2024-10-09", open: 100, high: 115, low: 90, close: 110 },
+  { date: "2024-10-10", open: 110, high: 125, low: 105, close: 120 },
+];
+
+const maxPrice = Math.max(...data.map((d) => d.high));
 
 const Candle: React.FC<{
   open: number;
@@ -91,8 +102,6 @@ const PriceLabel: React.FC<{
 );
 
 const CryptoCandlestickChart: React.FC<CryptoCandlestickChartProps> = ({
-  data,
-  maxPrice,
   spacing,
   position = [0, 0, 0],
   scaleY = 10,
@@ -115,13 +124,13 @@ const CryptoCandlestickChart: React.FC<CryptoCandlestickChartProps> = ({
         scaleX={scaleX} // Pass scaleX to each candle
       />
     ));
-  }, [data, maxPrice, spacing, scaleY, scaleX]);
+  }, [spacing, scaleY, scaleX]);
 
   // Define some price levels for the labels
   const priceLevels = useMemo(() => {
     const interval = maxPrice / 5;
     return Array.from({ length: 5 }, (_, i) => (i + 1) * interval);
-  }, [maxPrice]);
+  }, []);
 
   return (
     <group position={position}>
