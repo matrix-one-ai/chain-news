@@ -95,7 +95,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           placeholder="Enter your message"
           rows={4}
           style={{
-            width: "100%",
+            width: "95.5%",
             padding: "10px",
             fontSize: "16px",
           }}

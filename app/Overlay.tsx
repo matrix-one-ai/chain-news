@@ -7,15 +7,6 @@ import NewsCard from "./components/NewsCard";
 import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import { azureVoices } from "./helpers/azureVoices";
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  FormGroup,
-  Switch,
-  Typography,
-} from "@mui/material";
-import Marquee from "react-fast-marquee";
 import LiveBanner from "./components/LiveBanner";
 
 interface OverlayProps {
@@ -48,6 +39,7 @@ const Overlay = ({
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [segmentDuration, setSegmentDuration] = useState<number>(30);
 
   const startTimeRef = useRef<number>(0);
 
@@ -88,20 +80,20 @@ const Overlay = ({
         Promo the news provider and the source.
         The provider of the news is ${newsItem.providerTitle}.
 
-        Keep it under 1 minute of text.
+        Keep it under ${segmentDuration} seconds of text.
         Don't add weird characters or sounds. Pure text for speech.
      `;
 
       setPrompt(prompt);
     },
-    [setSelectedNews]
+    [segmentDuration, setSelectedNews]
   );
 
   const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
 
-  const switchNextNewsItem = () => {
+  const switchNextNewsItem = useCallback(() => {
     setCurrentNewsIndex((prevIndex) => prevIndex + 1);
-  };
+  }, []);
 
   useEffect(() => {
     if (isStreaming && isPlaying) {
@@ -129,7 +121,7 @@ const Overlay = ({
         Promo the news provider and the source.
         The provider of the news is ${newsItem.providerTitle}.
 
-        Keep it under 20 seconds of text.
+        Keep it under ${segmentDuration} seconds of text.
         Don't add weird characters or sounds. Pure text for speech.
       `;
 
@@ -154,7 +146,16 @@ const Overlay = ({
         audioRef.current?.removeEventListener("ended", switchNextNewsItem);
       };
     }
-  }, [currentNewsIndex, newsItems, setSelectedNews, isStreaming, isPlaying]);
+  }, [
+    currentNewsIndex,
+    newsItems,
+    setSelectedNews,
+    isStreaming,
+    isPlaying,
+    audioRef,
+    switchNextNewsItem,
+    segmentDuration,
+  ]);
 
   const handleStreamStart = useCallback(() => {
     setIsPlaying(true);
@@ -181,7 +182,37 @@ const Overlay = ({
     `;
 
     setPrompt(prompt);
-  }, [audioRef, setSelectedNews, setAudioBlob]);
+  }, [setSelectedNews, setAudioBlob, audioRef, switchNextNewsItem]);
+
+  useEffect(() => {
+    const broadcast = new BroadcastChannel("stream-control");
+
+    broadcast.onmessage = (event) => {
+      const { type, ...data } = event.data;
+
+      switch (type) {
+        case "START_STREAM":
+          handleStreamStart();
+          break;
+        case "STOP_STREAM":
+          handleStreamStop();
+          break;
+        case "SET_STREAMING":
+          setIsStreaming(data.isStreaming);
+          setIsPlaying(false);
+          break;
+        case "SET_SEGMENT_DURATION":
+          setSegmentDuration(data.segmentDuration);
+          break;
+        default:
+          break;
+      }
+    };
+
+    return () => {
+      broadcast.close();
+    };
+  }, [fetchAudio, handleStreamStart, handleStreamStop]);
 
   return (
     <div>
@@ -233,45 +264,8 @@ const Overlay = ({
         </div>
       )}
 
-      <Box
-        sx={{
-          position: "fixed",
-          top: 10,
-          left: 10,
-          zIndex: 1005,
-        }}
-      >
-        <FormGroup>
-          <FormControlLabel
-            control={<Switch value={isStreaming} />}
-            onChange={() => {
-              setIsStreaming((prev) => !prev);
-              setIsPlaying(false);
-            }}
-            label="Streamer Mode"
-          />
-        </FormGroup>
-      </Box>
-
       {isStreaming && (
         <>
-          <Box
-            sx={{
-              position: "fixed",
-              top: 10,
-              right: 10,
-              zIndex: 1002,
-            }}
-          >
-            <Button
-              variant={isPlaying ? "outlined" : "contained"}
-              color="primary"
-              onClick={isPlaying ? handleStreamStop : handleStreamStart}
-            >
-              {isPlaying ? "Stop Stream" : "Start Stream"}
-            </Button>
-          </Box>
-
           <LiveBanner />
         </>
       )}
