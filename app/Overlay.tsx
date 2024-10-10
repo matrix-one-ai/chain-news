@@ -171,6 +171,15 @@ const Overlay = ({
       audioRef.current.src = "";
       audioRef.current?.removeEventListener("ended", switchNextNewsItem);
     }
+
+    const prompt = `
+        Conclude the Crypto News Stream.
+        Thank your audience for watching.
+        Ask them to subscribe to your channel.
+        Say goodbye and see you next time.
+    `;
+
+    setPrompt(prompt);
   }, [audioRef, setSelectedNews, setAudioBlob]);
 
   return (
