@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import NewsCard from "./components/NewsCard";
 import { Message } from "ai/react";
 import { News } from "@prisma/client";
-import { azureVoices } from "./helpers/azureVoices";
 import LiveBanner from "./components/LiveBanner";
 
 interface OverlayProps {
@@ -15,8 +14,13 @@ interface OverlayProps {
   progress: number;
   isAudioLoading: boolean;
   selectedNews: News | null;
+  selectedVoice: string;
+  scriptLines: { text: string }[];
+  startTimeRef: React.MutableRefObject<number>;
+  responseTime: string;
+  onPromptFinish: (message: Message, options: any) => void;
+  setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
   fetchAudio: (text: string, voice: string) => Promise<void>;
-  setIsAudioLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
 }
@@ -27,34 +31,20 @@ const Overlay = ({
   progress,
   isAudioLoading,
   selectedNews,
+  selectedVoice,
+  scriptLines,
+  startTimeRef,
+  responseTime,
+  onPromptFinish,
+  setSelectedVoice,
   fetchAudio,
-  setIsAudioLoading,
   setSelectedNews,
   setAudioBlob,
 }: OverlayProps) => {
-  const [responseTime, setResponseTime] = useState<string>("");
-  const [selectedVoice, setSelectedVoice] = useState<string>(
-    azureVoices[0].value
-  );
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [segmentDuration, setSegmentDuration] = useState<number>(30);
-
-  const startTimeRef = useRef<number>(0);
-
-  const handleOnFinish = useCallback(
-    (message: Message, options: any) => {
-      console.log(message, options);
-      setIsAudioLoading(true);
-      fetchAudio(message.content, selectedVoice).then(() => {
-        const endTime = performance.now();
-        const timeTaken = ((endTime - startTimeRef.current) / 1000).toFixed(2);
-        setResponseTime(timeTaken);
-      });
-    },
-    [fetchAudio, selectedVoice, setIsAudioLoading]
-  );
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
@@ -86,7 +76,7 @@ const Overlay = ({
 
       setPrompt(prompt);
     },
-    [segmentDuration, setSelectedNews]
+    [segmentDuration, setSelectedNews, startTimeRef]
   );
 
   const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
@@ -238,7 +228,7 @@ const Overlay = ({
         responseTime={responseTime}
         selectedVoice={selectedVoice}
         setSelectedVoice={setSelectedVoice}
-        handleOnFinish={handleOnFinish}
+        handleOnFinish={onPromptFinish}
       />
 
       {!isStreaming && (
