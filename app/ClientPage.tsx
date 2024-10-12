@@ -13,7 +13,7 @@ interface ClientHomeProps {
 
 const speakerVoiceMap = {
   HOST1: "en-US-AvaMultilingualNeural",
-  HOST2: "en-US-DavisNeural",
+  HOST2: "en-US-AndrewMultilingualNeural",
 };
 
 const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
@@ -39,20 +39,20 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   const currentLineIndexRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
 
-  // State for current and next line
+  // State for the current line, including lineIndex
   const [currentLineState, setCurrentLineState] = useState<{
+    lineIndex: number;
     speaker: string;
     audioBlob: Blob | null;
     blendShapes: any[];
-  }>({ speaker: "", audioBlob: null, blendShapes: [] });
-
-  const [nextLineState, setNextLineState] = useState<{
-    speaker: string;
-    audioBlob: Blob | null;
-    blendShapes: any[];
-  }>({ speaker: "", audioBlob: null, blendShapes: [] });
+  }>({ lineIndex: -1, speaker: "", audioBlob: null, blendShapes: [] });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // Cache for fetched audio data
+  const [audioCache, setAudioCache] = useState<{
+    [index: number]: { blob: Blob; blendShapes: any[] };
+  }>({});
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
@@ -97,23 +97,33 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       const voiceId =
         speakerVoiceMap[currentLine.speaker as keyof typeof speakerVoiceMap];
 
-      let audioData, blendShapesData;
-      if (currentIndex === 0 || nextLineState.audioBlob === null) {
+      let audioData: Blob;
+      let blendShapesData: any[];
+
+      if (audioCache[currentIndex]) {
+        // Use cached audio data
+        audioData = audioCache[currentIndex].blob;
+        blendShapesData = audioCache[currentIndex].blendShapes;
+      } else {
         setIsAudioLoading(true);
         const result = await fetchAudio(currentLine.text, voiceId);
         setIsAudioLoading(false);
         if (result) {
           audioData = result.blob;
           blendShapesData = result.blendShapes;
+
+          // Cache the audio data
+          setAudioCache((prevCache) => ({
+            ...prevCache,
+            [currentIndex]: { blob: audioData, blendShapes: blendShapesData },
+          }));
         } else {
           return;
         }
-      } else {
-        audioData = nextLineState.audioBlob;
-        blendShapesData = nextLineState.blendShapes;
       }
 
       setCurrentLineState({
+        lineIndex: currentIndex,
         speaker: currentLine.speaker,
         audioBlob: audioData,
         blendShapes: blendShapesData,
@@ -125,35 +135,23 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         const nextLine = scriptLines[nextIndex];
         const nextVoiceId =
           speakerVoiceMap[nextLine.speaker as keyof typeof speakerVoiceMap];
-        fetchAudio(nextLine.text, nextVoiceId).then((result) => {
-          if (result) {
-            setNextLineState({
-              speaker: nextLine.speaker,
-              audioBlob: result.blob,
-              blendShapes: result.blendShapes,
-            });
-          } else {
-            setNextLineState({
-              speaker: nextLine.speaker,
-              audioBlob: null,
-              blendShapes: [],
-            });
-          }
-        });
-      } else {
-        setNextLineState({
-          speaker: "",
-          audioBlob: null,
-          blendShapes: [],
-        });
+        if (!audioCache[nextIndex]) {
+          fetchAudio(nextLine.text, nextVoiceId).then((result) => {
+            if (result) {
+              // Cache the audio data
+              setAudioCache((prevCache) => ({
+                ...prevCache,
+                [nextIndex]: {
+                  blob: result.blob,
+                  blendShapes: result.blendShapes,
+                },
+              }));
+            }
+          });
+        }
       }
     }
-  }, [
-    scriptLines,
-    nextLineState.audioBlob,
-    nextLineState.blendShapes,
-    fetchAudio,
-  ]);
+  }, [scriptLines, audioCache, fetchAudio]);
 
   // Move to the next line
   const nextLine = useCallback(() => {
@@ -179,7 +177,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     };
   }, [nextLine]);
 
-  // Play audio when currentLineState.audioBlob changes
+  // Play audio when currentLineState changes
   useEffect(() => {
     if (currentLineState.audioBlob && audioRef.current) {
       const audioURL = URL.createObjectURL(currentLineState.audioBlob);
@@ -191,7 +189,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         URL.revokeObjectURL(audioURL);
       };
     }
-  }, [currentLineState.audioBlob]);
+  }, [currentLineState.lineIndex]);
 
   // Handle prompt finish and start playing script
   const onPromptFinish = useCallback(
@@ -210,41 +208,49 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       currentLineIndexRef.current = 0;
       setIsAudioLoading(true);
 
-      // Start fetching the first line
-      const currentLine = parsedLines[0];
-      const voiceId =
-        speakerVoiceMap[currentLine.speaker as keyof typeof speakerVoiceMap];
-      const result = await fetchAudio(currentLine.text, voiceId);
-      setIsAudioLoading(false);
-      if (result) {
-        setCurrentLineState({
-          speaker: currentLine.speaker,
-          audioBlob: result.blob,
-          blendShapes: result.blendShapes,
+      // Start fetching all audio data upfront
+      const fetchAllAudio = async () => {
+        const audioDataArray = await Promise.all(
+          parsedLines.map(async (line, index) => {
+            const voiceId =
+              speakerVoiceMap[line.speaker as keyof typeof speakerVoiceMap];
+            const result = await fetchAudio(line.text, voiceId);
+            return result ? { ...result, speaker: line.speaker } : null;
+          })
+        );
+
+        const newAudioCache: {
+          [index: number]: { blob: Blob; blendShapes: any[] };
+        } = {};
+        audioDataArray.forEach((data, index) => {
+          if (data) {
+            newAudioCache[index] = {
+              blob: data.blob,
+              blendShapes: data.blendShapes,
+            };
+          }
         });
 
-        setIsPlaying(true);
+        setAudioCache(newAudioCache);
 
-        // Prefetch the next line if it exists
-        if (parsedLines.length > 1) {
-          const nextLine = parsedLines[1];
-          const nextVoiceId =
-            speakerVoiceMap[nextLine.speaker as keyof typeof speakerVoiceMap];
-          fetchAudio(nextLine.text, nextVoiceId).then((nextResult) => {
-            if (nextResult) {
-              setNextLineState({
-                speaker: nextLine.speaker,
-                audioBlob: nextResult.blob,
-                blendShapes: nextResult.blendShapes,
-              });
-            }
+        // Start playing the first line
+        if (newAudioCache[0]) {
+          setCurrentLineState({
+            lineIndex: 0,
+            speaker: parsedLines[0].speaker,
+            audioBlob: newAudioCache[0].blob,
+            blendShapes: newAudioCache[0].blendShapes,
           });
+          setIsPlaying(true);
         }
 
         const endTime = performance.now();
         const timeTaken = ((endTime - startTimeRef.current) / 1000).toFixed(2);
         setResponseTime(timeTaken);
-      }
+        setIsAudioLoading(false);
+      };
+
+      fetchAllAudio();
     },
     [fetchAudio]
   );

@@ -97,6 +97,7 @@ const Overlay = ({
         HOST1 should have more script lines then HOST2.
 
         This text is used to generate the audio for the show.
+        This is the first news item in the stream. Welcome your audience.
      `;
 
       setPrompt(prompt);
@@ -158,6 +159,7 @@ const Overlay = ({
         HOST1 should have more script lines then HOST2.
 
         This text is used to generate the audio for the show.
+        This is the first news item in the stream. Welcome your audience.
       `;
 
       const prompt1 = `
