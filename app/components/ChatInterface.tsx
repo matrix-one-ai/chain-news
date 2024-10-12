@@ -29,7 +29,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     messages,
     input,
     handleInputChange,
-    handleSubmit,
     isLoading,
     append,
     stop,
@@ -49,9 +48,46 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     (event: React.FormEvent) => {
       event.preventDefault();
       startTimeRef.current = performance.now();
-      handleSubmit(event);
+      const form = event.currentTarget as HTMLFormElement;
+      const message = (form.elements[0] as HTMLInputElement).value;
+
+      const prompt = `
+        Your job is to deliver the latest news in the world of cryptocurrency on our platform ChainNews.One.
+        Your audience is watching on live stream.
+
+        There are 2 hosts: Haiku and DogWifHat.
+
+        HOST1: Haiku is a young female news reporter, educated and classy. She is the main host of the show.
+        HOST2: DogWifHat is a crypto memecoin pumper small dog with a hat. He is the co-host of the show, and he is a bit of a clown.
+
+        Don't add weird characters or sounds.
+
+        ONLY output in this script format:
+
+        Use "<" to separate the speaker from the text.
+
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        ... etc
+
+        The only speakers you can use are:
+        HOST1, HOST2
+
+        HOST1 should have more script lines then HOST2.
+
+        This text is used to generate the audio for the show.
+
+
+        A user has submitted the following message in the chat:
+
+        ${message}
+
+        Please talk to the user.
+      `;
+      append({ role: "user", content: prompt });
     },
-    [handleSubmit, startTimeRef]
+    [append, startTimeRef]
   );
 
   useEffect(() => {

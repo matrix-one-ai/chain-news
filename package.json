@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gltf": "npx gltfjsx ./public/glbs/bar-stool.glb --output ./app/components/gltf/BarStool.tsx"
   },
   "dependencies": {
     "@ai-sdk/azure": "^0.0.45",

@@ -4,6 +4,7 @@ import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect } from "react";
 import { GridHelper } from "three";
 import { News } from "@prisma/client";
+import { Model as BarStool } from "./components/gltf/BarStool";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -27,6 +28,7 @@ interface SceneProps {
   audioRef: React.RefObject<HTMLAudioElement>;
   audioBlob: Blob | null;
   blendShapes: any[];
+  speaker: string;
   setProgress: React.Dispatch<React.SetStateAction<number>>;
 }
 
@@ -35,19 +37,22 @@ const Scene = ({
   audioRef,
   audioBlob,
   blendShapes,
+  speaker,
   setProgress,
 }: SceneProps) => {
   return (
     <Canvas>
-      <ambientLight intensity={Math.PI / 2} />
+      <ambientLight intensity={1.25} />
+
       <spotLight
         position={[10, 10, 10]}
         angle={0.15}
         penumbra={1}
         decay={0}
-        intensity={Math.PI}
+        intensity={3}
       />
-      <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+
+      <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
 
       <GridFloor />
 
@@ -55,10 +60,30 @@ const Scene = ({
         avatarKey="haiku"
         position={[0, 0, 0]}
         scale={[1, 1, 1]}
+        rotation={[0, Math.PI, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
-        audioBlob={audioBlob}
-        blendShapes={blendShapes}
+        audioBlob={speaker === "HOST1" ? audioBlob : null}
+        blendShapes={speaker === "HOST1" ? blendShapes : []}
+      />
+
+      <VrmAvatar
+        avatarKey="skippy"
+        position={[0.75, 0.8, 0]}
+        scale={[0.5, 0.5, 0.5]}
+        rotation={[0, Math.PI / 1.3, 0]}
+        audioRef={audioRef}
+        onLoadingProgress={setProgress}
+        audioBlob={speaker === "HOST2" ? audioBlob : null}
+        blendShapes={speaker === "HOST2" ? blendShapes : []}
+      />
+
+      <BarStool
+        position={[0.75, 0.58, 0]}
+        rotation={[0, -Math.PI / 4, 0]}
+        scale={[0.01, 0.01, 0.01]}
+        receiveShadow
+        castShadow
       />
 
       {selectedNews && (
@@ -69,10 +94,10 @@ const Scene = ({
             )}`}
             transparent
             opacity={1}
-            position={[-0.3, 1.5, -1]}
+            position={[-0.3, 1.4, -1]}
             rotation={[0, Math.PI / 20, 0]}
           >
-            <planeGeometry args={[3, 1.5]} />
+            <planeGeometry args={[3.25, 1.75]} />
           </Image>
         </Suspense>
       )}

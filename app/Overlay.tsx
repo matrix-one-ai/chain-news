@@ -20,9 +20,12 @@ interface OverlayProps {
   responseTime: string;
   onPromptFinish: (message: Message, options: any) => void;
   setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
-  fetchAudio: (text: string, voice: string) => Promise<void>;
+  fetchAudio: (
+    text: string,
+    voice: string
+  ) => Promise<{ blob: Blob; blendShapes: any } | null>;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
-  setAudioBlob: React.Dispatch<React.SetStateAction<Blob | null>>;
+  setAudioBlob: (blob: Blob | null) => void;
 }
 
 const Overlay = ({
@@ -52,9 +55,13 @@ const Overlay = ({
       setSelectedNews(newsItem);
 
       const prompt = `
-        You name is Haiku, host of CryptoNews.One.
-        Your job is to deliver the latest news in the world of cryptocurrency.
+        Your job is to deliver the latest news in the world of cryptocurrency on our platform ChainNews.One.
         Your audience is watching on live stream.
+
+        There are 2 hosts: Haiku and DogWifHat.
+
+        HOST1: Haiku is a young female news reporter, educated and classy. She is the main host of the show.
+        HOST2: DogWifHat is a crypto memecoin pumper small dog with a hat. He is the co-host of the show, and he is a bit of a clown.
 
         The news item you have selected is:
         Title: ${newsItem.title}
@@ -64,14 +71,29 @@ const Overlay = ({
         The content of the news source is:
         ${newsItem.content}
 
-        Please deliver the news to your audience.
         At the end of the news, you can ask your audience for their thoughts.
         Shout out to your audience and ask them to subscribe to your channel.
         Promo the news provider and the source.
         The provider of the news is ${newsItem.providerTitle}.
 
         Keep it under ${segmentDuration} seconds of text.
-        Don't add weird characters or sounds. Pure text for speech.
+        Don't add weird characters or sounds.
+
+        ONLY output in this script format:
+
+        Use "<" to separate the speaker from the text.
+
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        ... etc
+
+        The only speakers you can use are:
+        HOST1, HOST2
+
+        HOST1 should have more script lines then HOST2.
+
+        This text is used to generate the audio for the show.
      `;
 
       setPrompt(prompt);
@@ -93,9 +115,13 @@ const Overlay = ({
       console.log("getting next news item", newsItem);
 
       const prompt0 = `
-        Your name is Haiku, host of CryptoNews.One.
-        Your job is to deliver the latest news in the world of cryptocurrency.
+        Your job is to deliver the latest news in the world of cryptocurrency on our platform ChainNews.One.
         Your audience is watching on live stream.
+
+        There are 2 hosts: Haiku and DogWifHat.
+
+        HOST1: Haiku is a young female news reporter, educated and classy. She is the main host of the show.
+        HOST2: DogWifHat is a crypto memecoin pumper small dog with a hat. He is the co-host of the show, and he is a bit of a clown.
 
         The news item you have selected is:
         Title: ${newsItem.title}
@@ -112,7 +138,23 @@ const Overlay = ({
         The provider of the news is ${newsItem.providerTitle}.
 
         Keep it under ${segmentDuration} seconds of text.
-        Don't add weird characters or sounds. Pure text for speech.
+        Don't add weird characters or sounds.
+
+        ONLY output in this script format:
+
+        Use "<" to separate the speaker from the text.
+
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        SPEAKER<TEXT\n
+        ... etc
+
+        The only speakers you can use are:
+        HOST1, HOST2
+
+        HOST1 should have more script lines then HOST2.
+
+        This text is used to generate the audio for the show.
       `;
 
       const prompt1 = `
@@ -165,7 +207,7 @@ const Overlay = ({
     }
 
     const prompt = `
-        Conclude the Crypto News Stream.
+        Conclude the ChainNews.One Stream.
         Thank your audience for watching.
         Ask them to subscribe to your channel.
         Say goodbye and see you next time.
