@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import NewsCard from "./components/NewsCard";
@@ -18,6 +18,7 @@ interface OverlayProps {
   scriptLines: { text: string }[];
   startTimeRef: React.MutableRefObject<number>;
   responseTime: string;
+  isPlaying: boolean;
   onPromptFinish: (message: Message, options: any) => void;
   setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
   fetchAudio: (
@@ -26,6 +27,7 @@ interface OverlayProps {
   ) => Promise<{ blob: Blob; blendShapes: any } | null>;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
+  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Overlay = ({
@@ -38,15 +40,16 @@ const Overlay = ({
   scriptLines,
   startTimeRef,
   responseTime,
+  isPlaying,
   onPromptFinish,
   setSelectedVoice,
   fetchAudio,
   setSelectedNews,
   setAudioBlob,
+  setIsPlaying,
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [segmentDuration, setSegmentDuration] = useState<number>(30);
 
   const handleNewsClick = useCallback(
@@ -171,12 +174,6 @@ const Overlay = ({
        `;
 
       setPrompt(currentNewsIndex === 0 ? prompt0 : prompt1);
-
-      audioRef.current?.addEventListener("ended", switchNextNewsItem);
-
-      return () => {
-        audioRef.current?.removeEventListener("ended", switchNextNewsItem);
-      };
     }
   }, [
     currentNewsIndex,
@@ -184,8 +181,6 @@ const Overlay = ({
     setSelectedNews,
     isStreaming,
     isPlaying,
-    audioRef,
-    switchNextNewsItem,
     segmentDuration,
   ]);
 
@@ -203,7 +198,6 @@ const Overlay = ({
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = "";
-      audioRef.current?.removeEventListener("ended", switchNextNewsItem);
     }
 
     const prompt = `
@@ -215,6 +209,20 @@ const Overlay = ({
 
     setPrompt(prompt);
   }, [setSelectedNews, setAudioBlob, audioRef, switchNextNewsItem]);
+
+  const prevIsPlayingRef = useRef<boolean>(isPlaying);
+
+  useEffect(() => {
+    const prevIsPlaying = prevIsPlayingRef.current;
+
+    if (prevIsPlaying && !isPlaying && isStreaming) {
+      // isPlaying changed from true to false, and streaming is active
+      setIsPlaying(true);
+      switchNextNewsItem();
+    }
+
+    prevIsPlayingRef.current = isPlaying;
+  }, [isPlaying, isStreaming, switchNextNewsItem]);
 
   useEffect(() => {
     const broadcast = new BroadcastChannel("stream-control");
@@ -231,7 +239,6 @@ const Overlay = ({
           break;
         case "SET_STREAMING":
           setIsStreaming(data.isStreaming);
-          setIsPlaying(false);
           break;
         case "SET_SEGMENT_DURATION":
           setSegmentDuration(data.segmentDuration);
@@ -263,7 +270,7 @@ const Overlay = ({
       )}
 
       <ChatInterface
-        isStreaming={isStreaming}
+        isStreaming={isStreaming || isPlaying}
         prompt={prompt}
         startTimeRef={startTimeRef}
         isAudioLoading={isAudioLoading}
@@ -273,7 +280,7 @@ const Overlay = ({
         handleOnFinish={onPromptFinish}
       />
 
-      {!isStreaming && (
+      {!isStreaming && !isPlaying && (
         <div
           style={{
             position: "fixed",
@@ -296,7 +303,7 @@ const Overlay = ({
         </div>
       )}
 
-      {isStreaming && (
+      {(isStreaming || isPlaying) && (
         <>
           <LiveBanner />
         </>

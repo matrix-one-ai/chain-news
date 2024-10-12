@@ -52,6 +52,8 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     blendShapes: any[];
   }>({ speaker: "", audioBlob: null, blendShapes: [] });
 
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
     try {
@@ -158,6 +160,9 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     currentLineIndexRef.current += 1;
     if (currentLineIndexRef.current < scriptLines.length) {
       playCurrentLine();
+    } else {
+      // End of script
+      setIsPlaying(false);
     }
   }, [playCurrentLine, scriptLines.length]);
 
@@ -218,6 +223,8 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
           blendShapes: result.blendShapes,
         });
 
+        setIsPlaying(true);
+
         // Prefetch the next line if it exists
         if (parsedLines.length > 1) {
           const nextLine = parsedLines[1];
@@ -270,6 +277,8 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         setAudioBlob={(blob: Blob | null) =>
           setCurrentLineState((prev) => ({ ...prev, audioBlob: blob }))
         }
+        setIsPlaying={setIsPlaying}
+        isPlaying={isPlaying}
       />
 
       <audio ref={audioRef} />
