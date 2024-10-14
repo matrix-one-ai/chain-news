@@ -43,9 +43,16 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   const [currentLineState, setCurrentLineState] = useState<{
     lineIndex: number;
     speaker: string;
+    text: string;
     audioBlob: Blob | null;
     blendShapes: any[];
-  }>({ lineIndex: -1, speaker: "", audioBlob: null, blendShapes: [] });
+  }>({
+    lineIndex: -1,
+    speaker: "",
+    text: "",
+    audioBlob: null,
+    blendShapes: [],
+  });
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
@@ -125,6 +132,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       setCurrentLineState({
         lineIndex: currentIndex,
         speaker: currentLine.speaker,
+        text: currentLine.text,
         audioBlob: audioData,
         blendShapes: blendShapesData,
       });
@@ -238,6 +246,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
           setCurrentLineState({
             lineIndex: 0,
             speaker: parsedLines[0].speaker,
+            text: parsedLines[0].text,
             audioBlob: newAudioCache[0].blob,
             blendShapes: newAudioCache[0].blendShapes,
           });
@@ -285,6 +294,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         }
         setIsPlaying={setIsPlaying}
         isPlaying={isPlaying}
+        currentLineState={currentLineState}
       />
 
       <audio ref={audioRef} />

@@ -10,6 +10,7 @@ import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
 import { Box } from "@mui/material";
 import WaterMark from "./components/WaterMark";
+import Subtitle from "./components/Subtitle";
 
 interface OverlayProps {
   newsItems: News[];
@@ -22,6 +23,13 @@ interface OverlayProps {
   startTimeRef: React.MutableRefObject<number>;
   responseTime: string;
   isPlaying: boolean;
+  currentLineState: {
+    lineIndex: number;
+    speaker: string;
+    text: string;
+    audioBlob: Blob | null;
+    blendShapes: any[];
+  };
   onPromptFinish: (message: Message, options: any) => void;
   setSelectedVoice: React.Dispatch<React.SetStateAction<string>>;
   fetchAudio: (
@@ -41,6 +49,7 @@ const Overlay = ({
   selectedNews,
   selectedVoice,
   scriptLines,
+  currentLineState,
   startTimeRef,
   responseTime,
   isPlaying,
@@ -337,6 +346,13 @@ const Overlay = ({
         >
           <WaterMark />
         </Box>
+      )}
+
+      {currentLineState.lineIndex !== -1 && (
+        <Subtitle
+          speaker={currentLineState.speaker === "HOST1" ? "Haiku" : "DogWifHat"}
+          text={currentLineState.text}
+        />
       )}
 
       {(isStreaming || isPlaying) && (
