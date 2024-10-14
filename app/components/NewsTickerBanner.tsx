@@ -2,10 +2,16 @@ import { Box, Typography } from "@mui/material";
 import { News } from "@prisma/client";
 import React from "react";
 import Marquee from "react-fast-marquee";
+import { load } from "cheerio";
 
 interface NewTickerBannerProps {
   newsItems: News[];
 }
+
+const parseHTML = (htmlString: string): string => {
+  const $ = load(htmlString);
+  return $.text();
+};
 
 const NewsTickerBanner = ({ newsItems }: NewTickerBannerProps) => (
   <Box
@@ -22,7 +28,7 @@ const NewsTickerBanner = ({ newsItems }: NewTickerBannerProps) => (
           textTransform: "uppercase",
         }}
       >
-        {newsItems.map((newsItem) => newsItem.title).join(" • ")}
+        {newsItems.map((newsItem) => parseHTML(newsItem.title)).join(" • ")}
       </Typography>
     </Marquee>
   </Box>
