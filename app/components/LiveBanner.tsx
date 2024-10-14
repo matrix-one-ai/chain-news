@@ -47,9 +47,6 @@ const LiveBanner = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
-        touchAction: "none",
-        userSelect: "none",
-        pointerEvents: "none",
       }}
     >
       <Box
