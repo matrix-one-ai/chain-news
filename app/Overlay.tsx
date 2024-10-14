@@ -8,7 +8,8 @@ import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import WaterMark from "./components/WaterMark";
 
 interface OverlayProps {
   newsItems: News[];
@@ -323,6 +324,19 @@ const Overlay = ({
             />
           ))}
         </div>
+      )}
+
+      {!isStreaming && !isPlaying && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            paddingLeft: "1rem",
+          }}
+        >
+          <WaterMark />
+        </Box>
       )}
 
       {(isStreaming || isPlaying) && (

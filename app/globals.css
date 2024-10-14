@@ -16,7 +16,6 @@ body {
   height: 100%;
   overflow-x: hidden;
   background-color: black;
-
 }
 
 body {
@@ -43,54 +42,6 @@ a {
   margin-bottom: 10px;
 }
 
-@-webkit-keyframes AnimationName {
-  0% {
-    background-position: 0% 71%;
-  }
-  50% {
-    background-position: 100% 30%;
-  }
-  100% {
-    background-position: 0% 71%;
-  }
-}
-@-moz-keyframes AnimationName {
-  0% {
-    background-position: 0% 71%;
-  }
-  50% {
-    background-position: 100% 30%;
-  }
-  100% {
-    background-position: 0% 71%;
-  }
-}
-@keyframes AnimationName {
-  0% {
-    background-position: 0% 71%;
-  }
-  50% {
-    background-position: 100% 30%;
-  }
-  100% {
-    background-position: 0% 71%;
-  }
-}
-
-.logo-gradient {
-  height: 70px;
-  width: 155px;
-  border-radius: 50px;
-  z-index: 999;
-
-  background: linear-gradient(275deg, #00d1ff, #98f040);
-  background-size: 200% 200%;
-
-  -webkit-animation: AnimationName 10s ease infinite;
-  -moz-animation: AnimationName 10s ease infinite;
-  animation: AnimationName 10s ease infinite;
-}
-
 @keyframes blink {
   0%,
   100% {
@@ -106,15 +57,15 @@ a {
 }
 
 ::-webkit-scrollbar-track {
-  background: #160E28; /* Background color */
+  background: #160e28; /* Background color */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #10B7FF; /* Primary color */
+  background-color: #10b7ff; /* Primary color */
   border-radius: 10px;
-  border: 3px solid #160E28; /* Background color */
+  border: 3px solid #160e28; /* Background color */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #98F040; /* Secondary color on hover */
+  background-color: #98f040; /* Secondary color on hover */
 }

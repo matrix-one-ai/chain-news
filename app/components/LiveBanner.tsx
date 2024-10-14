@@ -146,7 +146,32 @@ const LiveBanner = () => {
               position: "relative",
             }}
           >
-            <Box className="logo-gradient" />
+            <Box
+              sx={{
+                height: "75px",
+                width: "160px",
+                borderRadius: "45px",
+                zIndex: 999,
+                background: "linear-gradient(275deg, #00d1ff, #98f040)",
+                backgroundSize: "200% 200%",
+                animation: "AnimationName 10s ease infinite",
+                "@-webkit-keyframes AnimationName": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+                "@-moz-keyframes AnimationName": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+                "@keyframes AnimationName": {
+                  "0%": { backgroundPosition: "0% 50%" },
+                  "50%": { backgroundPosition: "100% 50%" },
+                  "100%": { backgroundPosition: "0% 50%" },
+                },
+              }}
+            />
             <Image
               src="/images/logo-border.svg"
               alt="Chain News Logo"
@@ -155,8 +180,8 @@ const LiveBanner = () => {
               style={{
                 position: "absolute",
                 zIndex: 1000,
-                top: -39,
-                left: 2,
+                top: -37,
+                left: 5,
               }}
             />
           </Box>
