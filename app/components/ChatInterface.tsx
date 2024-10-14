@@ -34,10 +34,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const { messages, input, handleInputChange, isLoading, append, stop } =
-    useChat({
-      onFinish: handleOnFinish,
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    setInput,
+    isLoading,
+    append,
+    stop,
+  } = useChat({
+    onFinish: handleOnFinish,
+  });
 
   useEffect(() => {
     if (prompt) {
@@ -89,6 +96,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         Please talk to the user.
       `;
       append({ role: "user", content: prompt });
+      setInput("");
     },
     [append, startTimeRef]
   );
@@ -130,7 +138,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </Box>
       )}
 
-      <form onSubmit={handleSubmitWithTimer}>
+      <form
+        onSubmit={handleSubmitWithTimer}
+        style={{
+          minWidth: "350px",
+        }}
+      >
         <Stack spacing={1}>
           <TextField
             multiline
@@ -144,7 +157,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             }}
           />
 
-          <Select
+          {/* <Select
             value={selectedVoice}
             onChange={(e) => setSelectedVoice(e.target.value)}
           >
@@ -153,7 +166,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 {voice.label}
               </MenuItem>
             ))}
-          </Select>
+          </Select> */}
 
           <Button
             variant="contained"

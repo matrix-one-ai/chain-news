@@ -8,7 +8,7 @@ import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import WaterMark from "./components/WaterMark";
 
 interface OverlayProps {
