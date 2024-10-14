@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { azureVoices } from "../helpers/azureVoices";
 import { Message, useChat } from "ai/react";
+import { Box } from "@mui/material";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -25,16 +26,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    isLoading,
-    append,
-    stop,
-  } = useChat({
-    onFinish: handleOnFinish,
-  });
+  const { messages, input, handleInputChange, isLoading, append, stop } =
+    useChat({
+      onFinish: handleOnFinish,
+    });
 
   useEffect(() => {
     if (prompt) {
@@ -98,14 +93,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   }, [chatContainerRef, messages]);
 
   return !isStreaming ? (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 10,
-        left: 0,
-        zIndex: 1000,
-        width: "25%",
-        color: "black",
+    <Box
+      sx={{
+        touchAction: "all",
+        pointerEvents: "all",
+        margin: "0.5rem",
+        maxWidth: "400px",
       }}
     >
       <div
@@ -131,7 +124,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           placeholder="Enter your message"
           rows={4}
           style={{
-            width: "95.5%",
+            width: "100%",
             padding: "10px",
             fontSize: "16px",
           }}
@@ -173,7 +166,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           Latency: {responseTime ? `${responseTime}s` : ""}
         </div>
       </form>
-    </div>
+    </Box>
   ) : null;
 };
 

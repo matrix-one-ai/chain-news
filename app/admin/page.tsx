@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import ClientHome from "./ClientPage";
-import "./admin.css";
 
 export const metadata: Metadata = {
   title: "Chain News | Admin",

@@ -7,6 +7,8 @@ import NewsCard from "./components/NewsCard";
 import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
+import NewsTickerBanner from "./components/NewsTickerBanner";
+import { Box } from "@mui/material";
 
 interface OverlayProps {
   newsItems: News[];
@@ -189,7 +191,7 @@ const Overlay = ({
   const handleStreamStart = useCallback(() => {
     setIsPlaying(true);
     switchNextNewsItem();
-  }, [switchNextNewsItem]);
+  }, [setIsPlaying, switchNextNewsItem]);
 
   const handleStreamStop = useCallback(() => {
     setIsPlaying(false);
@@ -210,7 +212,7 @@ const Overlay = ({
     `;
 
     setPrompt(prompt);
-  }, [setSelectedNews, setAudioBlob, audioRef, switchNextNewsItem]);
+  }, [setIsPlaying, setSelectedNews, setAudioBlob, audioRef]);
 
   const prevIsPlayingRef = useRef<boolean>(isPlaying);
 
@@ -224,7 +226,7 @@ const Overlay = ({
     }
 
     prevIsPlayingRef.current = isPlaying;
-  }, [isPlaying, isStreaming, switchNextNewsItem]);
+  }, [isPlaying, isStreaming, setIsPlaying, switchNextNewsItem]);
 
   useEffect(() => {
     const broadcast = new BroadcastChannel("stream-control");
@@ -256,7 +258,21 @@ const Overlay = ({
   }, [fetchAudio, handleStreamStart, handleStreamStop]);
 
   return (
-    <div>
+    <Box
+      sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "flex-end",
+        flexDirection: "column",
+        height: "100%",
+        touchAction: "none",
+        userSelect: "none",
+        pointerEvents: "none",
+      }}
+    >
       {progress < 100 && (
         <div
           style={{
@@ -286,13 +302,15 @@ const Overlay = ({
         <div
           style={{
             position: "fixed",
-            top: 10,
-            right: 10,
+            top: 0,
+            right: 0,
             zIndex: 1000,
             width: "25%",
             maxWidth: "400px",
-            maxHeight: "100%",
+            maxHeight: "96%",
             overflowY: "auto",
+            touchAction: "all",
+            pointerEvents: "all",
           }}
         >
           {newsItems.map((newsItem, index) => (
@@ -310,7 +328,9 @@ const Overlay = ({
           <LiveBanner />
         </>
       )}
-    </div>
+
+      <NewsTickerBanner newsItems={newsItems} />
+    </Box>
   );
 };
 

@@ -41,7 +41,11 @@ const Scene = ({
   setProgress,
 }: SceneProps) => {
   return (
-    <Canvas>
+    <Canvas
+      style={{
+        background: "linear-gradient(180deg, #171717 0%, #000000 100%)",
+      }}
+    >
       <ambientLight intensity={1.25} />
 
       <spotLight

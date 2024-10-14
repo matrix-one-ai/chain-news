@@ -55,10 +55,10 @@ const LiveBanner = () => {
       <Box
         style={{
           background:
-            "linear-gradient(90deg, #200F45 0%, rgba(78, 50, 142, 0) 100%)",
+            "linear-gradient(90deg, #200F45 -10%, rgba(78, 50, 142, 0) 100%)",
           width: "100%",
           padding: "1.5rem 2rem",
-          paddingBottom: "3rem",
+          paddingBottom: "4rem",
         }}
       >
         <Stack
@@ -98,29 +98,42 @@ const LiveBanner = () => {
             style={{
               backgroundColor: "#160e2888",
               color: "#0BC9F2",
-              fontFamily: "var(--font-ibm-plex-sans)",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "14.92px",
-              width: "10rem",
-              height: "2.5rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              margin: "0.5rem",
+              marginLeft: "1rem",
               borderRadius: "0.5rem",
-              position: "relative",
             }}
           >
-            <Box className="live-light" />
-            <Typography
-              variant="body1"
-              style={{
-                fontWeight: "bold",
-                fontSize: "0.8rem",
+            <Stack
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: "row",
+                gap: 1,
+                padding: "0.5rem 1rem",
               }}
             >
-              LIVE STREAM
-            </Typography>
+              {/* Blinking LIVE light */}
+              <Box
+                sx={{
+                  width: "0.5rem",
+                  height: "0.5rem",
+                  backgroundColor: "#a6ed7a",
+                  borderRadius: "50%",
+                  transform: "translateY(-50%)",
+                  animation: "blink 4s infinite",
+                  marginTop: "0.5rem",
+                }}
+              />
+              <Typography
+                variant="h6"
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "0.8rem",
+                }}
+              >
+                LIVE STREAM
+              </Typography>
+            </Stack>
           </Box>
         </Stack>
         <Stack

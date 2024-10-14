@@ -1,25 +1,22 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Low } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme";
 import "./globals.css";
-import "@mui/material-pigment-css/styles.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-ibm-plex-sans",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-ibm-plex-mono",
 });
 
 export const metadata: Metadata = {
@@ -56,11 +53,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexSans.variable}`}
-      >
-        {children}
+      <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </AppRouterCacheProvider>
         <Analytics />
+        <CssBaseline />
       </body>
     </html>
   );
