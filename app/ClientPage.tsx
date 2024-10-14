@@ -217,56 +217,47 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         .map((line) => {
           const [speaker, text] = line.split("<");
           return { speaker, text };
-        });
+        })
+        .filter(
+          (parsedLine) =>
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
+        );
       console.log(parsedLines);
       setScriptLines(parsedLines);
       currentLineIndexRef.current = 0;
       setIsAudioLoading(true);
 
-      // Start fetching all audio data upfront
-      const fetchAllAudio = async () => {
-        const audioDataArray = await Promise.all(
-          parsedLines.map(async (line, index) => {
-            const voiceId =
-              speakerVoiceMap[line.speaker as keyof typeof speakerVoiceMap];
-            const result = await fetchAudio(line.text, voiceId);
-            return result ? { ...result, speaker: line.speaker } : null;
-          })
-        );
+      const firstLine = parsedLines[0];
 
-        const newAudioCache: {
-          [index: number]: { blob: Blob; blendShapes: any[] };
-        } = {};
-        audioDataArray.forEach((data, index) => {
-          if (data) {
-            newAudioCache[index] = {
-              blob: data.blob,
-              blendShapes: data.blendShapes,
-            };
-          }
-        });
+      const voiceId =
+        speakerVoiceMap[firstLine.speaker as keyof typeof speakerVoiceMap];
 
-        setAudioCache(newAudioCache);
+      const result = await fetchAudio(firstLine.text, voiceId);
 
-        // Start playing the first line
-        if (newAudioCache[0]) {
-          setCurrentLineState({
-            lineIndex: 0,
-            speaker: parsedLines[0].speaker,
-            text: parsedLines[0].text,
-            audioBlob: newAudioCache[0].blob,
-            blendShapes: newAudioCache[0].blendShapes,
-          });
-          setIsPlaying(true);
-        }
+      if (!result) {
+        return console.log("Error fetching audio", result);
+      }
 
-        const endTime = performance.now();
-        const timeTaken = ((endTime - startTimeRef.current) / 1000).toFixed(2);
-        setResponseTime(timeTaken);
-        setIsAudioLoading(false);
-      };
+      setAudioCache({
+        0: {
+          blob: result.blob,
+          blendShapes: result.blendShapes,
+        },
+      });
 
-      fetchAllAudio();
+      setCurrentLineState({
+        lineIndex: 0,
+        speaker: parsedLines[0].speaker,
+        text: parsedLines[0].text,
+        audioBlob: result.blob,
+        blendShapes: result.blendShapes,
+      });
+
+      setIsPlaying(true);
+      const endTime = performance.now();
+      const timeTaken = ((endTime - startTimeRef.current) / 1000).toFixed(2);
+      setResponseTime(timeTaken);
+      setIsAudioLoading(false);
     },
     [fetchAudio]
   );
