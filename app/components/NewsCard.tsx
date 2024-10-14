@@ -13,6 +13,7 @@ import {
   GamesOutlined,
 } from "@mui/icons-material";
 import Image from "next/image";
+import * as cheerio from "cheerio";
 
 interface NewsCardProps {
   newsItem: News;
@@ -20,9 +21,8 @@ interface NewsCardProps {
 }
 
 const parseHTML = (htmlString: string): string => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(htmlString, "text/html");
-  return doc.body.textContent || "";
+  const $ = cheerio.load(htmlString);
+  return $.text();
 };
 
 const categoryIcons: Record<NewsCategory, JSX.Element> = {
