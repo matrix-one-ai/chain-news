@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
-import * as cheerio from "cheerio";
+import { load } from "cheerio";
 
 const azure = createAzure({
   resourceName: process.env.AZURE_OPENAI_RESOURCE!,
@@ -28,7 +28,7 @@ export async function POST() {
 
       console.log(html);
 
-      const $ = cheerio.load(html);
+      const $ = load(html);
       const mainContent = $("main").html();
 
       const { text } = await generateText({

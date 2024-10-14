@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useRef } from "react";
 import { azureVoices } from "../helpers/azureVoices";
 import { Message, useChat } from "ai/react";
-import { Box } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -101,7 +109,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         maxWidth: "400px",
       }}
     >
-      <div
+      <Box
         ref={chatContainerRef}
         style={{
           maxHeight: "300px",
@@ -111,60 +119,48 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         }}
       >
         {messages.map((message, index) => (
-          <div key={index}>
-            <strong>{message.role === "user" ? "User" : "AI"}:</strong>{" "}
-            {message.content}
-          </div>
+          <Box key={index}>
+            <Typography variant="body1" fontWeight="bold">
+              {message.role === "user" ? "User" : "AI"}:{" "}
+              <Typography variant="body2">{message.content}</Typography>
+            </Typography>
+          </Box>
         ))}
-      </div>
+      </Box>
+
       <form onSubmit={handleSubmitWithTimer}>
-        <textarea
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Enter your message"
-          rows={4}
-          style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "16px",
-          }}
-        />
-        <div>
-          <select
+        <Stack spacing={1}>
+          <TextField
+            multiline
+            value={input}
+            onChange={handleInputChange}
+            placeholder="Enter your message"
+            rows={4}
+            fullWidth
+          />
+
+          <Select
             value={selectedVoice}
             onChange={(e) => setSelectedVoice(e.target.value)}
-            style={{
-              padding: "10px",
-              fontSize: "16px",
-              width: "100%",
-            }}
           >
             {azureVoices.map((voice) => (
-              <option key={voice.value} value={voice.value}>
+              <MenuItem key={voice.value} value={voice.value}>
                 {voice.label}
-              </option>
+              </MenuItem>
             ))}
-          </select>
-        </div>
+          </Select>
 
-        <button
-          type="submit"
-          disabled={isLoading || isAudioLoading}
-          style={{
-            marginTop: "10px",
-            padding: "10px 20px",
-            fontSize: "16px",
-            width: "100%",
-          }}
-        >
-          {isLoading || isAudioLoading ? "Loading..." : "Send"}
-        </button>
-
-        <div
-          style={{ whiteSpace: "nowrap", color: "white", paddingTop: "5px" }}
-        >
-          Latency: {responseTime ? `${responseTime}s` : ""}
-        </div>
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={isLoading || isAudioLoading || !input}
+            fullWidth
+            style={{ marginTop: "10px" }}
+          >
+            {isLoading || isAudioLoading ? "Loading..." : "Send"}
+          </Button>
+        </Stack>
       </form>
     </Box>
   ) : null;
