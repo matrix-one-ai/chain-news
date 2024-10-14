@@ -109,24 +109,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         maxWidth: "400px",
       }}
     >
-      <Box
-        ref={chatContainerRef}
-        style={{
-          maxHeight: "300px",
-          overflowY: "auto",
-          backgroundColor: "#f0f0f0",
-          padding: "10px",
-        }}
-      >
-        {messages.map((message, index) => (
-          <Box key={index}>
-            <Typography variant="body1" fontWeight="bold">
-              {message.role === "user" ? "User" : "AI"}:{" "}
-              <Typography variant="body2">{message.content}</Typography>
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+      {messages.length > 0 && (
+        <Box
+          ref={chatContainerRef}
+          style={{
+            maxHeight: "300px",
+            overflowY: "auto",
+            backgroundColor: "#f0f0f0",
+            padding: "10px",
+          }}
+        >
+          {messages.map((message, index) => (
+            <Box key={index}>
+              <Typography variant="body1" fontWeight="bold">
+                {message.role === "user" ? "User" : "AI"}:{" "}
+                <Typography variant="body2">{message.content}</Typography>
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      )}
 
       <form onSubmit={handleSubmitWithTimer}>
         <Stack spacing={1}>
@@ -137,6 +139,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             placeholder="Enter your message"
             rows={4}
             fullWidth
+            sx={{
+              backdropFilter: "blur(1px)",
+            }}
           />
 
           <Select
