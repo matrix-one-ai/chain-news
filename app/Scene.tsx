@@ -72,9 +72,9 @@ const Scene = ({
       />
 
       <VrmAvatar
-        avatarKey="skippy"
+        avatarKey="dogwifhat"
         position={[0.75, 0.8, 0]}
-        scale={[0.5, 0.5, 0.5]}
+        scale={[1, 1, 1]}
         rotation={[0, Math.PI / 1.3, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
