@@ -93,6 +93,8 @@ const Overlay = ({
 
         Keep it under ${segmentDuration} seconds of text.
         Don't add weird characters or sounds.
+        Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
+        Say lists inline as just text.
 
         ONLY output in this script format:
 
@@ -155,6 +157,8 @@ const Overlay = ({
 
         Keep it under ${segmentDuration} seconds of text.
         Don't add weird characters or sounds.
+        Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
+        Say lists inline as just text.
 
         ONLY output in this script format:
 
