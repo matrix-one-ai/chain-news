@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function POST() {
   try {
     const list = await fetch(
       "https://fda.forbes.com/v2/education/?categories="
