@@ -169,6 +169,13 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     } else {
       // End of script
       setIsPlaying(false);
+      setCurrentLineState({
+        lineIndex: -1,
+        speaker: "",
+        text: "",
+        audioBlob: null,
+        blendShapes: [],
+      });
     }
   }, [playCurrentLine, scriptLines.length]);
 
