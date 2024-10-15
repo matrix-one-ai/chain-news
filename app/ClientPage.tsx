@@ -4,7 +4,6 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import { News } from "@prisma/client";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
-import { azureVoices } from "./helpers/azureVoices";
 import { Message } from "ai";
 
 interface ClientHomeProps {
@@ -18,28 +17,20 @@ const speakerVoiceMap = {
 
 const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [responseTime, setResponseTime] = useState<string>("");
-
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
-
-  const [selectedVoice, setSelectedVoice] = useState<string>(
-    azureVoices[0].value
-  );
-
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
-
   const [scriptLines, setScriptLines] = useState<
     {
       speaker: string;
       text: string;
     }[]
   >([]);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [audioCache, setAudioCache] = useState<{
+    [index: number]: { blob: Blob; blendShapes: any[] };
+  }>({});
 
-  const currentLineIndexRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
-
-  // State for the current line, including lineIndex
   const [currentLineState, setCurrentLineState] = useState<{
     lineIndex: number;
     speaker: string;
@@ -54,12 +45,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     blendShapes: [],
   });
 
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
-  // Cache for fetched audio data
-  const [audioCache, setAudioCache] = useState<{
-    [index: number]: { blob: Blob; blendShapes: any[] };
-  }>({});
+  const currentLineIndexRef = useRef<number>(0);
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
@@ -254,9 +240,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       });
 
       setIsPlaying(true);
-      const endTime = performance.now();
-      const timeTaken = ((endTime - startTimeRef.current) / 1000).toFixed(2);
-      setResponseTime(timeTaken);
       setIsAudioLoading(false);
     },
     [fetchAudio]
@@ -278,13 +261,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
-        selectedNews={selectedNews}
-        selectedVoice={selectedVoice}
-        scriptLines={scriptLines}
-        startTimeRef={startTimeRef}
-        responseTime={responseTime}
         onPromptFinish={onPromptFinish}
-        setSelectedVoice={setSelectedVoice}
         fetchAudio={fetchAudio}
         setSelectedNews={setSelectedNews}
         setAudioBlob={(blob: Blob | null) =>
