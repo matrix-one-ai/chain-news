@@ -61,10 +61,10 @@ const Scene = ({
       <GridFloor />
 
       <VrmAvatar
-        avatarKey="haiku"
+        avatarKey="vivian"
         position={[0, 0, 0]}
         scale={[1, 1, 1]}
-        rotation={[0, Math.PI, 0]}
+        rotation={[0, 0, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
         audioBlob={speaker === "HOST1" ? audioBlob : null}

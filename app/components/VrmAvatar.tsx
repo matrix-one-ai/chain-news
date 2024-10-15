@@ -470,7 +470,11 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             (value: number, index: number) => {
               const blendShapeName = getBlendShapeKey(index + 1);
               if (blendShapeName) {
-                expressionManager.setValue(blendShapeName, value);
+                expressionManager.setValue(
+                  blendShapeName.charAt(0).toLowerCase() +
+                    blendShapeName.slice(1),
+                  value
+                );
               }
             }
           );
