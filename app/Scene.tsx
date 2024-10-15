@@ -72,10 +72,10 @@ const Scene = ({
       />
 
       <VrmAvatar
-        avatarKey="dogwifhat"
-        position={[0.75, 0.8, 0]}
+        avatarKey="dogwifhat-sit"
+        position={[-0.75, 0.8, 0]}
         scale={[1, 1, 1]}
-        rotation={[0, Math.PI / 1.3, 0]}
+        rotation={[0, -Math.PI / 1.3, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
         audioBlob={speaker === "HOST2" ? audioBlob : null}
@@ -83,8 +83,8 @@ const Scene = ({
       />
 
       <BarStool
-        position={[0.75, 0.58, 0]}
-        rotation={[0, -Math.PI / 4, 0]}
+        position={[-0.75, 0.58, 0]}
+        rotation={[0, Math.PI / 4, 0]}
         scale={[0.01, 0.01, 0.01]}
         receiveShadow
         castShadow
@@ -98,8 +98,8 @@ const Scene = ({
             )}`}
             transparent
             opacity={1}
-            position={[-0.3, 1.4, -1]}
-            rotation={[0, Math.PI / 20, 0]}
+            position={[0.3, 1.4, -1]}
+            rotation={[0, -Math.PI / 20, 0]}
           >
             <planeGeometry args={[3.25, 1.75]} />
           </Image>
