@@ -13,8 +13,10 @@ import WaterMark from "./components/WaterMark";
 import Subtitle from "./components/Subtitle";
 import {
   concludeNewsPrompt,
+  jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
+  streamPromoPrompt,
 } from "./helpers/prompts";
 
 interface OverlayProps {
@@ -75,7 +77,6 @@ const Overlay = ({
   useEffect(() => {
     if (isStreaming && isPlaying) {
       const newsItem = newsItems[currentNewsIndex];
-      setSelectedNews(newsItem);
 
       console.log("getting next news item", newsItem);
 
@@ -87,8 +88,16 @@ const Overlay = ({
         setSelectedNews(null);
         prompt = concludeNewsPrompt();
       } else if (currentNewsIndex === 0) {
+        setSelectedNews(newsItem);
         prompt = startNewsPrompt(newsItem, segmentDuration);
+      } else if (currentNewsIndex % 3 === 0) {
+        setSelectedNews(null);
+        prompt = streamPromoPrompt();
+      } else if (currentNewsIndex % 10 === 0) {
+        setSelectedNews(null);
+        prompt = jokeBreakPrompt();
       } else {
+        setSelectedNews(newsItem);
         prompt = nextSegmentPrompt(newsItem);
       }
 

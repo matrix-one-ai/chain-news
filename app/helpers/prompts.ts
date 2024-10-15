@@ -72,6 +72,13 @@ export function streamPromoPrompt() {
     `;
 }
 
+export function jokeBreakPrompt() {
+  return `
+        Interlude a dramatic news break where the hosts joke around and talk smack to each other and the stream viewers.
+        Make this entertaining as it servers a fresh break in between segments to spice up the content and break the monotony of repeated stories.
+    `;
+}
+
 export function concludeNewsPrompt() {
   return `
         Conclude the Chain News.One Stream.
