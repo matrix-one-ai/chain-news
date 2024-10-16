@@ -93,15 +93,17 @@ const Scene = ({
         />
       </Suspense>
 
-      <Suspense fallback={null}>
-        <Screen
-          position={[0, 0, -0.75]}
-          rotation={[0, 0, 0]}
-          scale={[0.85, 0.85, 0.85]}
-          receiveShadow
-          castShadow
-        />
-      </Suspense>
+      {!selectedNews && (
+        <Suspense fallback={null}>
+          <Screen
+            position={[0, 0, -0.75]}
+            rotation={[0, 0, 0]}
+            scale={[0.85, 0.85, 0.85]}
+            receiveShadow
+            castShadow
+          />
+        </Suspense>
+      )}
 
       {selectedNews && (
         <Suspense fallback={null}>
@@ -111,10 +113,10 @@ const Scene = ({
             )}`}
             transparent
             opacity={1}
-            position={[0.3, 1.4, -1]}
-            rotation={[0, -Math.PI / 20, 0]}
+            position={[0, 1.75, -2]}
+            rotation={[0, 0, 0]}
           >
-            <planeGeometry args={[3.25, 1.75]} />
+            <planeGeometry args={[4, 2]} />
           </Image>
         </Suspense>
       )}
