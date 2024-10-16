@@ -4,7 +4,8 @@ import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect } from "react";
 import { GridHelper } from "three";
 import { News } from "@prisma/client";
-import { Model as BarStool } from "./components/gltf/BarStool";
+import { Model as Desk } from "./components/gltf/Desk";
+import { Model as Screen } from "./components/gltf/Screen";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -62,7 +63,7 @@ const Scene = ({
 
       <VrmAvatar
         avatarKey="vivian"
-        position={[0, 0, 0]}
+        position={[0, 0, -1.25]}
         scale={[1, 1, 1]}
         rotation={[0, 0, 0]}
         audioRef={audioRef}
@@ -73,7 +74,7 @@ const Scene = ({
 
       <VrmAvatar
         avatarKey="dogwifhat-sit"
-        position={[-0.75, 0.8, 0]}
+        position={[-1, 0.85, -0.5]}
         scale={[1, 1, 1]}
         rotation={[0, -Math.PI / 1.3, 0]}
         audioRef={audioRef}
@@ -82,13 +83,25 @@ const Scene = ({
         blendShapes={speaker === "HOST2" ? blendShapes : []}
       />
 
-      <BarStool
-        position={[-0.75, 0.58, 0]}
-        rotation={[0, Math.PI / 4, 0]}
-        scale={[0.01, 0.01, 0.01]}
-        receiveShadow
-        castShadow
-      />
+      <Suspense fallback={null}>
+        <Desk
+          position={[0, 0, -0.75]}
+          rotation={[0, 0, 0]}
+          scale={[0.85, 0.85, 0.85]}
+          receiveShadow
+          castShadow
+        />
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <Screen
+          position={[0, 0, -0.75]}
+          rotation={[0, 0, 0]}
+          scale={[0.85, 0.85, 0.85]}
+          receiveShadow
+          castShadow
+        />
+      </Suspense>
 
       {selectedNews && (
         <Suspense fallback={null}>
