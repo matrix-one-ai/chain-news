@@ -9,8 +9,6 @@ const Subtitle = ({ speaker, text }: SubTitleProps) => {
   return (
     <Box
       sx={{
-        position: "fixed",
-        bottom: "25%",
         width: "100%",
         textAlign: "center",
         display: "flex",
@@ -20,7 +18,6 @@ const Subtitle = ({ speaker, text }: SubTitleProps) => {
       <Box
         sx={{
           backgroundColor: "#0c0a1285",
-
           width: "fit-content",
           padding: "0.5rem 1rem",
           backdropFilter: "blur(5px)",

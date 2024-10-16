@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from "@mui/material";
 import Image from "next/image";
+import Subtitle from "./Subtitle";
 
 const formatDate = (date: Date) => {
   const days = [
@@ -34,7 +35,12 @@ const formatDate = (date: Date) => {
   return `${dayName} ${day} ${month}, ${year}`;
 };
 
-const LiveBanner = () => {
+interface LiveBannerProps {
+  currentSpeaker: string;
+  subtitleText: string;
+}
+
+const LiveBanner = ({ currentSpeaker, subtitleText }: LiveBannerProps) => {
   return (
     <Box
       style={{
@@ -49,6 +55,10 @@ const LiveBanner = () => {
         justifyContent: "flex-end",
       }}
     >
+      {currentSpeaker && subtitleText && (
+        <Subtitle speaker={currentSpeaker} text={subtitleText} />
+      )}
+
       <Box
         style={{
           background:

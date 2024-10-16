@@ -10,7 +10,6 @@ import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
 import { Box } from "@mui/material";
 import WaterMark from "./components/WaterMark";
-import Subtitle from "./components/Subtitle";
 import {
   concludeNewsPrompt,
   jokeBreakPrompt,
@@ -254,18 +253,15 @@ const Overlay = ({
         </Box>
       )}
 
-      {currentLineState.lineIndex !== -1 && (
-        <Subtitle
-          speaker={currentLineState.speaker === "HOST1" ? "Haiku" : "DogWifHat"}
-          text={currentLineState.text}
-        />
-      )}
-
-      {(isStreaming || isPlaying) && (
-        <>
-          <LiveBanner />
-        </>
-      )}
+      {isStreaming ||
+        (isPlaying && (
+          <LiveBanner
+            currentSpeaker={
+              currentLineState.speaker === "HOST1" ? "Haiku" : "DogWifHat"
+            }
+            subtitleText={currentLineState.text}
+          />
+        ))}
 
       <NewsTickerBanner newsItems={newsItems} />
     </Box>
