@@ -108,7 +108,7 @@ const Scene = ({
       </Suspense>
 
       <CameraSetup />
-      <OrbitControls target={[0, 1.25, 0]} maxDistance={10} minDistance={0.5} />
+      <OrbitControls target={[0, 1.25, 0]} maxDistance={1} minDistance={0.5} />
     </Canvas>
   );
 };
