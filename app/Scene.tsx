@@ -1,11 +1,11 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Image } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect } from "react";
 import { GridHelper } from "three";
 import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
-import { Model as Screen } from "./components/gltf/Screen";
+import BentScreen from "./components/BentScreen";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -93,36 +93,22 @@ const Scene = ({
         />
       </Suspense>
 
-      {!selectedNews && (
-        <Suspense fallback={null}>
-          <Screen
-            position={[0, 0, -0.75]}
-            rotation={[0, 0, 0]}
-            scale={[0.85, 0.85, 0.85]}
-            receiveShadow
-            castShadow
-          />
-        </Suspense>
-      )}
-
-      {selectedNews && (
-        <Suspense fallback={null}>
-          <Image
-            url={`/api/image?url=${encodeURIComponent(
-              selectedNews.imageUrl as string
-            )}`}
-            transparent
-            opacity={1}
-            position={[0, 1.75, -2]}
-            rotation={[0, 0, 0]}
-          >
-            <planeGeometry args={[4, 2]} />
-          </Image>
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <BentScreen
+          url={
+            selectedNews
+              ? `/api/image?url=${encodeURIComponent(
+                  selectedNews.imageUrl as string
+                )}`
+              : "/images/screen-banner.png"
+          }
+          position={[0, 1.75, -1.75]}
+          rotation={[0, 0, 0]}
+        />
+      </Suspense>
 
       <CameraSetup />
-      <OrbitControls target={[0, 1.25, 0]} maxDistance={1} minDistance={0.5} />
+      <OrbitControls target={[0, 1.25, 0]} maxDistance={10} minDistance={0.5} />
     </Canvas>
   );
 };
