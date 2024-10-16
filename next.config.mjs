@@ -21,6 +21,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "specials-images.forbesimg.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.coindesk.com",
+      },
     ],
   },
 };
