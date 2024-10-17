@@ -1,10 +1,10 @@
 // components/MatrixTunnel.tsx
 import React, { useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Line } from "@react-three/drei";
+import { Shape, Color } from "three";
 import * as THREE from "three";
+import { Line } from "@react-three/drei";
 
-// Define the props interface for RoundedPlane
 interface RoundedPlaneProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
@@ -32,7 +32,7 @@ const RoundedPlane = React.forwardRef<THREE.Line, RoundedPlaneProps>(
       const x = 0;
       const y = 0;
 
-      const shape = new THREE.Shape();
+      const shape = new Shape();
 
       shape.moveTo(x + radius, y);
       shape.lineTo(x + width - radius, y);
@@ -54,20 +54,15 @@ const RoundedPlane = React.forwardRef<THREE.Line, RoundedPlaneProps>(
 
     const points = React.useMemo(
       () =>
-        shape
-          .getPoints(64)
-          .map(
-            (p) =>
-              [p.x - width / 2, p.y - height / 2, 0] as [number, number, number]
-          ),
-      [shape, width, height]
+        shape.getPoints(64).map((p) => [p.x - width / 2, p.y - height / 2, 0]),
+      [shape]
     );
 
     return (
       <group position={position} rotation={rotation}>
         <Line
           ref={ref as any}
-          points={points}
+          points={points as any}
           color={color}
           lineWidth={1}
           transparent
@@ -81,7 +76,7 @@ const RoundedPlane = React.forwardRef<THREE.Line, RoundedPlaneProps>(
 RoundedPlane.displayName = "RoundedPlane";
 
 function createLinePoints() {
-  const linePoints: [number, number, number][][] = [];
+  const linePoints = [];
 
   // Left side (from bottom to top)
   for (let y = 0; y <= 4; y += 0.5) {
@@ -124,7 +119,7 @@ const MatrixTunnel: React.FC = () => {
   // Parameters
   const planeCount = 200; // Increased plane count for smoother tunnel
   const planeSpacing = 0.25;
-  const speed = 0.01; // Adjusted speed for smoother animation
+  const speed = 0.001; // Adjusted speed for smoother animation
   const zSpawn = 10; // Z position where planes spawn
   const zReset = -10; // Z position where planes reset back to zSpawn
 
@@ -134,12 +129,12 @@ const MatrixTunnel: React.FC = () => {
 
   // Create an array of planes with positions and refs
   const planes = useMemo(() => {
-    const arr: { z: number; ref: React.RefObject<THREE.Line> }[] = [];
+    const arr = [];
     for (let i = 0; i < planeCount; i++) {
       const zPosition = zSpawn - i * planeSpacing;
       arr.push({
         z: zPosition,
-        ref: React.createRef<THREE.Line>(), // Ref to access Line component
+        ref: React.createRef(), // Ref to access Line component
       });
     }
     return arr;
@@ -161,27 +156,23 @@ const MatrixTunnel: React.FC = () => {
       // Update position and opacity directly
       if (plane.ref.current) {
         // Update position
-        const parent = plane.ref.current.parent as THREE.Group;
-        parent.position.z = plane.z;
+        (plane.ref.current as any).parent.position.z = plane.z;
 
         // Update opacity
-        const material = plane.ref.current.material as THREE.Material;
-        material.opacity = opacity;
+        (plane.ref.current as any).material.opacity = opacity;
       }
     });
   });
 
   // Prepare linePoints with per-vertex colors
   const lineSegments = useMemo(() => {
-    const segments: {
-      points: [number, number, number][];
-      colors: number[][];
-    }[] = [];
+    const segments: any = [];
 
     linePoints.forEach((line) => {
+      // Create multiple points along the line to simulate fade
       const numPoints = 50;
-      const points: [number, number, number][] = [];
-      const colors: number[][] = [];
+      const points = [];
+      const colors = [];
 
       for (let i = 0; i <= numPoints; i++) {
         const t = i / numPoints;
@@ -197,7 +188,7 @@ const MatrixTunnel: React.FC = () => {
         opacity = Math.max(0, Math.min(1, opacity)); // Clamp between 0 and 1
 
         // Create color with opacity
-        const color = new THREE.Color("#98f040");
+        const color = new Color("#98f040");
         colors.push([color.r, color.g, color.b, opacity]);
       }
 
@@ -212,7 +203,7 @@ const MatrixTunnel: React.FC = () => {
       {planes.map((plane, idx) => (
         <RoundedPlane
           key={idx}
-          ref={plane.ref}
+          ref={plane.ref as any}
           position={[0, 2, plane.z]}
           rotation={[0, 0, 0]}
           color="#98f040"
@@ -223,11 +214,11 @@ const MatrixTunnel: React.FC = () => {
         />
       ))}
 
-      {lineSegments.map((segment, index) => (
+      {lineSegments.map((segment: any, index: number) => (
         <Line
           key={index}
           points={segment.points}
-          vertexColors={segment.colors.flat() as any}
+          vertexColors={segment.colors}
           transparent
         />
       ))}

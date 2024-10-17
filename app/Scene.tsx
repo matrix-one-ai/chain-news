@@ -1,8 +1,7 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, RoundedBox } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect } from "react";
-import { GridHelper } from "three";
 import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
@@ -17,12 +16,6 @@ const CameraSetup: React.FC = () => {
   }, [camera]);
 
   return null;
-};
-
-const GridFloor: React.FC = () => {
-  const gridHelper = new GridHelper(20, 40, 0x888888, 0x444444);
-  gridHelper.position.set(0, 0, 0);
-  return <primitive object={gridHelper} />;
 };
 
 interface SceneProps {
@@ -49,7 +42,6 @@ const Scene = ({
       }}
     >
       <ambientLight intensity={1.25} />
-
       <spotLight
         position={[10, 10, 10]}
         angle={0.15}
@@ -57,11 +49,7 @@ const Scene = ({
         decay={0}
         intensity={3}
       />
-
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
-
-      {/* <GridFloor /> */}
-
       <VrmAvatar
         avatarKey="vivian"
         position={[0, 0, -1.25]}
@@ -72,7 +60,6 @@ const Scene = ({
         audioBlob={speaker === "HOST1" ? audioBlob : null}
         blendShapes={speaker === "HOST1" ? blendShapes : []}
       />
-
       <VrmAvatar
         avatarKey="dogwifhat-sit"
         position={[-1, 0.85, -0.5]}
@@ -83,7 +70,6 @@ const Scene = ({
         audioBlob={speaker === "HOST2" ? audioBlob : null}
         blendShapes={speaker === "HOST2" ? blendShapes : []}
       />
-
       <Suspense fallback={null}>
         <Desk
           position={[0, 0, -0.75]}
@@ -93,7 +79,6 @@ const Scene = ({
           castShadow
         />
       </Suspense>
-
       <Suspense fallback={null}>
         <BentScreen
           url={
@@ -107,11 +92,17 @@ const Scene = ({
           rotation={[0, 0, 0]}
         />
       </Suspense>
-
       <MatrixTunnel />
-
       <CameraSetup />
-      <OrbitControls target={[0, 1.25, 0]} maxDistance={1} minDistance={0.5} />
+      <OrbitControls
+        target={[0, 1.25, 0]}
+        maxDistance={1}
+        minDistance={0.5}
+        maxPolarAngle={Math.PI / 2}
+        minPolarAngle={0}
+        maxAzimuthAngle={Math.PI / 4}
+        minAzimuthAngle={-Math.PI / 4}
+      />{" "}
     </Canvas>
   );
 };
