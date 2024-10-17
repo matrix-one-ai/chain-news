@@ -13,6 +13,7 @@ const Subtitle = ({ speaker, text }: SubTitleProps) => {
         textAlign: "center",
         display: "flex",
         justifyContent: "center",
+        marginBottom: "0.5rem",
       }}
     >
       <Box

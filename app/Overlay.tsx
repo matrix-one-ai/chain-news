@@ -253,15 +253,14 @@ const Overlay = ({
         </Box>
       )}
 
-      {isStreaming ||
-        (isPlaying && (
-          <LiveBanner
-            currentSpeaker={
-              currentLineState.speaker === "HOST1" ? "Haiku" : "DogWifHat"
-            }
-            subtitleText={currentLineState.text}
-          />
-        ))}
+      {(isStreaming || isPlaying) && (
+        <LiveBanner
+          currentSpeaker={
+            currentLineState.speaker === "HOST1" ? "Sam" : "DogWifHat"
+          }
+          subtitleText={currentLineState.text}
+        />
+      )}
 
       <NewsTickerBanner newsItems={newsItems} />
     </Box>
