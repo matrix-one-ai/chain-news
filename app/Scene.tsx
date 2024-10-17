@@ -1,7 +1,7 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
@@ -35,6 +35,16 @@ const Scene = ({
   speaker,
   setProgress,
 }: SceneProps) => {
+  const screenUrl = useMemo(
+    () =>
+      selectedNews
+        ? `/api/image?url=${encodeURIComponent(
+            selectedNews.imageUrl as string
+          )}`
+        : "/videos/cnews-video-v1.mp4",
+    [selectedNews]
+  );
+
   return (
     <Canvas
       style={{
@@ -81,18 +91,14 @@ const Scene = ({
       </Suspense>
       <Suspense fallback={null}>
         <BentScreen
-          url={
-            selectedNews
-              ? `/api/image?url=${encodeURIComponent(
-                  selectedNews.imageUrl as string
-                )}`
-              : "/images/screen-banner.png"
-          }
+          url={screenUrl}
           position={[0, 1.75, -1.75]}
           rotation={[0, 0, 0]}
         />
       </Suspense>
-      <MatrixTunnel />
+      <Suspense fallback={null}>
+        <MatrixTunnel />
+      </Suspense>
       <CameraSetup />
       <OrbitControls
         target={[0, 1.25, 0]}

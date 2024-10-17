@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { extend } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
-import { Image } from "@react-three/drei";
+import { extend, useFrame } from "@react-three/fiber";
+import { useRef } from "react";
+import { Image, useVideoTexture } from "@react-three/drei";
 
 // Paul West @prisoner849 https://discourse.threejs.org/u/prisoner849
 // https://discourse.threejs.org/t/simple-curved-plane/26647/10
@@ -56,6 +56,50 @@ class MeshSineMaterial extends THREE.MeshBasicMaterial {
 
 extend({ MeshSineMaterial, BentPlaneGeometry });
 
+const VideoPlayer = ({
+  url,
+  position,
+  rotation,
+}: {
+  url: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+}) => {
+  const ref = useRef<any>();
+
+  // Load video texture regardless of whether it's an image or video
+  const videoTexture = useVideoTexture(url, {
+    unsuspend: "canplay",
+    crossOrigin: "Anonymous",
+    muted: true,
+    loop: true,
+    start: true,
+  });
+
+  useFrame(() => {
+    if (ref?.current) {
+      (ref.current as any).material.radius = 0.1;
+    }
+  });
+
+  return (
+    <mesh
+      ref={ref}
+      key={url} // Add key prop here
+      position={position}
+      rotation={rotation}
+      scale={[1, 1, 1]}
+    >
+      <bentPlaneGeometry args={[0.25, 4, 2, 20, 20]} />
+      <meshBasicMaterial
+        map={videoTexture}
+        toneMapped={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+};
+
 function BentScreen({
   url,
   position,
@@ -65,16 +109,25 @@ function BentScreen({
   position: [number, number, number];
   rotation: [number, number, number];
 }) {
-  const ref = useRef();
+  const ref = useRef<any>();
 
-  useEffect(() => {
+  // Helper function to determine if the URL is a video based on file extension
+  const isVideo = (url: string) => {
+    const videoExtensions = [".mp4", ".webm", ".ogg"];
+    return videoExtensions.some((ext) => url.endsWith(ext));
+  };
+
+  useFrame(() => {
     if (ref?.current) {
       (ref.current as any).material.radius = 0.1;
     }
-  }, []);
+  });
 
-  return (
+  return isVideo(url) ? (
+    <VideoPlayer url={url} position={position} rotation={rotation} />
+  ) : (
     <Image
+      key={url}
       ref={ref as any}
       url={url}
       transparent
