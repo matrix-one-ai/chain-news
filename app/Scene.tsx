@@ -1,11 +1,12 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, RoundedBox } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect } from "react";
 import { GridHelper } from "three";
 import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
+import MatrixTunnel from "./components/MatrixTunnel";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -59,7 +60,7 @@ const Scene = ({
 
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
 
-      <GridFloor />
+      {/* <GridFloor /> */}
 
       <VrmAvatar
         avatarKey="vivian"
@@ -106,6 +107,8 @@ const Scene = ({
           rotation={[0, 0, 0]}
         />
       </Suspense>
+
+      <MatrixTunnel />
 
       <CameraSetup />
       <OrbitControls target={[0, 1.25, 0]} maxDistance={1} minDistance={0.5} />
