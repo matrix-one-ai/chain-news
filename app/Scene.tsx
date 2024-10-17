@@ -61,7 +61,7 @@ const Scene = ({
       />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
       <VrmAvatar
-        avatarKey="vivian-new"
+        avatarKey="vivian-best"
         position={[0, 0, -1.25]}
         scale={[1, 1, 1]}
         rotation={[0, 0, 0]}
