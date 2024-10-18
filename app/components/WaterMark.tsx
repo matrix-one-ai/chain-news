@@ -1,7 +1,8 @@
 import { Stack, Box } from "@mui/material";
 import Image from "next/image";
+import { memo } from "react";
 
-const WaterMark = () => {
+const WaterMark = memo(() => {
   return (
     <Stack
       direction="row"
@@ -62,6 +63,8 @@ const WaterMark = () => {
       />
     </Stack>
   );
-};
+});
+
+WaterMark.displayName = "WaterMark";
 
 export default WaterMark;

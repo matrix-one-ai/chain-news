@@ -3,12 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
-import NewsCard from "./components/NewsCard";
 import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 import WaterMark from "./components/WaterMark";
 import {
   concludeNewsPrompt,
@@ -17,6 +16,9 @@ import {
   startNewsPrompt,
   streamPromoPrompt,
 } from "./helpers/prompts";
+import SettingsIcon from "@mui/icons-material/Settings";
+import SettingsModal from "./components/SettingsModal";
+import NewsList from "./components/NewsList";
 
 interface OverlayProps {
   newsItems: News[];
@@ -32,10 +34,6 @@ interface OverlayProps {
     blendShapes: any[];
   };
   onPromptFinish: (message: Message, options: any) => void;
-  fetchAudio: (
-    text: string,
-    voice: string
-  ) => Promise<{ blob: Blob; blendShapes: any } | null>;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
@@ -49,14 +47,15 @@ const Overlay = ({
   currentLineState,
   isPlaying,
   onPromptFinish,
-  fetchAudio,
   setSelectedNews,
   setAudioBlob,
   setIsPlaying,
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [segmentDuration, setSegmentDuration] = useState<number>(30);
+  const [segmentDuration, setSegmentDuration] = useState<number>(1);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isSubtitlesVisible, setIsSubtitlesVisible] = useState<boolean>(true);
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
@@ -114,13 +113,13 @@ const Overlay = ({
 
   const handleStreamStart = useCallback(() => {
     setIsPlaying(true);
+    setIsSettingsOpen(false);
     switchNextNewsItem();
   }, [setIsPlaying, switchNextNewsItem]);
 
   const handleStreamStop = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentNewsIndex(-1);
     setSelectedNews(null);
+    setIsStreaming(false);
 
     setAudioBlob(null);
     if (audioRef.current) {
@@ -131,7 +130,7 @@ const Overlay = ({
     const prompt = concludeNewsPrompt();
 
     setPrompt(prompt);
-  }, [setIsPlaying, setSelectedNews, setAudioBlob, audioRef]);
+  }, [setSelectedNews, setAudioBlob, audioRef]);
 
   const prevIsPlayingRef = useRef<boolean>(isPlaying);
 
@@ -147,34 +146,9 @@ const Overlay = ({
     prevIsPlayingRef.current = isPlaying;
   }, [isPlaying, isStreaming, setIsPlaying, switchNextNewsItem]);
 
-  useEffect(() => {
-    const broadcast = new BroadcastChannel("stream-control");
-
-    broadcast.onmessage = (event) => {
-      const { type, ...data } = event.data;
-
-      switch (type) {
-        case "START_STREAM":
-          handleStreamStart();
-          break;
-        case "STOP_STREAM":
-          handleStreamStop();
-          break;
-        case "SET_STREAMING":
-          setIsStreaming(data.isStreaming);
-          break;
-        case "SET_SEGMENT_DURATION":
-          setSegmentDuration(data.segmentDuration);
-          break;
-        default:
-          break;
-      }
-    };
-
-    return () => {
-      broadcast.close();
-    };
-  }, [fetchAudio, handleStreamStart, handleStreamStop]);
+  const onSettingsClick = useCallback(() => {
+    setIsSettingsOpen(true);
+  }, []);
 
   return (
     <Box
@@ -206,6 +180,37 @@ const Overlay = ({
         </div>
       )}
 
+      <IconButton
+        aria-label="settings"
+        onClick={onSettingsClick}
+        sx={{
+          touchAction: "all",
+          userSelect: "all",
+          pointerEvents: "all",
+          ...((isPlaying || isStreaming) && {
+            position: "fixed",
+            top: 0,
+            left: 0,
+          }),
+        }}
+      >
+        <SettingsIcon />
+      </IconButton>
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        isStreaming={isStreaming}
+        isPlaying={isPlaying}
+        segmentDuration={segmentDuration}
+        isSubtitlesVisible={isSubtitlesVisible}
+        onClose={() => setIsSettingsOpen(false)}
+        onToggleStreaming={() => setIsStreaming((prev) => !prev)}
+        onStartStream={handleStreamStart}
+        onStopStream={handleStreamStop}
+        onSegmentDurationChange={setSegmentDuration}
+        onToggleSubtitles={() => setIsSubtitlesVisible((prev) => !prev)}
+      />
+
       <ChatInterface
         isStreaming={isStreaming || isPlaying}
         prompt={prompt}
@@ -213,32 +218,11 @@ const Overlay = ({
         handleOnFinish={onPromptFinish}
       />
 
-      {!isStreaming && !isPlaying && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            right: 0,
-            zIndex: 1000,
-            width: "50%",
-            paddingLeft: "5rem",
-            paddingTop: "0.25rem",
-            maxWidth: "400px",
-            maxHeight: "calc(100% - 3.25rem)",
-            overflowY: "auto",
-            touchAction: "all",
-            pointerEvents: "all",
-          }}
-        >
-          {newsItems.map((newsItem, index) => (
-            <NewsCard
-              key={newsItem.title + index}
-              newsItem={newsItem}
-              onClick={handleNewsClick}
-            />
-          ))}
-        </div>
-      )}
+      <NewsList
+        newsItems={newsItems}
+        onNewsClick={handleNewsClick}
+        isVisible={!isStreaming && !isPlaying}
+      />
 
       {!isStreaming && !isPlaying && (
         <Box
@@ -259,6 +243,7 @@ const Overlay = ({
             currentLineState.speaker === "HOST1" ? "Sam" : "DogWifHat"
           }
           subtitleText={currentLineState.text}
+          isSubtitlesVisible={isSubtitlesVisible}
         />
       )}
 

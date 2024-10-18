@@ -262,7 +262,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         progress={progress}
         isAudioLoading={isAudioLoading}
         onPromptFinish={onPromptFinish}
-        fetchAudio={fetchAudio}
         setSelectedNews={setSelectedNews}
         setAudioBlob={(blob: Blob | null) =>
           setCurrentLineState((prev) => ({ ...prev, audioBlob: blob }))

@@ -23,7 +23,7 @@ export function startNewsPrompt(newsItem: News, segmentDuration: number) {
         Promo the news provider briefly at the end.
         The provider of the news is ${newsItem.providerTitle}.
 
-        Keep it under ${segmentDuration} seconds of text.
+        Keep it under ${segmentDuration} minutes of text.
         Don't add weird characters or sounds.
         Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
         Say lists inline as just text.

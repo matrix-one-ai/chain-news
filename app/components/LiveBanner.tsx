@@ -38,9 +38,14 @@ const formatDate = (date: Date) => {
 interface LiveBannerProps {
   currentSpeaker: string;
   subtitleText: string;
+  isSubtitlesVisible: boolean;
 }
 
-const LiveBanner = ({ currentSpeaker, subtitleText }: LiveBannerProps) => {
+const LiveBanner = ({
+  currentSpeaker,
+  subtitleText,
+  isSubtitlesVisible,
+}: LiveBannerProps) => {
   return (
     <Box
       style={{
@@ -55,7 +60,7 @@ const LiveBanner = ({ currentSpeaker, subtitleText }: LiveBannerProps) => {
         justifyContent: "flex-end",
       }}
     >
-      {currentSpeaker && subtitleText && (
+      {currentSpeaker && subtitleText && isSubtitlesVisible && (
         <Subtitle speaker={currentSpeaker} text={subtitleText} />
       )}
 
