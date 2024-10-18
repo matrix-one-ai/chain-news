@@ -107,8 +107,7 @@ const SettingsModal = ({
           <FormControlLabel
             control={
               <Checkbox
-                defaultChecked
-                value={isSubtitlesVisible}
+                checked={isSubtitlesVisible}
                 onChange={onToggleSubtitles}
               />
             }
