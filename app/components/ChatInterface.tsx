@@ -7,11 +7,20 @@ interface ChatInterfaceProps {
   isStreaming: boolean;
   prompt: string;
   isAudioLoading: boolean;
+  isPromptUnlocked: boolean;
+  customPrompt: string;
   handleOnFinish: (message: Message, options: any) => void;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = memo(
-  ({ isStreaming, prompt, isAudioLoading, handleOnFinish }) => {
+  ({
+    isStreaming,
+    prompt,
+    isAudioLoading,
+    isPromptUnlocked,
+    customPrompt,
+    handleOnFinish,
+  }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -40,11 +49,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         const form = event.currentTarget as HTMLFormElement;
         const message = (form.elements[0] as HTMLInputElement).value;
 
-        const prompt = sendChatMessage(message);
+        const prompt = isPromptUnlocked
+          ? customPrompt
+          : sendChatMessage(message);
         append({ role: "user", content: prompt });
         setInput("");
       },
-      [append, setInput]
+      [append, customPrompt, isPromptUnlocked, setInput]
     );
 
     useEffect(() => {

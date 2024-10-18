@@ -11,6 +11,7 @@ import { Box, IconButton } from "@mui/material";
 import WaterMark from "./components/WaterMark";
 import {
   concludeNewsPrompt,
+  customPromptDefault,
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
@@ -56,14 +57,22 @@ const Overlay = ({
   const [segmentDuration, setSegmentDuration] = useState<number>(1);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isSubtitlesVisible, setIsSubtitlesVisible] = useState<boolean>(true);
+  const [isPromptUnlocked, setIsPromptUnlocked] = useState<boolean>(false);
+  const [customPrompt, setCustomPrompt] = useState<string>(
+    customPromptDefault()
+  );
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
       setSelectedNews(newsItem);
-      const prompt = startNewsPrompt(newsItem, segmentDuration);
-      setPrompt(prompt);
+      if (isPromptUnlocked) {
+        setPrompt(customPrompt);
+      } else {
+        const prompt = startNewsPrompt(newsItem, segmentDuration);
+        setPrompt(prompt);
+      }
     },
-    [segmentDuration, setSelectedNews]
+    [customPrompt, isPromptUnlocked, segmentDuration, setSelectedNews]
   );
 
   const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
@@ -87,7 +96,9 @@ const Overlay = ({
         prompt = concludeNewsPrompt();
       } else if (currentNewsIndex === 0) {
         setSelectedNews(newsItem);
-        prompt = startNewsPrompt(newsItem, segmentDuration);
+        prompt = isPromptUnlocked
+          ? customPrompt
+          : startNewsPrompt(newsItem, segmentDuration);
       } else if (currentNewsIndex % 3 === 0) {
         setSelectedNews(null);
         prompt = streamPromoPrompt();
@@ -109,6 +120,8 @@ const Overlay = ({
     isStreaming,
     isPlaying,
     segmentDuration,
+    isPromptUnlocked,
+    customPrompt,
   ]);
 
   const handleStreamStart = useCallback(() => {
@@ -203,18 +216,24 @@ const Overlay = ({
         isPlaying={isPlaying}
         segmentDuration={segmentDuration}
         isSubtitlesVisible={isSubtitlesVisible}
+        isPromptUnlocked={isPromptUnlocked}
+        customPrompt={customPrompt}
         onClose={() => setIsSettingsOpen(false)}
         onToggleStreaming={() => setIsStreaming((prev) => !prev)}
         onStartStream={handleStreamStart}
         onStopStream={handleStreamStop}
         onSegmentDurationChange={setSegmentDuration}
         onToggleSubtitles={() => setIsSubtitlesVisible((prev) => !prev)}
+        onTogglePromptUnlock={() => setIsPromptUnlocked((prev) => !prev)}
+        setCustomPrompt={setCustomPrompt}
       />
 
       <ChatInterface
         isStreaming={isStreaming || isPlaying}
         prompt={prompt}
         isAudioLoading={isAudioLoading}
+        customPrompt={customPrompt}
+        isPromptUnlocked={isPromptUnlocked}
         handleOnFinish={onPromptFinish}
       />
 

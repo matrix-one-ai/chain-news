@@ -8,6 +8,7 @@ import {
   Modal,
   Slider,
   Switch,
+  TextField,
   Typography,
 } from "@mui/material";
 
@@ -17,12 +18,16 @@ interface SettingsModalProps {
   isPlaying: boolean;
   segmentDuration: number;
   isSubtitlesVisible: boolean;
+  isPromptUnlocked: boolean;
+  customPrompt: string;
   onClose: () => void;
   onToggleStreaming: () => void;
   onStartStream: () => void;
   onStopStream: () => void;
   onSegmentDurationChange: (segmentDuration: number) => void;
   onToggleSubtitles: () => void;
+  onTogglePromptUnlock: () => void;
+  setCustomPrompt: (customPrompt: string) => void;
 }
 
 const SettingsModal = ({
@@ -31,12 +36,16 @@ const SettingsModal = ({
   isPlaying,
   segmentDuration,
   isSubtitlesVisible,
+  isPromptUnlocked,
+  customPrompt,
   onClose,
   onToggleStreaming,
   onStartStream,
   onStopStream,
   onSegmentDurationChange,
   onToggleSubtitles,
+  onTogglePromptUnlock,
+  setCustomPrompt,
 }: SettingsModalProps) => {
   return (
     <Modal
@@ -51,7 +60,8 @@ const SettingsModal = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400,
+          maxWidth: 800,
+          width: "100%",
           bgcolor: "background.paper",
           border: "2px solid #000",
           boxShadow: 24,
@@ -114,6 +124,32 @@ const SettingsModal = ({
             label="Show Subtitles"
           />
         </FormGroup>
+
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isPromptUnlocked}
+                onChange={onTogglePromptUnlock}
+              />
+            }
+            label="Unlock system prompt"
+          />
+        </FormGroup>
+
+        {isPromptUnlocked && (
+          <FormGroup>
+            <TextField
+              id="custom-prompt"
+              label="Design your own prompt"
+              multiline
+              maxRows={8}
+              variant="filled"
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+            />
+          </FormGroup>
+        )}
       </Box>
     </Modal>
   );
