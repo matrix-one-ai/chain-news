@@ -62,7 +62,7 @@ const Scene = ({
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
       <VrmAvatar
         avatarKey="vivian-best"
-        position={[0, 0, -1.25]}
+        position={[0, 0, -0.75]}
         scale={[1, 1, 1]}
         rotation={[0, 0, 0]}
         audioRef={audioRef}
@@ -72,9 +72,9 @@ const Scene = ({
       />
       <VrmAvatar
         avatarKey="dogwifhat-sit"
-        position={[-1, 0.85, -0.5]}
+        position={[-0.5, 0.85, -0.2]}
         scale={[1, 1, 1]}
-        rotation={[0, -Math.PI / 1.3, 0]}
+        rotation={[0, -Math.PI / 1.2, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
         audioBlob={speaker === "HOST2" ? audioBlob : null}
@@ -82,9 +82,9 @@ const Scene = ({
       />
       <Suspense fallback={null}>
         <Desk
-          position={[0, 0, -0.75]}
+          position={[0, 0, -0.3]}
           rotation={[0, 0, 0]}
-          scale={[0.85, 0.85, 0.85]}
+          scale={[0.6, 0.85, 0.3]}
           receiveShadow
           castShadow
         />
@@ -92,7 +92,7 @@ const Scene = ({
       <Suspense fallback={null}>
         <BentScreen
           url={screenUrl}
-          position={[0, 1.75, -1.75]}
+          position={[0, 1.6, -1.25]}
           rotation={[0, 0, 0]}
         />
       </Suspense>
@@ -108,7 +108,7 @@ const Scene = ({
         minPolarAngle={0}
         maxAzimuthAngle={Math.PI / 4}
         minAzimuthAngle={-Math.PI / 4}
-      />{" "}
+      />
     </Canvas>
   );
 };

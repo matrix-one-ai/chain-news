@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "gltf": "npx gltfjsx ./public/glbs/screen.glb --output ./app/components/gltf/Screen.tsx"
+    "gltf": "npx gltfjsx ./public/glbs/desk.glb --output ./app/components/gltf/Desk.tsx"
   },
   "dependencies": {
     "@ai-sdk/azure": "^0.0.48",
