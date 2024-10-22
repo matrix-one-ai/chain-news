@@ -106,11 +106,13 @@ const Overlay = ({
           ? customPrompt
           : startNewsPrompt(newsItem, segmentDuration);
         setCurrentNewsIndex((prev) => prev + 1);
-      } else if (currentNewsIndex % 3 === 0) {
-        setSelectedNews(null);
-        setCurrentNewsIndex((prev) => prev + 1);
-        prompt = streamPromoPrompt();
-      } else if (currentNewsIndex % 5 === 0) {
+      }
+      // else if (currentNewsIndex % 5 === 0) {
+      //   setSelectedNews(null);
+      //   setCurrentNewsIndex((prev) => prev + 1);
+      //   prompt = streamPromoPrompt();
+      // }
+      else if (currentNewsIndex % 4 === 0) {
         setSelectedNews(null);
         setCurrentNewsIndex((prev) => prev + 1);
         prompt = jokeBreakPrompt();
