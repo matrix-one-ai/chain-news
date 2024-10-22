@@ -81,7 +81,7 @@ export async function GET() {
     }));
 
     // Step 3: Perform Database Operations in a Single Transaction
-    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+    const twoMinuteAgo = new Date(Date.now() - 120 * 1000);
 
     const [insertResult, chats] = await prisma.$transaction([
       // Bulk Insert New Chats, skipping duplicates
@@ -93,7 +93,7 @@ export async function GET() {
       prisma.youtubeChat.findMany({
         where: {
           publishedAt: {
-            gte: oneMinuteAgo,
+            gte: twoMinuteAgo,
           },
           isRead: false,
         },
@@ -102,7 +102,7 @@ export async function GET() {
       prisma.youtubeChat.updateMany({
         where: {
           publishedAt: {
-            gte: oneMinuteAgo,
+            gte: twoMinuteAgo,
           },
           isRead: false,
         },
