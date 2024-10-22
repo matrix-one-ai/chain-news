@@ -65,6 +65,9 @@ const Overlay = ({
   );
 
   const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
+  const [lastSegmentType, setLastSegmentType] = useState<
+    "chat" | "news" | "joke" | null
+  >(null);
 
   const fetchChats = useCallback(async () => {
     try {
@@ -86,47 +89,59 @@ const Overlay = ({
     const main = async () => {
       const newsItem = newsItems[currentNewsIndex];
 
-      console.log("getting next news item", newsItem);
-      console.log(currentNewsIndex);
+      console.log("Getting next news item:", newsItem);
+      console.log("Current News Index:", currentNewsIndex);
 
       let prompt = "";
 
       const chats = await fetchChats();
 
-      if (chats?.length > 0) {
+      if (chats?.length > 0 && lastSegmentType !== "chat") {
+        // Handle Chat Segment
         setSelectedNews(null);
         prompt = chatsResponsePrompt(chats);
+        setLastSegmentType("chat");
         setCurrentNewsIndex((prev) => prev + 1);
       } else if (!newsItem) {
+        // Handle Conclusion
         setIsPlaying(false);
         setCurrentNewsIndex(-1);
         setSelectedNews(null);
         prompt = concludeNewsPrompt();
+        setLastSegmentType(null);
       } else if (currentNewsIndex === 0) {
+        // Handle Start of News
         setSelectedNews(newsItem);
         prompt = isPromptUnlocked
           ? customPrompt
           : startNewsPrompt(newsItem, segmentDuration);
+        setLastSegmentType("news");
         setCurrentNewsIndex((prev) => prev + 1);
       }
       // else if (currentNewsIndex % 5 === 0) {
       //   setSelectedNews(null);
       //   setCurrentNewsIndex((prev) => prev + 1);
       //   prompt = streamPromoPrompt();
+      //   setLastSegmentType('promo');
       // }
       else if (currentNewsIndex % 4 === 0) {
+        // Handle Joke Breaks
         setSelectedNews(null);
         setCurrentNewsIndex((prev) => prev + 1);
         prompt = jokeBreakPrompt();
+        setLastSegmentType("joke");
       } else {
+        // Handle Next News Segment
         setSelectedNews(newsItem);
-        setCurrentNewsIndex((prev) => prev + 1);
         prompt = nextSegmentPrompt(newsItem);
+        setLastSegmentType("news");
+        setCurrentNewsIndex((prev) => prev + 1);
       }
 
       setIsPlaying(true);
       setPrompt(prompt);
     };
+
     if (isStreaming && !isPlaying && streamStarted) {
       main();
     }
@@ -142,6 +157,7 @@ const Overlay = ({
     setIsPlaying,
     setSelectedNews,
     streamStarted,
+    lastSegmentType,
   ]);
 
   const handleNewsClick = useCallback(
