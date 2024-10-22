@@ -60,11 +60,14 @@ export async function GET() {
             delay *= 2;
           } else {
             console.error("An error occurred:", errorDetails.message);
-            break;
+            return NextResponse.json(
+              { error: errorDetails.message },
+              { status: 500 }
+            );
           }
         } else {
           console.error("An unexpected error occurred:", error);
-          break;
+          return NextResponse.json({ error: error.message }, { status: 500 });
         }
       }
     } while (nextPageToken);
