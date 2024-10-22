@@ -142,3 +142,10 @@ Don't add weird characters or sounds.
 Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
 Say lists inline as just text.`;
 }
+
+export function chatsResponsePrompt(chats: any[]) {
+  return `Here is a list of chat messages from the live stream:
+${chats.map((chat) => `${chat.displayName}: ${chat.displayMessage}`).join("\n")}
+Respond to the chat messages in a fun and engaging way.
+`;
+}

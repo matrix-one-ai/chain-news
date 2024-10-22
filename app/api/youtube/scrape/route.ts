@@ -69,8 +69,6 @@ export async function GET() {
       }
     } while (nextPageToken);
 
-    console.log(allChats);
-
     const upsertPromises = allChats.map(async (chat) => {
       const messageId = chat.id;
       const snippet = chat.snippet;

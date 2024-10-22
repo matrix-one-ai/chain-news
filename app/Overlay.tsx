@@ -10,6 +10,7 @@ import NewsTickerBanner from "./components/NewsTickerBanner";
 import { Box, IconButton } from "@mui/material";
 import WaterMark from "./components/WaterMark";
 import {
+  chatsResponsePrompt,
   concludeNewsPrompt,
   customPromptDefault,
   jokeBreakPrompt,
@@ -65,46 +66,72 @@ const Overlay = ({
 
   const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
 
-  useEffect(() => {
-    if (isStreaming && !isPlaying && streamStarted) {
-      const newsItem = newsItems[currentNewsIndex];
-
-      console.log("getting next news item", newsItem);
-      console.log(currentNewsIndex);
-
-      let prompt = "";
-
-      if (!newsItem) {
-        setIsPlaying(false);
-        setCurrentNewsIndex(-1);
-        setSelectedNews(null);
-        prompt = concludeNewsPrompt();
-      } else if (currentNewsIndex === 0) {
-        setSelectedNews(newsItem);
-        prompt = isPromptUnlocked
-          ? customPrompt
-          : startNewsPrompt(newsItem, segmentDuration);
-        setCurrentNewsIndex((prev) => prev + 1);
-      } else if (currentNewsIndex % 3 === 0) {
-        setSelectedNews(null);
-        setCurrentNewsIndex((prev) => prev + 1);
-        prompt = streamPromoPrompt();
-      } else if (currentNewsIndex % 5 === 0) {
-        setSelectedNews(null);
-        setCurrentNewsIndex((prev) => prev + 1);
-        prompt = jokeBreakPrompt();
-      } else {
-        setSelectedNews(newsItem);
-        setCurrentNewsIndex((prev) => prev + 1);
-        prompt = nextSegmentPrompt(newsItem);
+  const fetchChats = useCallback(async () => {
+    try {
+      const scrape = await fetch("/api/youtube/scrape");
+      if (scrape.ok) {
+        console.log("scraped youtube");
+        const response = await fetch("/api/youtube/chats");
+        const data = await response.json();
+        console.log(data);
+        return data.chats;
       }
-
-      setIsPlaying(true);
-      setPrompt(prompt);
+    } catch (error) {
+      console.error(error);
     }
+  }, []);
+
+  // streaming loop
+  useEffect(() => {
+    const main = async () => {
+      if (isStreaming && !isPlaying && streamStarted) {
+        const newsItem = newsItems[currentNewsIndex];
+
+        console.log("getting next news item", newsItem);
+        console.log(currentNewsIndex);
+
+        let prompt = "";
+
+        const chats = await fetchChats();
+
+        if (chats?.length > 0) {
+          setSelectedNews(null);
+          prompt = chatsResponsePrompt(chats);
+          setCurrentNewsIndex((prev) => prev + 1);
+        } else if (!newsItem) {
+          setIsPlaying(false);
+          setCurrentNewsIndex(-1);
+          setSelectedNews(null);
+          prompt = concludeNewsPrompt();
+        } else if (currentNewsIndex === 0) {
+          setSelectedNews(newsItem);
+          prompt = isPromptUnlocked
+            ? customPrompt
+            : startNewsPrompt(newsItem, segmentDuration);
+          setCurrentNewsIndex((prev) => prev + 1);
+        } else if (currentNewsIndex % 3 === 0) {
+          setSelectedNews(null);
+          setCurrentNewsIndex((prev) => prev + 1);
+          prompt = streamPromoPrompt();
+        } else if (currentNewsIndex % 5 === 0) {
+          setSelectedNews(null);
+          setCurrentNewsIndex((prev) => prev + 1);
+          prompt = jokeBreakPrompt();
+        } else {
+          setSelectedNews(newsItem);
+          setCurrentNewsIndex((prev) => prev + 1);
+          prompt = nextSegmentPrompt(newsItem);
+        }
+
+        setIsPlaying(true);
+        setPrompt(prompt);
+      }
+    };
+    main();
   }, [
     currentNewsIndex,
     customPrompt,
+    fetchChats,
     isPlaying,
     isPromptUnlocked,
     isStreaming,
@@ -135,6 +162,7 @@ const Overlay = ({
   }, []);
 
   const handleStreamStop = useCallback(() => {
+    setStreamStarted(false);
     setSelectedNews(null);
     setIsStreaming(false);
 

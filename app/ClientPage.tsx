@@ -47,34 +47,43 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
-    try {
-      const response = await fetch("/api/speech", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          voice: voiceId,
-        }),
-      });
+    const maxRetries = 3;
+    let attempt = 0;
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+    while (attempt < maxRetries) {
+      try {
+        const response = await fetch("/api/speech", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+            voice: voiceId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        const { audioData, blendShapes } = data;
+
+        const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
+          c.charCodeAt(0)
+        );
+        const blob = new Blob([audioBuffer], { type: "audio/ogg" });
+
+        return { blob, blendShapes };
+      } catch (error) {
+        console.error(`Error fetching audio (attempt ${attempt + 1}):`, error);
+        attempt += 1;
+        if (attempt >= maxRetries) {
+          console.error("Max retries reached. Giving up.");
+          return null;
+        }
       }
-
-      const data = await response.json();
-      const { audioData, blendShapes } = data;
-
-      const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-        c.charCodeAt(0)
-      );
-      const blob = new Blob([audioBuffer], { type: "audio/ogg" });
-
-      return { blob, blendShapes };
-    } catch (error) {
-      console.error("Error fetching audio:", error);
-      return null;
     }
   }, []);
 

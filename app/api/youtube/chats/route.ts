@@ -7,13 +7,27 @@ export async function GET() {
   try {
     const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
 
-    const chats = await prisma.youtubeChat.findMany({
-      where: {
-        publishedAt: {
-          gte: oneMinuteAgo,
+    const [chats] = await prisma.$transaction([
+      prisma.youtubeChat.findMany({
+        where: {
+          publishedAt: {
+            gte: oneMinuteAgo,
+          },
+          isRead: false,
         },
-      },
-    });
+      }),
+      prisma.youtubeChat.updateMany({
+        where: {
+          publishedAt: {
+            gte: oneMinuteAgo,
+          },
+          isRead: false,
+        },
+        data: {
+          isRead: true,
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       chats,
