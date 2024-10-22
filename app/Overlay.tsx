@@ -96,7 +96,7 @@ const Overlay = ({
 
       const chats = await fetchChats();
 
-      if (chats?.length > 0 && lastSegmentType !== "chat") {
+      if (chats?.length > 0 && lastSegmentType !== "chat" && currentNewsIndex > 0) {
         // Handle Chat Segment
         setSelectedNews(null);
         prompt = chatsResponsePrompt(chats);
