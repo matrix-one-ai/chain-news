@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import { Message } from "ai/react";
@@ -54,6 +54,7 @@ const Overlay = ({
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
+  const [streamStarted, setStreamStarted] = useState<boolean>(false);
   const [segmentDuration, setSegmentDuration] = useState<number>(1);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isSubtitlesVisible, setIsSubtitlesVisible] = useState<boolean>(true);
@@ -61,6 +62,58 @@ const Overlay = ({
   const [customPrompt, setCustomPrompt] = useState<string>(
     customPromptDefault()
   );
+
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
+
+  useEffect(() => {
+    if (isStreaming && !isPlaying && streamStarted) {
+      const newsItem = newsItems[currentNewsIndex];
+
+      console.log("getting next news item", newsItem);
+      console.log(currentNewsIndex);
+
+      let prompt = "";
+
+      if (!newsItem) {
+        setIsPlaying(false);
+        setCurrentNewsIndex(-1);
+        setSelectedNews(null);
+        prompt = concludeNewsPrompt();
+      } else if (currentNewsIndex === 0) {
+        setSelectedNews(newsItem);
+        prompt = isPromptUnlocked
+          ? customPrompt
+          : startNewsPrompt(newsItem, segmentDuration);
+        setCurrentNewsIndex((prev) => prev + 1);
+      } else if (currentNewsIndex % 3 === 0) {
+        setSelectedNews(null);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = streamPromoPrompt();
+      } else if (currentNewsIndex % 5 === 0) {
+        setSelectedNews(null);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = jokeBreakPrompt();
+      } else {
+        setSelectedNews(newsItem);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = nextSegmentPrompt(newsItem);
+      }
+
+      setIsPlaying(true);
+      setPrompt(prompt);
+    }
+  }, [
+    currentNewsIndex,
+    customPrompt,
+    isPlaying,
+    isPromptUnlocked,
+    isStreaming,
+    newsItems,
+    segmentDuration,
+    setIsPlaying,
+    setSelectedNews,
+    streamStarted,
+  ]);
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
@@ -75,60 +128,11 @@ const Overlay = ({
     [customPrompt, isPromptUnlocked, segmentDuration, setSelectedNews]
   );
 
-  const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
-
-  const switchNextNewsItem = useCallback(() => {
-    setCurrentNewsIndex((prevIndex) => prevIndex + 1);
-  }, []);
-
-  useEffect(() => {
-    if (isStreaming && isPlaying) {
-      const newsItem = newsItems[currentNewsIndex];
-
-      console.log("getting next news item", newsItem);
-
-      let prompt = "";
-
-      if (!newsItem) {
-        setIsPlaying(false);
-        setCurrentNewsIndex(-1);
-        setSelectedNews(null);
-        prompt = concludeNewsPrompt();
-      } else if (currentNewsIndex === 0) {
-        setSelectedNews(newsItem);
-        prompt = isPromptUnlocked
-          ? customPrompt
-          : startNewsPrompt(newsItem, segmentDuration);
-      } else if (currentNewsIndex % 3 === 0) {
-        setSelectedNews(null);
-        prompt = streamPromoPrompt();
-      } else if (currentNewsIndex % 10 === 0) {
-        setSelectedNews(null);
-        prompt = jokeBreakPrompt();
-      } else {
-        setSelectedNews(newsItem);
-        prompt = nextSegmentPrompt(newsItem);
-      }
-
-      setPrompt(prompt);
-    }
-  }, [
-    currentNewsIndex,
-    newsItems,
-    setSelectedNews,
-    setIsPlaying,
-    isStreaming,
-    isPlaying,
-    segmentDuration,
-    isPromptUnlocked,
-    customPrompt,
-  ]);
-
   const handleStreamStart = useCallback(() => {
-    setIsPlaying(true);
+    setCurrentNewsIndex(0); // sets -1 to 0
+    setStreamStarted(true);
     setIsSettingsOpen(false);
-    switchNextNewsItem();
-  }, [setIsPlaying, switchNextNewsItem]);
+  }, []);
 
   const handleStreamStop = useCallback(() => {
     setSelectedNews(null);
@@ -144,20 +148,6 @@ const Overlay = ({
 
     setPrompt(prompt);
   }, [setSelectedNews, setAudioBlob, audioRef]);
-
-  const prevIsPlayingRef = useRef<boolean>(isPlaying);
-
-  useEffect(() => {
-    const prevIsPlaying = prevIsPlayingRef.current;
-
-    if (prevIsPlaying && !isPlaying && isStreaming) {
-      // isPlaying changed from true to false, and streaming is active
-      setIsPlaying(true);
-      switchNextNewsItem();
-    }
-
-    prevIsPlayingRef.current = isPlaying;
-  }, [isPlaying, isStreaming, setIsPlaying, switchNextNewsItem]);
 
   const onSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);

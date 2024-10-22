@@ -32,6 +32,7 @@ const Subtitle = ({ speaker, text }: SubTitleProps) => {
           {": "}
           <Typography
             variant="body1"
+            component="span"
             sx={{ color: "white", display: "inline" }}
           >
             {text}
