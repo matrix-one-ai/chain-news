@@ -16,7 +16,7 @@ import {
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
-  streamPromoPrompt,
+  // streamPromoPrompt,
 } from "./helpers/prompts";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
