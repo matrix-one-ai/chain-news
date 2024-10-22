@@ -3,6 +3,8 @@ import { google } from "googleapis";
 import { PrismaClient } from "@prisma/client";
 
 export const maxDuration = 120; // 2 minutes
+export const revalidate = 0;
+export const runtime = "nodejs";
 
 const prisma = new PrismaClient();
 
@@ -54,10 +56,10 @@ export async function GET() {
           if (errorDetails.reason === "rateLimitExceeded") {
             retryCount++;
             if (retryCount > maxRetries) {
-              console.error("Max retries reached. Exiting.");
+              console.log("Max retries reached. Exiting.");
               break;
             }
-            console.warn(`Rate limit exceeded. Retrying in ${delay}ms...`);
+            console.log(`Rate limit exceeded. Retrying in ${delay}ms...`);
             await new Promise((resolve) => setTimeout(resolve, delay));
             delay *= 2;
           } else {
