@@ -68,7 +68,9 @@ const Overlay = ({
 
   const fetchChats = useCallback(async () => {
     try {
-      const resp = await fetch("/api/youtube/chats");
+      const resp = await fetch("/api/youtube/chats", {
+        cache: "no-cache",
+      });
       if (resp.ok) {
         const data = await resp.json();
         console.log("got chats", data.chats);
