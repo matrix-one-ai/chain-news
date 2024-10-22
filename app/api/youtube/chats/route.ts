@@ -81,7 +81,7 @@ export async function GET() {
     }));
 
     // Step 3: Perform Database Operations in a Single Transaction
-    const twoMinuteAgo = new Date(Date.now() - 120 * 1000);
+    const twoMinuteAgo = new Date(Date.now() - 120 * 1000).toISOString();
 
     const [insertResult, chats] = await prisma.$transaction([
       // Bulk Insert New Chats, skipping duplicates
