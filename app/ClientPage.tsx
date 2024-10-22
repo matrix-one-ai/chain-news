@@ -45,8 +45,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     blendShapes: [],
   });
 
-  const currentLineIndexRef = useRef<number>(0);
-
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
     try {
@@ -82,7 +80,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
 
   // Play the current line and prefetch the next line
   const playCurrentLine = useCallback(async () => {
-    const currentIndex = currentLineIndexRef.current;
+    const currentIndex = currentLineState.lineIndex;
     if (currentIndex < scriptLines.length) {
       const currentLine = scriptLines[currentIndex];
 
@@ -145,12 +143,12 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         }
       }
     }
-  }, [scriptLines, audioCache, fetchAudio]);
+  }, [currentLineState.lineIndex, scriptLines, audioCache, fetchAudio]);
 
   // Move to the next line
   const nextLine = useCallback(() => {
-    currentLineIndexRef.current += 1;
-    if (currentLineIndexRef.current < scriptLines.length) {
+    currentLineState.lineIndex += 1;
+    if (currentLineState.lineIndex < scriptLines.length) {
       playCurrentLine();
     } else {
       // End of script
@@ -163,7 +161,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         blendShapes: [],
       });
     }
-  }, [playCurrentLine, scriptLines.length]);
+  }, [currentLineState, playCurrentLine, scriptLines.length]);
 
   // Set up event listener for when audio ends
   useEffect(() => {
@@ -181,6 +179,8 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   // Play audio when currentLineState changes
   useEffect(() => {
     if (currentLineState.audioBlob && audioRef.current) {
+      console.log(currentLineState);
+
       const audioURL = URL.createObjectURL(currentLineState.audioBlob);
       audioRef.current.src = audioURL;
       audioRef.current.play();
@@ -190,7 +190,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         URL.revokeObjectURL(audioURL);
       };
     }
-  }, [currentLineState.lineIndex]);
+  }, [currentLineState.audioBlob]);
 
   // Handle prompt finish and start playing script
   const onPromptFinish = useCallback(
@@ -210,7 +210,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
-      currentLineIndexRef.current = 0;
       setIsAudioLoading(true);
 
       const firstLine = parsedLines[0];
