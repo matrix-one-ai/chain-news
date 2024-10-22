@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { PrismaClient } from "@prisma/client";
 
+export const maxDuration = 120; // 2 minutes
+
 const prisma = new PrismaClient();
 
 export async function GET() {
@@ -71,6 +73,8 @@ export async function GET() {
         }
       }
     } while (nextPageToken);
+
+    console.log(allChats);
 
     // Step 2: Prepare Data for Bulk Insertion
     const createManyData = allChats.map((chat) => ({
