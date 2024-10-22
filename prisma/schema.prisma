@@ -25,3 +25,13 @@ model News {
   datePublished       DateTime
   createdAt           DateTime @default(now())
 }
+
+model YoutubeChat {
+  id              String   @id @map("id") // YouTube message ID
+  liveChatId      String
+  authorChannelId String
+  displayName     String
+  displayMessage  String
+  publishedAt     DateTime
+  isRead          Boolean  @default(false)
+}
