@@ -81,7 +81,11 @@ export async function GET() {
     }));
 
     // Step 3: Perform Database Operations in a Single Transaction
-    const twoMinuteAgo = new Date(Date.now() - 120 * 1000).toISOString();
+    const twoMinutesAgo = new Date(Date.now() - 120 * 1000); // Use Date object directly
+
+    // Logging for debugging purposes
+    console.log("Current UTC Time:", new Date().toISOString());
+    console.log("Two Minutes Ago (UTC):", twoMinutesAgo.toISOString());
 
     const [insertResult, chats] = await prisma.$transaction([
       // Bulk Insert New Chats, skipping duplicates
@@ -89,11 +93,11 @@ export async function GET() {
         data: createManyData,
         skipDuplicates: true, // Supported in PostgreSQL, MySQL 8.0.19+, and SQLite >= 3.24.0
       }),
-      // Fetch Unread Chats from the Last Minute
+      // Fetch Unread Chats from the Last Two Minutes
       prisma.youtubeChat.findMany({
         where: {
           publishedAt: {
-            gte: twoMinuteAgo,
+            gte: twoMinutesAgo,
           },
           isRead: false,
         },
@@ -102,7 +106,7 @@ export async function GET() {
       prisma.youtubeChat.updateMany({
         where: {
           publishedAt: {
-            gte: twoMinuteAgo,
+            gte: twoMinutesAgo,
           },
           isRead: false,
         },
