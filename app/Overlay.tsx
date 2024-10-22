@@ -68,12 +68,10 @@ const Overlay = ({
 
   const fetchChats = useCallback(async () => {
     try {
-      const scrape = await fetch("/api/youtube/scrape");
-      if (scrape.ok) {
-        console.log("scraped youtube");
-        const response = await fetch("/api/youtube/chats");
-        const data = await response.json();
-        console.log(data);
+      const resp = await fetch("/api/youtube/chats");
+      if (resp.ok) {
+        const data = await resp.json();
+        console.log("got chats", data.chats);
         return data.chats;
       }
     } catch (error) {
@@ -84,50 +82,50 @@ const Overlay = ({
   // streaming loop
   useEffect(() => {
     const main = async () => {
-      if (isStreaming && !isPlaying && streamStarted) {
-        const newsItem = newsItems[currentNewsIndex];
+      const newsItem = newsItems[currentNewsIndex];
 
-        console.log("getting next news item", newsItem);
-        console.log(currentNewsIndex);
+      console.log("getting next news item", newsItem);
+      console.log(currentNewsIndex);
 
-        let prompt = "";
+      let prompt = "";
 
-        const chats = await fetchChats();
+      const chats = await fetchChats();
 
-        if (chats?.length > 0) {
-          setSelectedNews(null);
-          prompt = chatsResponsePrompt(chats);
-          setCurrentNewsIndex((prev) => prev + 1);
-        } else if (!newsItem) {
-          setIsPlaying(false);
-          setCurrentNewsIndex(-1);
-          setSelectedNews(null);
-          prompt = concludeNewsPrompt();
-        } else if (currentNewsIndex === 0) {
-          setSelectedNews(newsItem);
-          prompt = isPromptUnlocked
-            ? customPrompt
-            : startNewsPrompt(newsItem, segmentDuration);
-          setCurrentNewsIndex((prev) => prev + 1);
-        } else if (currentNewsIndex % 3 === 0) {
-          setSelectedNews(null);
-          setCurrentNewsIndex((prev) => prev + 1);
-          prompt = streamPromoPrompt();
-        } else if (currentNewsIndex % 5 === 0) {
-          setSelectedNews(null);
-          setCurrentNewsIndex((prev) => prev + 1);
-          prompt = jokeBreakPrompt();
-        } else {
-          setSelectedNews(newsItem);
-          setCurrentNewsIndex((prev) => prev + 1);
-          prompt = nextSegmentPrompt(newsItem);
-        }
-
-        setIsPlaying(true);
-        setPrompt(prompt);
+      if (chats?.length > 0) {
+        setSelectedNews(null);
+        prompt = chatsResponsePrompt(chats);
+        setCurrentNewsIndex((prev) => prev + 1);
+      } else if (!newsItem) {
+        setIsPlaying(false);
+        setCurrentNewsIndex(-1);
+        setSelectedNews(null);
+        prompt = concludeNewsPrompt();
+      } else if (currentNewsIndex === 0) {
+        setSelectedNews(newsItem);
+        prompt = isPromptUnlocked
+          ? customPrompt
+          : startNewsPrompt(newsItem, segmentDuration);
+        setCurrentNewsIndex((prev) => prev + 1);
+      } else if (currentNewsIndex % 3 === 0) {
+        setSelectedNews(null);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = streamPromoPrompt();
+      } else if (currentNewsIndex % 5 === 0) {
+        setSelectedNews(null);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = jokeBreakPrompt();
+      } else {
+        setSelectedNews(newsItem);
+        setCurrentNewsIndex((prev) => prev + 1);
+        prompt = nextSegmentPrompt(newsItem);
       }
+
+      setIsPlaying(true);
+      setPrompt(prompt);
     };
-    main();
+    if (isStreaming && !isPlaying && streamStarted) {
+      main();
+    }
   }, [
     currentNewsIndex,
     customPrompt,
