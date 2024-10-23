@@ -7,11 +7,16 @@ import React, {
   useRef,
   Suspense,
 } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTF, GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { loadMixamoAnimation } from "../helpers/loadMixamoAnimation";
-import { VRM, VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import {
+  VRM,
+  VRMHumanBoneName,
+  VRMLoaderPlugin,
+  VRMUtils,
+} from "@pixiv/three-vrm";
 import { azureToVrmBlendShapes } from "../helpers/azureToVrmBlendShapes";
 import { fetchWithProgress } from "../helpers/fetchWithProgress";
 import { throttle } from "../helpers/throttle";
@@ -69,12 +74,10 @@ const processBlendShapesData = (
   return frames;
 };
 
-// Utility function to get blend shape key
 const getBlendShapeKey = (index: number): string => {
   return azureToVrmBlendShapes[index];
 };
 
-// Type definitions for props
 interface VrmAvatarProps {
   avatarKey: string;
   audioRef: React.MutableRefObject<HTMLAudioElement | null>;
@@ -86,7 +89,6 @@ interface VrmAvatarProps {
   scale: [number, number, number];
 }
 
-// Type definition for processed frames
 interface ProcessedFrame {
   frameIndex: number;
   blendShapeValues: number[];
@@ -102,7 +104,6 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   rotation,
   scale,
 }) => {
-  // State variables
   const [gltf, setGltf] = useState<GLTF | null>(null);
   const [mixer, setMixer] = useState<THREE.AnimationMixer | null>(null);
   const [idleActions, setIdleActions] = useState<THREE.AnimationAction[]>([]);
@@ -112,8 +113,10 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   const [audioReady, setAudioReady] = useState(false);
   const [processedFrames, setProcessedFrames] = useState<ProcessedFrame[]>([]);
   const [decryptedVrm, setDecryptedVrm] = useState<DecryptedVRM | null>(null);
-  const [isTalking, setIsTalking] = useState(false); // State to track if avatar is talking
-  const audioBlobCounterRef = useRef<number>(0); // Counter to track number of audioBlobs
+  const [isTalking, setIsTalking] = useState(false);
+  const audioBlobCounterRef = useRef<number>(0);
+
+  const { camera } = useThree();
 
   // Decrypt VRM Function
   const decryptVRM = useCallback(
@@ -441,6 +444,42 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
 
     if (gltf) {
       const vrm: VRM = gltf.userData.vrm;
+      const lookAt = vrm.lookAt;
+      if (!lookAt) return;
+      // Calculate direction vector from head to camera
+      const headBone = vrm.humanoid?.getNormalizedBoneNode(
+        VRMHumanBoneName.Head
+      );
+      const cameraPosition = camera.position;
+
+      if (headBone) {
+        const headPosition = new THREE.Vector3();
+        headBone.getWorldPosition(headPosition);
+
+        const direction = new THREE.Vector3()
+          .subVectors(cameraPosition, headPosition)
+          .normalize();
+
+        // Apply constraints to limit the rotation angles
+        const maxRotationAngle = Math.PI / 4; // 45 degrees
+        const constrainedDirection = new THREE.Vector3(
+          THREE.MathUtils.clamp(
+            avatarKey === "dogwifhat-sit" ? -direction.x : direction.x,
+            -maxRotationAngle,
+            maxRotationAngle
+          ),
+          THREE.MathUtils.clamp(
+            direction.y,
+            -maxRotationAngle,
+            maxRotationAngle
+          ),
+          avatarKey === "dogwifhat-sit" ? -direction.z : direction.z
+        ).normalize();
+
+        headBone.lookAt(headPosition.clone().add(constrainedDirection));
+      }
+
+      lookAt.lookAt(camera.position);
       vrm.update(delta);
     }
 
