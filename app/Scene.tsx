@@ -1,5 +1,5 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Plane } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect, useMemo } from "react";
 import { News } from "@prisma/client";
@@ -81,6 +81,9 @@ const Scene = ({
         blendShapes={speaker === "HOST2" ? blendShapes : []}
       />
       <Suspense fallback={null}>
+        <Plane position={[0, 0.3, -0.35]} rotation={[0, 0, 0]} args={[1.5, 1]}>
+          <meshStandardMaterial attach="material" color="black" />
+        </Plane>
         <Desk
           position={[0, 0, -0.3]}
           rotation={[0, 0, 0]}
