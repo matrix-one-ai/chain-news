@@ -62,7 +62,7 @@ const Scene = ({
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
       <VrmAvatar
         avatarKey="vivian-best"
-        position={[0, 0, -0.75]}
+        position={[0, 0, -0.65]}
         scale={[1, 1, 1]}
         rotation={[0, 0, 0]}
         audioRef={audioRef}

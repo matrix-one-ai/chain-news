@@ -469,7 +469,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             maxRotationAngle
           ),
           THREE.MathUtils.clamp(
-            direction.y,
+            avatarKey === "dogwifhat-sit" ? -direction.y : direction.y,
             -maxRotationAngle,
             maxRotationAngle
           ),
