@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Chip, Fade, Typography } from "@mui/material";
 import { News } from "@prisma/client";
 import {
   EmojiEvents,
@@ -25,7 +25,7 @@ const parseHTML = (htmlString: string): string => {
   return $.text();
 };
 
-const categoryIcons: Record<NewsCategory, JSX.Element> = {
+export const newsCategoryIcons: Record<NewsCategory, JSX.Element> = {
   Memes: <EmojiEvents />,
   Bitcoin: <TokenOutlined />,
   Ethereum: <TokenOutlined />,
@@ -38,7 +38,7 @@ const categoryIcons: Record<NewsCategory, JSX.Element> = {
   Gaming: <GamesOutlined />,
 };
 
-type NewsCategory =
+export type NewsCategory =
   | "Memes"
   | "Ethereum"
   | "Solana"
@@ -65,6 +65,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
       transition:
         "transform 0.3s, box-shadow 0.3s, background-color 0.3s, backdrop-filter 0.3s",
       backdropFilter: "blur(10px)",
+      zIndex: 1001,
 
       "&:hover": {
         transform: "translateX(-10px)",
@@ -75,31 +76,35 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => (
       },
     }}
   >
-    <Image
-      src={newsItem.imageUrl as string}
-      alt={newsItem.title}
-      width={350}
-      height={250}
-    />
-
-    <Typography variant="h6" color="white" fontSize={18} className="glitch">
-      {parseHTML(newsItem.title)}
-    </Typography>
-
-    <Typography variant="body2" color="info">
-      {newsItem.providerTitle}
-    </Typography>
-
-    <Box style={{ marginTop: "10px" }}>
-      {newsItem.category && (
-        <Chip
-          label={newsItem.category}
-          icon={categoryIcons[newsItem.category as NewsCategory]}
-          style={{ marginRight: "5px", padding: "2px 10px" }}
-          size="small"
+    <Fade in={true} timeout={500}>
+      <Box>
+        <Image
+          src={newsItem.imageUrl as string}
+          alt={newsItem.title}
+          width={350}
+          height={250}
         />
-      )}
-    </Box>
+
+        <Typography variant="h6" color="white" fontSize={18} className="glitch">
+          {parseHTML(newsItem.title)}
+        </Typography>
+
+        <Typography variant="body2" color="info">
+          {newsItem.providerTitle}
+        </Typography>
+
+        <Box style={{ marginTop: "10px" }}>
+          {newsItem.category && (
+            <Chip
+              label={newsItem.category}
+              icon={newsCategoryIcons[newsItem.category as NewsCategory]}
+              style={{ marginRight: "5px", padding: "2px 10px" }}
+              size="small"
+            />
+          )}
+        </Box>
+      </Box>
+    </Fade>
   </Box>
 );
 
