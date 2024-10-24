@@ -1,0 +1,61 @@
+import { PrismaClient } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
+import { createAzure } from "@ai-sdk/azure";
+import { generateText } from "ai";
+
+const prisma = new PrismaClient();
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_OPENAI_RESOURCE!,
+  apiKey: process.env.AZURE_OPENAI_KEY!,
+});
+
+export async function GET(req: NextRequest) {
+  try {
+    const topic = req.nextUrl.searchParams.get("topic");
+
+    console.log(topic);
+
+    const feed = await prisma.news.findMany({
+      select: {
+        id: true,
+        providerTitle: true,
+        category: true,
+        title: true,
+        description: true,
+        source: true,
+        url: true,
+        imageUrl: true,
+        datePublished: true,
+        content: true,
+      },
+      orderBy: { datePublished: "desc" },
+    });
+
+    const { text } = await generateText({
+      model: azure("gpt-4o"),
+      prompt: `Give me the top 5 breaking stories in crypto from this list:
+${feed
+  .map((item) => `ID ${item.id}: ${item.title} - ${item.description}`)
+  .join("\n")}
+
+Return the IDs in a simple array like: [1, 2, 3, 4, 5]
+
+${topic ? `The topic to filter for is: ${topic}` : ""}
+Make sure is not general boring blog news, only price action, major events, and partnerships. This is for investors looking for hot topics.
+`,
+    });
+
+    const ids = text.match(/\d+/g)?.map(Number);
+
+    if (!ids) {
+      return NextResponse.json({ error: "No IDs found" });
+    }
+
+    const filteredFeed = feed.filter((item) => ids.includes(item.id));
+
+    return NextResponse.json(filteredFeed);
+  } catch (error) {
+    return NextResponse.json({ error }, { status: 500 });
+  }
+}
