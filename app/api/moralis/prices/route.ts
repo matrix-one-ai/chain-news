@@ -79,7 +79,6 @@ export async function GET() {
         ],
       }
     );
-    console.log(response);
     return NextResponse.json(response.raw);
   } catch (e) {
     console.log(e);
