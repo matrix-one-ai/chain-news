@@ -63,11 +63,18 @@ const NewsList = memo(
               usdPrice: tokenPrice?.usdPrice,
               percentChange24h: tokenPrice?.["24hrPercentChange"],
             };
+          })
+          .sort((a, b) => {
+            if (a.usdPrice !== undefined && b.usdPrice === undefined) {
+              return -1;
+            }
+            if (a.usdPrice === undefined && b.usdPrice !== undefined) {
+              return 1;
+            }
+            return 0;
           }),
       [newsItems, selectedFilter, tokenPrices]
     );
-
-    console.log(filteredNewsItems);
 
     useEffect(() => {
       const fetchNews = async () => {

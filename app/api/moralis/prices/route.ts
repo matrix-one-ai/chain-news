@@ -47,6 +47,30 @@ export async function GET() {
           {
             tokenAddress: "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
           },
+          // LINK (Chainlink)
+          {
+            tokenAddress: "0x514910771af9ca656af840dff83e8264ecf986ca",
+          },
+          // UNI (Uniswap)
+          {
+            tokenAddress: "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+          },
+          // MKR (Maker)
+          {
+            tokenAddress: "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+          },
+          // ELA (Elastos)
+          {
+            tokenAddress: "0xe6fd75ff38adca4b97fbcd938c86b98772431867",
+          },
+          // TON (TONCoin)
+          {
+            tokenAddress: "0x582d872a1b094fc48f5de31d3b73f2d9be47def1",
+          },
+          // PYUSD (PaypalUSD)
+          {
+            tokenAddress: "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
+          },
         ],
       }
     );

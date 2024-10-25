@@ -32,7 +32,7 @@ export async function POST() {
       const mainContent = $("main").html();
 
       const { text } = await generateText({
-        model: azure("gpt-4o-mini"),
+        model: azure("gpt-4o"),
         prompt: `
           Extract the News content from this HTML to pure string text, give me a 200-500 word summary.
           ---
