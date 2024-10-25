@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { News, PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
@@ -49,6 +49,7 @@ export async function POST() {
           "Latest on Crypto News, Blockchain & NFTs - Digital Assets",
         providerUrl: "https://www.forbes.com/digital-assets/",
         isRSS: false,
+        tokenTicker: "",
         rssUrl: null,
         category: "",
         title: item.title.trim(),
@@ -61,8 +62,8 @@ export async function POST() {
       });
     }
 
-    const { text } = await generateText({
-      model: azure("gpt-4o-mini"),
+    const { text: categoryResult } = await generateText({
+      model: azure("gpt-4o"),
       prompt: `
         Categorize the following news articles from Forbes:
         The categories are: NFTs, DeFi, Memes, DePIN, AI, Solana, Gaming, Ethereum, Bitcoin, and General.
@@ -76,10 +77,32 @@ export async function POST() {
       `,
     });
 
-    const categories = JSON.parse(text);
+    const categories = JSON.parse(categoryResult);
 
     parsedNews.forEach((item, index: number) => {
       item.category = categories[index];
+    });
+
+    const { text: tokenResult } = await generateText({
+      model: azure("gpt-4o"),
+      prompt: `
+        Estimate the token ticker name for the following news articles:
+        ${parsedNews
+          .map((item, index: number) => `${index}: ${item.title}`)
+          .join("\n")}
+        Return a flat JSON object with the categories for each article.
+        Example output: { "0": "ETH", "1": "BTC", "2": "DOGE" }
+        Do not include any other information in the response.
+        Do not use any markdown text.
+        I want to know the best fit token ticker name for each article so I can pull prices.
+        If the token ticker is not known, return an empty string.
+      `,
+    });
+
+    const tokens = JSON.parse(tokenResult);
+
+    parsedNews.forEach((item, index: number) => {
+      item.tokenTicker = tokens[index];
     });
 
     await prisma.news.deleteMany({
@@ -94,6 +117,7 @@ export async function POST() {
         providerTitle: item.providerTitle,
         providerDescription: item.providerDescription,
         providerUrl: item.providerUrl,
+        tokenTicker: item.tokenTicker,
         isRSS: item.isRSS,
         rssUrl: item.rssUrl,
         category: item.category,

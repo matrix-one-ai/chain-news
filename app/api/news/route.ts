@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
+export const revalidate = 60 * 5;
+
 const prisma = new PrismaClient();
 
 export async function GET() {
@@ -16,6 +18,7 @@ export async function GET() {
         imageUrl: true,
         datePublished: true,
         content: true,
+        tokenTicker: true,
       },
       orderBy: { datePublished: "desc" },
     });

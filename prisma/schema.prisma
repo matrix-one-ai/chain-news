@@ -13,6 +13,7 @@ model News {
   providerTitle       String
   providerDescription String
   providerUrl         String
+  tokenTicker         String?
   isRSS               Boolean
   rssUrl              String?
   category            String

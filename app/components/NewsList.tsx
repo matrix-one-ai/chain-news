@@ -1,6 +1,6 @@
 import { News } from "@prisma/client";
 import NewsCard from "./NewsCard";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Chip, Fade, IconButton, Tooltip } from "@mui/material";
 import { newsCategoryIcons } from "./NewsCard";
 import Marquee from "react-fast-marquee";
@@ -11,6 +11,10 @@ const newsFilters = Object.keys(newsCategoryIcons).map((key) => ({
   icon: newsCategoryIcons[key as keyof typeof newsCategoryIcons],
 }));
 
+const stripPrefix = (str: string) => {
+  return str.replace(/^W|Wrapped\s*/i, "");
+};
+
 interface NewsListProps {
   newsItems: News[];
   isVisible: boolean;
@@ -20,6 +24,7 @@ interface NewsListProps {
 const NewsList = memo(
   ({ newsItems, isVisible, onNewsClick }: NewsListProps) => {
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+    const [tokenPrices, setTokenPrices] = useState<any>(null);
 
     const handleFilterClick = useCallback((category: string | null) => {
       setSelectedFilter(category);
@@ -31,12 +36,53 @@ const NewsList = memo(
 
     const filteredNewsItems = useMemo(
       () =>
-        newsItems.filter(
-          (newsItem) =>
-            selectedFilter === null || newsItem.category === selectedFilter
-        ),
-      [newsItems, selectedFilter]
+        newsItems
+          .filter(
+            (newsItem) =>
+              selectedFilter === null || newsItem.category === selectedFilter
+          )
+          .map((newsItem) => {
+            const tokenPrice = tokenPrices?.find((token: any) => {
+              if (!newsItem.tokenTicker) {
+                return false;
+              }
+              const strippedTokenTicker = stripPrefix(
+                newsItem.tokenTicker || ""
+              );
+              const strippedTokenName = stripPrefix(token.tokenName);
+              const strippedTokenSymbol = stripPrefix(token.tokenSymbol);
+              return (
+                strippedTokenSymbol === strippedTokenTicker ||
+                strippedTokenName.includes(strippedTokenTicker)
+              );
+            });
+
+            return {
+              ...newsItem,
+              tokenSymbol: tokenPrice?.tokenSymbol,
+              usdPrice: tokenPrice?.usdPrice,
+              percentChange24h: tokenPrice?.["24hrPercentChange"],
+            };
+          }),
+      [newsItems, selectedFilter, tokenPrices]
     );
+
+    console.log(filteredNewsItems);
+
+    useEffect(() => {
+      const fetchNews = async () => {
+        try {
+          const response = await fetch("/api/moralis/prices");
+          if (!response.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const data = await response.json();
+          setTokenPrices(data);
+        } catch (err: any) {}
+      };
+
+      fetchNews();
+    }, []);
 
     return (
       <Fade
