@@ -1,7 +1,15 @@
 import { News } from "@prisma/client";
 import NewsCard from "./NewsCard";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { Box, Chip, Fade, IconButton, Tooltip } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Chip,
+  Fade,
+  IconButton,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { newsCategoryIcons } from "./NewsCard";
 import Marquee from "react-fast-marquee";
 import { CancelOutlined } from "@mui/icons-material";
@@ -102,6 +110,24 @@ const NewsList = memo(
         }}
       >
         <Box>
+          <Autocomplete
+            options={newsItems.sort(
+              (a, b) => -b.category.localeCompare(a.category)
+            )}
+            groupBy={(option) => option.category}
+            getOptionLabel={(option) => option.title}
+            size="small"
+            sx={{
+              position: "fixed",
+              top: 45,
+              right: 5,
+              zIndex: 1000,
+              width: 315,
+              backdropFilter: "blur(10px)",
+            }}
+            renderInput={(params) => <TextField {...params} label="Search" />}
+          />
+
           {selectedFilter && (
             <Tooltip title="Clear filter">
               <IconButton
@@ -123,12 +149,11 @@ const NewsList = memo(
 
           <Marquee
             speed={30}
-            pauseOnHover
-            direction="right"
+            gradientColor="rgba(0, 0, 0, 0.5)"
             style={{
               padding: "0.25rem 0",
               position: "fixed",
-              top: 0,
+              top: 2,
               right: 0,
               maxWidth: "320px",
             }}
@@ -142,20 +167,20 @@ const NewsList = memo(
                 color={selectedFilter === label ? "primary" : "default"}
                 sx={{
                   margin: "0 0.25rem",
+                  backdropFilter: "blur(10px)",
                 }}
               />
             ))}
           </Marquee>
           <div
             style={{
-              marginTop: "2.75rem",
               position: "fixed",
-              top: 0,
+              top: 90,
               right: 0,
               width: "50%",
               paddingLeft: "5rem",
               maxWidth: "400px",
-              maxHeight: "calc(100% - 5.75rem)",
+              maxHeight: "calc(100% - 150px)",
               overflowY: "auto",
             }}
           >
