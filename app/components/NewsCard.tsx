@@ -56,7 +56,7 @@ export type NewsCategory =
 
 const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   const percentChange = parseFloat(newsItem.percentChange24h || "0");
-  const percentChangeColor = percentChange < 0 ? "red" : "secondary.main";
+  const percentChangeColor = percentChange < 0 ? "#ff2e2e" : "secondary.main";
   const plusOrMinus = percentChange < 0 ? "" : "+";
 
   return (
