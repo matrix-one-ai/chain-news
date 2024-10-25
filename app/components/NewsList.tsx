@@ -151,11 +151,18 @@ const NewsList = memo(
               backdropFilter: "blur(10px)",
             }}
             clearOnBlur={false}
+            onChange={(_, value) => {
+              if (value) {
+                setSearchQuery(value.title);
+              } else {
+                setSearchQuery("");
+              }
+            }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Search"
                 onChange={handleSearchChange}
+                label="Search"
               />
             )}
           />
