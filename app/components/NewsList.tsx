@@ -33,6 +33,9 @@ const NewsList = memo(
   ({ newsItems, isVisible, onNewsClick }: NewsListProps) => {
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [tokenPrices, setTokenPrices] = useState<any>(null);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [debouncedSearchQuery, setDebouncedSearchQuery] =
+      useState<string>("");
 
     const handleFilterClick = useCallback((category: string | null) => {
       setSelectedFilter(category);
@@ -42,12 +45,34 @@ const NewsList = memo(
       setSelectedFilter(null);
     }, []);
 
+    const handleSearchChange = useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+      },
+      []
+    );
+
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedSearchQuery(searchQuery);
+      }, 500);
+
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [searchQuery]);
+
     const filteredNewsItems = useMemo(
       () =>
         newsItems
           .filter(
             (newsItem) =>
               selectedFilter === null || newsItem.category === selectedFilter
+          )
+          .filter((newsItem) =>
+            newsItem.title
+              .toLowerCase()
+              .includes(debouncedSearchQuery.toLowerCase())
           )
           .map((newsItem) => {
             const tokenPrice = tokenPrices?.find((token: any) => {
@@ -81,7 +106,7 @@ const NewsList = memo(
             }
             return 0;
           }),
-      [newsItems, selectedFilter, tokenPrices]
+      [newsItems, debouncedSearchQuery, selectedFilter, tokenPrices]
     );
 
     useEffect(() => {
@@ -125,7 +150,14 @@ const NewsList = memo(
               width: 315,
               backdropFilter: "blur(10px)",
             }}
-            renderInput={(params) => <TextField {...params} label="Search" />}
+            clearOnBlur={false}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Search"
+                onChange={handleSearchChange}
+              />
+            )}
           />
 
           {selectedFilter && (
