@@ -212,7 +212,7 @@ const NewsList = memo(
               width: "50%",
               paddingLeft: "5rem",
               maxWidth: "400px",
-              maxHeight: "calc(100% - 150px)",
+              maxHeight: "calc(100% - 140px)",
               overflowY: "auto",
             }}
           >
