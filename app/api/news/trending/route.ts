@@ -6,6 +6,7 @@ import { generateText } from "ai";
 export const revalidate = 60 * 5;
 export const runtime = "nodejs";
 export const maxDuration = 300;
+export const dynamic = 'force-static'
 
 const prisma = new PrismaClient();
 
