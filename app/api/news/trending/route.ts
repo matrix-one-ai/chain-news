@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
 
+export const revalidate = 60 * 5;
+
 const prisma = new PrismaClient();
 
 const azure = createAzure({
