@@ -32,7 +32,7 @@ const NewsTickerBanner = ({ newsItems }: NewTickerBannerProps) => (
         }}
       >
         {newsItems.map((newsItem, index) => (
-          <React.Fragment key={newsItem.id}>
+          <React.Fragment key={`${newsItem.id}-${index}`}>
             {parseHTML(newsItem.title)}
             {index < newsItems.length - 1 && (
               <Image

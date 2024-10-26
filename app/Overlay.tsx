@@ -21,6 +21,7 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
+import Web3AuthLogin from "./components/Web3AuthLogin";
 
 interface OverlayProps {
   newsItems: News[];
@@ -96,7 +97,11 @@ const Overlay = ({
 
       const chats = await fetchChats();
 
-      if (chats?.length > 0 && lastSegmentType !== "chat" && currentNewsIndex > 0) {
+      if (
+        chats?.length > 0 &&
+        lastSegmentType !== "chat" &&
+        currentNewsIndex > 0
+      ) {
         // Handle Chat Segment
         setSelectedNews(null);
         prompt = chatsResponsePrompt(chats);
@@ -303,6 +308,8 @@ const Overlay = ({
       )}
 
       <NewsTickerBanner newsItems={newsItems} />
+
+      <Web3AuthLogin />
     </Box>
   );
 };
