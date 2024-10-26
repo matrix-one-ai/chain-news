@@ -9,16 +9,15 @@ import {
   WEB3AUTH_NETWORK,
 } from "@web3auth/base";
 import { getDefaultExternalAdapters } from "@web3auth/default-solana-adapter";
-import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
+import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
-import { AuthAdapter } from "@web3auth/auth-adapter";
 
 import RPC from "../helpers/solanaRPC";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
 const chainConfig = {
-  chainId: "0x2",
+  chainId: "0x1",
   chainNamespace: CHAIN_NAMESPACES.SOLANA,
   rpcTarget: "https://api.devnet.solana.com",
   tickerName: "SOLANA",
@@ -28,18 +27,6 @@ const chainConfig = {
   logo: "https://images.toruswallet.io/sol.svg",
 };
 
-const solanaPrivateKeyProvider = new SolanaPrivateKeyProvider({
-  config: { chainConfig },
-});
-
-const web3AuthOptions: Web3AuthOptions = {
-  clientId,
-  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
-  chainConfig,
-  privateKeyProvider: solanaPrivateKeyProvider,
-};
-const web3auth = new Web3Auth(web3AuthOptions);
-
 function truncateAddress(address: string): string {
   if (!address || address.length < 10) {
     return address;
@@ -48,6 +35,7 @@ function truncateAddress(address: string): string {
 }
 
 function Web3AuthLogin() {
+  const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
@@ -65,12 +53,38 @@ function Web3AuthLogin() {
   useEffect(() => {
     const init = async () => {
       try {
+        const solanaPrivateKeyPrvoider = new SolanaPrivateKeyProvider({
+          config: { chainConfig: chainConfig },
+        });
+
+        const web3auth = new Web3Auth({
+          clientId,
+          uiConfig: {
+            appName: "ChainNews.One",
+            mode: "dark",
+            logoLight: "https://web3auth.io/images/web3authlog.png",
+            logoDark: "https://web3auth.io/images/web3authlogodark.png",
+            defaultLanguage: "en",
+            loginGridCol: 3,
+            primaryButton: "externalLogin",
+            uxMode: "redirect",
+          },
+          web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+          privateKeyProvider: solanaPrivateKeyPrvoider,
+        });
+
         const adapters = getDefaultExternalAdapters({
-          options: web3AuthOptions,
+          options: {
+            clientId,
+            chainConfig,
+          },
         });
         adapters.forEach((adapter: IAdapter<unknown>) => {
           web3auth.configureAdapter(adapter);
         });
+
+        setWeb3auth(web3auth);
+
         await web3auth.initModal();
         setProvider(web3auth.provider);
 
@@ -86,18 +100,26 @@ function Web3AuthLogin() {
   }, []);
 
   const login = async () => {
+    if (!web3auth) {
+      uiConsole("web3auth not initialized yet");
+      return;
+    }
     const web3authProvider = await web3auth.connect();
-    setProvider(web3authProvider);
+
     if (web3auth.connected) {
       setLoggedIn(true);
     }
+    setProvider(web3authProvider);
   };
 
   const logout = async () => {
+    if (!web3auth) {
+      uiConsole("web3auth not initialized yet");
+      return;
+    }
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    uiConsole("logged out");
   };
 
   function uiConsole(...args: any[]): void {
