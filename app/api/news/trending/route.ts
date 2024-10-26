@@ -4,6 +4,8 @@ import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
 
 export const revalidate = 60 * 5;
+export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const prisma = new PrismaClient();
 
