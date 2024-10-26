@@ -13,7 +13,7 @@ import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 import { AuthAdapter } from "@web3auth/auth-adapter";
 
-import RPC from "../helpers/ethersRPC";
+import RPC from "../helpers/solanaRPC";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -28,20 +28,17 @@ const chainConfig = {
   logo: "https://images.toruswallet.io/sol.svg",
 };
 
-const privateKeyProvider = new SolanaPrivateKeyProvider({
+const solanaPrivateKeyProvider = new SolanaPrivateKeyProvider({
   config: { chainConfig },
 });
-const authAdapter = new AuthAdapter({ privateKeyProvider: privateKeyProvider });
 
 const web3AuthOptions: Web3AuthOptions = {
   clientId,
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
   chainConfig,
-  privateKeyProvider,
+  privateKeyProvider: solanaPrivateKeyProvider,
 };
 const web3auth = new Web3Auth(web3AuthOptions);
-
-web3auth.configureAdapter(authAdapter);
 
 function truncateAddress(address: string): string {
   if (!address || address.length < 10) {
@@ -58,8 +55,9 @@ function Web3AuthLogin() {
   useEffect(() => {
     if (provider) {
       (async () => {
-        const userAddress = await RPC.getAccounts(provider);
-        setAddress(userAddress);
+        const rpc = new RPC(provider);
+        const address = await rpc.getAccounts();
+        setAddress(address[0]);
       })();
     }
   }, [provider]);
