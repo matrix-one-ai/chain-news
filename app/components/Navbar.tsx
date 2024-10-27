@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
 
+import { useEffect, useState } from "react";
+import WaterMark from "./WaterMark";
+import { AppBar, Box, Button, Toolbar } from "@mui/material";
 import {
   CHAIN_NAMESPACES,
   IAdapter,
@@ -39,16 +40,6 @@ function Web3AuthLogin() {
   const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [address, setAddress] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (provider) {
-      (async () => {
-        const rpc = new RPC(provider);
-        const address = await rpc.getAccounts();
-        setAddress(address[0]);
-      })();
-    }
-  }, [provider]);
 
   useEffect(() => {
     const init = async () => {
@@ -93,6 +84,13 @@ function Web3AuthLogin() {
         if (web3auth.connected) {
           setLoggedIn(true);
         }
+
+        if (web3auth.provider) {
+          const rpc = new RPC(web3auth.provider);
+          const address = await rpc.getAccounts();
+          console.log(address);
+          setAddress(address[0]);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -133,31 +131,38 @@ function Web3AuthLogin() {
   }
 
   const loggedInView = (
-    <Button onClick={logout}>
+    <Button onClick={logout} color="warning" variant="outlined">
       Log Out ({address ? truncateAddress(address) : ""})
     </Button>
   );
 
   const unloggedInView = (
-    <Button onClick={login} variant="outlined">
+    <Button onClick={login} color="warning" variant="contained">
       Login
     </Button>
   );
 
+  return <Box>{loggedIn ? loggedInView : unloggedInView}</Box>;
+}
+
+export default function Navbar() {
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 100,
-        left: 20,
-        touchAction: "all",
-        userSelect: "all",
-        pointerEvents: "all",
-      }}
-    >
-      {loggedIn ? loggedInView : unloggedInView}
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "#0C071C",
+          touchAction: "all",
+          userSelect: "all",
+          pointerEvents: "all",
+        }}
+      >
+        <Toolbar>
+          <WaterMark />
+          <Box sx={{ flexGrow: 1 }} />
+          <Web3AuthLogin />
+        </Toolbar>
+      </AppBar>
     </Box>
   );
 }
-
-export default Web3AuthLogin;

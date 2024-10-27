@@ -6,6 +6,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import "./globals.css";
+import Navbar from "./components/Navbar";
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600"],
@@ -55,7 +56,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          <ThemeProvider theme={theme}>
+            <Navbar />
+            {children}
+          </ThemeProvider>
         </AppRouterCacheProvider>
         <Analytics />
         <CssBaseline />

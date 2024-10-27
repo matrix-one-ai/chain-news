@@ -6,20 +6,21 @@ const WaterMark = memo(() => {
   return (
     <Stack
       direction="row"
-      spacing={3}
-      style={{
+      spacing={1}
+      sx={{
         alignItems: "center",
       }}
     >
       <Box
-        style={{
+        sx={{
           position: "relative",
+          scale: 0.8,
         }}
       >
         <Box
           sx={{
-            height: "75px",
-            width: "160px",
+            height: "50px",
+            width: "108px",
             borderRadius: "45px",
             zIndex: 999,
             background: "linear-gradient(210deg, #AD7BFF, #FFB46E)",
@@ -45,21 +46,21 @@ const WaterMark = memo(() => {
         <Image
           src="/images/logo-border.svg"
           alt="Chain News Logo"
-          width={150}
-          height={150}
+          width={100}
+          height={90}
           style={{
             position: "absolute",
             zIndex: 1000,
-            top: -37,
-            left: 5,
+            top: -20,
+            left: 4,
           }}
         />
       </Box>
       <Image
         src="/images/chain-news-watermark-dark.svg"
         alt="Chain News"
-        width={200}
-        height={100}
+        width={100}
+        height={50}
       />
     </Stack>
   );

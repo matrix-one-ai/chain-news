@@ -144,7 +144,7 @@ const NewsList = memo(
             size="small"
             sx={{
               position: "fixed",
-              top: 45,
+              top: 102,
               right: 5,
               zIndex: 1000,
               width: 315,
@@ -192,7 +192,7 @@ const NewsList = memo(
             style={{
               padding: "0.25rem 0",
               position: "fixed",
-              top: 2,
+              top: 62,
               right: 0,
               maxWidth: "320px",
             }}
@@ -214,12 +214,12 @@ const NewsList = memo(
           <div
             style={{
               position: "fixed",
-              top: 90,
+              top: 145,
               right: 0,
               width: "50%",
               paddingLeft: "5rem",
               maxWidth: "400px",
-              maxHeight: "calc(100% - 140px)",
+              maxHeight: "calc(100% - 195px)",
               overflowY: "auto",
             }}
           >

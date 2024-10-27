@@ -8,7 +8,6 @@ import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
 import { Box, IconButton } from "@mui/material";
-import WaterMark from "./components/WaterMark";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
@@ -21,7 +20,6 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
-import Web3AuthLogin from "./components/Web3AuthLogin";
 
 interface OverlayProps {
   newsItems: News[];
@@ -208,13 +206,13 @@ const Overlay = ({
     <Box
       sx={{
         position: "fixed",
-        top: 0,
+        top: 40,
         left: 0,
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "flex-end",
         flexDirection: "column",
-        height: "100%",
+        height: "calc(100vh - 40px)",
         touchAction: "none",
         userSelect: "none",
         pointerEvents: "none",
@@ -243,7 +241,7 @@ const Overlay = ({
           pointerEvents: "all",
           ...((isPlaying || isStreaming) && {
             position: "fixed",
-            top: 0,
+            top: 60,
             left: 0,
           }),
         }}
@@ -284,19 +282,6 @@ const Overlay = ({
         isVisible={!isStreaming && !isPlaying}
       />
 
-      {!isStreaming && !isPlaying && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            paddingLeft: "1rem",
-          }}
-        >
-          <WaterMark />
-        </Box>
-      )}
-
       {(isStreaming || isPlaying) && (
         <LiveBanner
           currentSpeaker={
@@ -308,8 +293,6 @@ const Overlay = ({
       )}
 
       <NewsTickerBanner newsItems={newsItems} />
-
-      <Web3AuthLogin />
     </Box>
   );
 };
