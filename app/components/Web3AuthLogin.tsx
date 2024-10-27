@@ -80,7 +80,9 @@ function Web3AuthLogin() {
           },
         });
         adapters.forEach((adapter: IAdapter<unknown>) => {
-          web3auth.configureAdapter(adapter);
+          if (adapter.name !== "wallet-connect-v2") {
+            web3auth.configureAdapter(adapter);
+          }
         });
 
         setWeb3auth(web3auth);
