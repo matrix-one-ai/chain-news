@@ -42,6 +42,18 @@ function Web3AuthLogin() {
   const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
+    if (provider && web3auth?.connected) {
+      (async () => {
+        const rpc = new RPC(provider);
+        const address = await rpc.getAccounts();
+
+        console.log(address)
+        setAddress(address[0]);
+      })();
+    }
+  }, [provider, web3auth?.connected]);
+
+  useEffect(() => {
     const init = async () => {
       try {
         const solanaPrivateKeyPrvoider = new SolanaPrivateKeyProvider({
@@ -83,13 +95,6 @@ function Web3AuthLogin() {
 
         if (web3auth.connected) {
           setLoggedIn(true);
-        }
-
-        if (web3auth.provider) {
-          const rpc = new RPC(web3auth.provider);
-          const address = await rpc.getAccounts();
-          console.log(address);
-          setAddress(address[0]);
         }
       } catch (error) {
         console.error(error);
