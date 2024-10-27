@@ -174,7 +174,7 @@ const NewsList = memo(
                 size="small"
                 sx={{
                   position: "fixed",
-                  top: 2,
+                  top: 65,
                   right: 325,
                   zIndex: 1000,
                 }}
