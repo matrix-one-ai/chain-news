@@ -1,7 +1,7 @@
 import ClientHome from "./ClientPage";
 
 export default async function Home() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/news`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/news`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

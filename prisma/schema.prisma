@@ -13,7 +13,6 @@ model News {
   providerTitle       String
   providerDescription String
   providerUrl         String
-  tokenTicker         String?
   isRSS               Boolean
   rssUrl              String?
   category            String
@@ -25,14 +24,21 @@ model News {
   content             String
   datePublished       DateTime
   createdAt           DateTime @default(now())
+  tokenTicker         String?
 }
 
 model YoutubeChat {
-  id              String   @id @map("id") // YouTube message ID
+  id              String   @id @map("id")
   liveChatId      String
   authorChannelId String
   displayName     String
   displayMessage  String
   publishedAt     DateTime
   isRead          Boolean  @default(false)
+}
+
+model TwitterAPI {
+  id               Int    @id @default(autoincrement())
+  oauthToken       String
+  oauthTokenSecret String
 }
