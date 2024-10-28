@@ -28,10 +28,7 @@ export const GET = async () => {
       },
     });
 
-    return NextResponse.json({
-      message: "success",
-      data: authLink,
-    });
+    return NextResponse.redirect(authLink.url);
   } catch (err) {
     console.log(err);
     return NextResponse.json({
