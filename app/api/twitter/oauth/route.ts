@@ -9,17 +9,29 @@ const prisma = new PrismaClient();
 export const GET = async () => {
   try {
     const client = new TwitterApi({
-      appKey: "uufGUyoQPkkqs5ksLNzqVqThU",
-      appSecret: "qvyqBDuzmLGj38sKyvxnwkq7ZIkProELAHYkvbY79wfotl0jAL",
+      appKey: process.env.TWITTER_CONSUMER_KEY!,
+      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
     });
+
     const authLink = await client.generateAuthLink(
-      "http://localhost:3000/api/twitter/callback"
+      `${process.env.NEXT_PUBLIC_URL}/api/twitter/callback`
     );
-    console.log(authLink)
-    console.log(authLink.url);
-    console.log(authLink.oauth_token);
-    console.log(authLink.oauth_token_secret);
-    return NextResponse.redirect(authLink.url);
+
+    console.log(authLink);
+
+    await prisma.twitterAPI.deleteMany();
+
+    await prisma.twitterAPI.create({
+      data: {
+        oauthToken: authLink.oauth_token,
+        oauthTokenSecret: authLink.oauth_token_secret,
+      },
+    });
+
+    return NextResponse.json({
+      message: "success",
+      data: authLink,
+    });
   } catch (err) {
     console.log(err);
     return NextResponse.json({

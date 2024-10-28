@@ -8,29 +8,46 @@ const prisma = new PrismaClient();
 
 export const GET = async (req: NextRequest) => {
   try {
-    // Extract tokens from query string
     const oauth_token = req.nextUrl.searchParams.get("oauth_token");
     const oauth_verifier = req.nextUrl.searchParams.get("oauth_verifier");
 
-    // Get the saved oauth_token_secret from session
-    const { oauth_token_secret } = req.session;
+    const twitterSaved = await prisma.twitterAPI.findFirst();
 
-    if (!oauth_token || !oauth_verifier || !oauth_token_secret) {
-      return res
-        .status(400)
-        .send("You denied the app or your session expired!");
+    if (!twitterSaved) {
+      return NextResponse.json({
+        message: "error",
+        error: "No saved tokens found!",
+      });
     }
 
-    // Obtain the persistent tokens
-    // Create a client from temporary tokens
+    const oauth_token_secret = twitterSaved.oauthTokenSecret;
+
+    if (!oauth_token || !oauth_verifier || !oauth_token_secret) {
+      return NextResponse.json({
+        message: "error",
+        error: "Missing parameters",
+      });
+    }
+
     const client = new TwitterApi({
-      appKey: CONSUMER_KEY,
-      appSecret: CONSUMER_SECRET,
+      appKey: process.env.TWITTER_CONSUMER_KEY!,
+      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
       accessToken: oauth_token,
       accessSecret: oauth_token_secret,
     });
-    console.log(authLink.url);
-    return NextResponse.redirect(authLink.url);
+
+    const clientInit = await client.login(oauth_verifier);
+
+    console.log(clientInit);
+
+    return NextResponse.json({
+      message: "success",
+      data: {
+        oauth_token,
+        oauth_verifier,
+        oauth_token_secret,
+      },
+    });
   } catch (err) {
     console.log(err);
     return NextResponse.json({
