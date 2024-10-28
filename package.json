@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npx prisma generate",
-    "dev": "next dev --turbo",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -43,7 +43,8 @@
     "react-dom": "^18",
     "react-fast-marquee": "^1.6.5",
     "rss-parser": "^3.13.0",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "twitter-api-v2": "^1.18.1"
   },
   "devDependencies": {
     "@types/html-to-text": "^9.0.4",

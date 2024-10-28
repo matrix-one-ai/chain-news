@@ -36,3 +36,7 @@ model YoutubeChat {
   publishedAt     DateTime
   isRead          Boolean  @default(false)
 }
+
+model TwitterAPI {
+  
+}
