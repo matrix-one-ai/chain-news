@@ -25,6 +25,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.coindesk.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.jwplayer.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.decrypt.co",
+      },
     ],
   },
 };
