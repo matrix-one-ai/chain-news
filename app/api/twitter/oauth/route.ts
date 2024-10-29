@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { TwitterApi } from "twitter-api-v2";
 
 export const runtime = "nodejs";
+export const revalidate = 0;
 
 const prisma = new PrismaClient();
 
