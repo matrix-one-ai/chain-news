@@ -45,13 +45,36 @@ function Web3AuthLogin() {
     if (provider && web3auth?.connected) {
       (async () => {
         const rpc = new RPC(provider);
-        const address = await rpc.getAccounts();
+        const accounts = await rpc.getAccounts();
+        const walletAddress = accounts[0];
+        setAddress(walletAddress);
 
-        console.log(address)
-        setAddress(address[0]);
+        try {
+          const response = await fetch("/api/web3auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              walletAddress,
+              chainId: chainConfig.chainId,
+              chainNamespace: chainConfig.chainNamespace,
+              adapter: web3auth.connectedAdapterName,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to post user info");
+          }
+
+          const data = await response.json();
+          console.log("User info posted successfully:", data);
+        } catch (error) {
+          console.error("Error posting user info:", error);
+        }
       })();
     }
-  }, [provider, web3auth?.connected]);
+  }, [provider, web3auth?.connected, web3auth?.connectedAdapterName]);
 
   useEffect(() => {
     const init = async () => {

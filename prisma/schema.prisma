@@ -42,3 +42,13 @@ model TwitterAPI {
   oauthToken       String
   oauthTokenSecret String
 }
+
+model User {
+  id             Int      @id @default(autoincrement())
+  walletAddress  String   @unique
+  chainId        String
+  chainNamespace String
+  adapter        String
+  createdAt      DateTime @default(now())
+  lastLogin      DateTime @default(now())
+}
