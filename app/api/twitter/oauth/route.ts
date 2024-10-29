@@ -10,12 +10,21 @@ const prisma = new PrismaClient();
 export const GET = async () => {
   try {
     const client = new TwitterApi({
-      appKey: process.env.TWITTER_CONSUMER_KEY!,
-      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
+      clientId: process.env.TWITTER_CLIENT_ID!,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET!,
     });
 
-    const authLink = await client.generateAuthLink(
-      `${process.env.NEXT_PUBLIC_URL}/api/twitter/callback`
+    const authLink = await client.generateOAuth2AuthLink(
+      `${process.env.NEXT_PUBLIC_URL}/api/twitter/callback`,
+      {
+        scope: [
+          "tweet.read",
+          "tweet.read",
+          "tweet.write",
+          "users.read",
+          "offline.access",
+        ],
+      }
     );
 
     console.log(authLink);
@@ -24,8 +33,8 @@ export const GET = async () => {
 
     await prisma.twitterAPI.create({
       data: {
-        oauthToken: authLink.oauth_token,
-        oauthTokenSecret: authLink.oauth_token_secret,
+        state: authLink.state,
+        codeVerifier: authLink.codeVerifier,
       },
     });
 

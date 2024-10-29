@@ -9,45 +9,75 @@ const prisma = new PrismaClient();
 
 export const GET = async (req: NextRequest) => {
   try {
-    const oauth_token = req.nextUrl.searchParams.get("oauth_token");
-    const oauth_verifier = req.nextUrl.searchParams.get("oauth_verifier");
+    const state = req.nextUrl.searchParams.get("state");
+    const code = req.nextUrl.searchParams.get("code");
 
-    const twitterSaved = await prisma.twitterAPI.findFirst();
+    const twitterSession = await prisma.twitterAPI.findFirst();
 
-    if (!twitterSaved) {
+    if (!twitterSession) {
       return NextResponse.json({
         message: "error",
-        error: "No saved tokens found!",
+        error: "No twitterSession found!",
       });
     }
 
-    const oauth_token_secret = twitterSaved.oauthTokenSecret;
+    const codeVerifier = twitterSession.codeVerifier;
+    const sessionState = twitterSession.state;
 
-    if (!oauth_token || !oauth_verifier || !oauth_token_secret) {
+    if (!state || !code || !codeVerifier || !sessionState) {
       return NextResponse.json({
         message: "error",
         error: "Missing parameters",
       });
     }
+    if (state !== sessionState) {
+      return NextResponse.json({
+        message: "error",
+        error: "Invalid state",
+      });
+    }
 
     const client = new TwitterApi({
-      appKey: process.env.TWITTER_CONSUMER_KEY!,
-      appSecret: process.env.TWITTER_CONSUMER_SECRET!,
-      accessToken: oauth_token,
-      accessSecret: oauth_token_secret,
+      clientId: process.env.TWITTER_CLIENT_ID!,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET!,
     });
 
-    const clientInit = await client.login(oauth_verifier);
+    const {
+      client: loggedClient,
+      accessToken,
+      refreshToken,
+      expiresIn,
+    } = await client.loginWithOAuth2({
+      code,
+      codeVerifier,
+      redirectUri: `${process.env.NEXT_PUBLIC_URL}/api/twitter/callback`,
+    });
 
-    console.log(clientInit);
+    if (!loggedClient || !accessToken || !refreshToken || !expiresIn) {
+      return NextResponse.json({
+        message: "error",
+        error: "No client found",
+      });
+    }
+
+    const { data: userObject } = await loggedClient.v2.me();
+
+    console.log(userObject);
+
+    await prisma.twitterAPI.update({
+      where: {
+        id: twitterSession.id,
+      },
+      data: {
+        refreshToken,
+        expiresAt: new Date(Date.now() + expiresIn * 1000),
+        username: userObject.username,
+      },
+    });
 
     return NextResponse.json({
       message: "success",
-      data: {
-        oauth_token,
-        oauth_verifier,
-        oauth_token_secret,
-      },
+      userObject,
     });
   } catch (err) {
     console.log(err);

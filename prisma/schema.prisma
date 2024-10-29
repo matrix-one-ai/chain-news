@@ -38,9 +38,12 @@ model YoutubeChat {
 }
 
 model TwitterAPI {
-  id               Int    @id @default(autoincrement())
-  oauthToken       String
-  oauthTokenSecret String
+  id           Int     @id @default(autoincrement())
+  state        String
+  codeVerifier String
+  refreshToken String?
+  expiresAt    DateTime?
+  username     String?
 }
 
 model User {
