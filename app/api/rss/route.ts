@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 
 const rssParser = new RSSParser({
   customFields: {
-    item: ["media:content", "description"],
+    item: ["media:content", "description", "media:thumbnail", "dc:creator"],
   },
 });
 
@@ -95,6 +95,36 @@ const mapCoinDeskNews = (feed: any, provider: string, rssUrl: string) => {
   };
 };
 
+const mapDecryptNews = (feed: any, provider: string, rssUrl: string) => {
+  return {
+    provider,
+    providerTitle: feed.title.trim(),
+    providerDescription: htmlToText(feed.description || "", {
+      wordwrap: false,
+      selectors: [{ selector: "img", format: "skip" }],
+    }).trim(),
+    providerUrl: feed.link,
+    isRSS: true,
+    rssUrl: rssUrl,
+    items: feed.items.map((item: any) => ({
+      category: "",
+      title: item.title.trim(),
+      description: htmlToText(item.description || "", {
+        wordwrap: false,
+        selectors: [{ selector: "img", format: "skip" }],
+      }).trim(),
+      source: item["dc:creator"],
+      url: item.link,
+      imageUrl: JSON.parse(JSON.stringify(item["media:thumbnail"]))?.["$"]?.url,
+      content: htmlToText(item.content || "", {
+        wordwrap: false,
+        selectors: [{ selector: "img", format: "skip" }],
+      }).trim(),
+      datePublished: item.pubDate ? new Date(item.pubDate) : new Date(),
+    })),
+  };
+};
+
 const providers = [
   {
     rssUrl: "https://cointelegraph.com/rss",
@@ -110,6 +140,11 @@ const providers = [
     rssUrl: "https://www.coindesk.com/arc/outboundfeeds/rss/",
     provider: "CoinDesk",
     mapFunction: mapCoinDeskNews,
+  },
+  {
+    rssUrl: "http://decrypt.co/feed",
+    provider: "Decrypt",
+    mapFunction: mapDecryptNews,
   },
 ];
 
@@ -193,7 +228,6 @@ export async function GET() {
         })),
       });
     }
-
     return NextResponse.json({ success: true });
   } catch (error) {
     console.log(error);
