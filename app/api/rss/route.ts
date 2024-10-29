@@ -11,6 +11,7 @@ const azure = createAzure({
 });
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const rssParser = new RSSParser({
   customFields: {

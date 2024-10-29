@@ -1,4 +1,4 @@
-import { News, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
@@ -10,10 +10,11 @@ const azure = createAzure({
 });
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 const prisma = new PrismaClient();
 
-export async function POST() {
+export async function GET() {
   try {
     const list = await fetch(
       "https://fda.forbes.com/v2/education/?categories="
@@ -26,8 +27,6 @@ export async function POST() {
       const resp = await fetch(item.articleURL);
       const html = await resp.text();
 
-      console.log(html);
-
       const $ = load(html);
       const mainContent = $("main").html();
 
@@ -39,8 +38,6 @@ export async function POST() {
           ${mainContent}
           `,
       });
-
-      console.log(text);
 
       parsedNews.push({
         provider: "Forbes",
