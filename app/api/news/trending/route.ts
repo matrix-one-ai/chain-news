@@ -6,7 +6,7 @@ import { generateText } from "ai";
 export const revalidate = 60 * 5;
 export const runtime = "nodejs";
 export const maxDuration = 300;
-export const dynamic = 'force-static'
+export const dynamic = "force-static";
 
 const prisma = new PrismaClient();
 
@@ -59,52 +59,7 @@ Make sure is not general boring blog news, only price action, major events, and 
 
     const filteredFeed = feed.filter((item) => ids.includes(item.id));
 
-    const commentFeed = [];
-
-    for (const newsItem of filteredFeed) {
-      const { text: commentsText } = await generateText({
-        model: azure("gpt-4o-mini"),
-        prompt: `Your job is to comment on the latest news in the world of cryptocurrency on our platform Chain News.
-Your audience is consuming your comments in a RSS feed.
-
-There are 2 hosts: Sam and DogWifHat.
-
-Sam: Sam is a young female news reporter, educated, classy and informative. She is the main host of the show.
-DogWifHat: DogWifHat is a crypto meme coin fanatic. He looks like a small dog with a hat. He is a bit of a clown and joker but an infamous finance guru. He is the co-host of the show.
-
-The news item you have selected is:
-Title: ${newsItem.title}
-Description: ${newsItem.description}
-Source: ${newsItem.source}
-
-The content of the news source is:
-${newsItem.content}
-
-
-Please deliver the news to your audience in a dynamic, creative and non-repetitive way, use different segment style intros, jokes, emotional appeals, and cadences between hosts.
-
-ONLY output in this script format:
-
-Use ":" to separate the speaker from the text.
-
-SPEAKER: TEXT
-SPEAKER: TEXT
-SPEAKER: TEXT
-... etc
-
-The only speakers you can use are:
-Sam, DogWifHat
-
-Sam should have more script lines then DogWifHat.
-
-Do not inset new lines, weird characters or bullet lists. Or code, just text. Do not use cache or previous responses.
-      `,
-      });
-
-      commentFeed.push({ ...newsItem, comments: commentsText });
-    }
-
-    return NextResponse.json(commentFeed);
+    return NextResponse.json(filteredFeed);
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
   }
