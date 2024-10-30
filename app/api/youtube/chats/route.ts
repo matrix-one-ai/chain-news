@@ -17,7 +17,7 @@ export async function GET() {
     });
 
     const liveChatId =
-      "KicKGFVDYjJZSlUtT09OaFJ1NHNRempFcTZDQRILaTFGQ0o5YmRZRTQ";
+      "KicKGFVDZHdMcW1kcEVvZU9vaC1DdUN2WFhkZxILVUtLYW9jSTg2TDA";
     let nextPageToken: string | undefined = undefined;
     let allChats: any[] = [];
 
