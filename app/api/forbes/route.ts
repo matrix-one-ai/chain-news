@@ -14,7 +14,7 @@ export const maxDuration = 300;
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function POST() {
   try {
     const list = await fetch(
       "https://fda.forbes.com/v2/education/?categories="
