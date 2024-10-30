@@ -265,18 +265,21 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       />
 
       <Overlay
+        selectedNews={selectedNews}
         newsItems={newsData}
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
+        isPlaying={isPlaying}
+        currentLineState={currentLineState}
         onPromptFinish={onPromptFinish}
         setSelectedNews={setSelectedNews}
         setAudioBlob={(blob: Blob | null) =>
           setCurrentLineState((prev) => ({ ...prev, audioBlob: blob }))
         }
+        setScriptLines={setScriptLines}
+        setCurrentLineState={setCurrentLineState}
         setIsPlaying={setIsPlaying}
-        isPlaying={isPlaying}
-        currentLineState={currentLineState}
       />
 
       <audio ref={audioRef} />

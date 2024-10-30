@@ -20,8 +20,10 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
+import PlayerPanel from "./components/PlayerPanel";
 
 interface OverlayProps {
+  selectedNews: News | null;
   newsItems: News[];
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
@@ -38,9 +40,22 @@ interface OverlayProps {
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
+  setScriptLines: React.Dispatch<
+    React.SetStateAction<{ speaker: string; text: string }[]>
+  >;
+  setCurrentLineState: React.Dispatch<
+    React.SetStateAction<{
+      lineIndex: number;
+      speaker: string;
+      text: string;
+      audioBlob: Blob | null;
+      blendShapes: any[];
+    }>
+  >;
 }
 
 const Overlay = ({
+  selectedNews,
   newsItems,
   audioRef,
   progress,
@@ -51,6 +66,8 @@ const Overlay = ({
   setSelectedNews,
   setAudioBlob,
   setIsPlaying,
+  setScriptLines,
+  setCurrentLineState,
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
@@ -198,6 +215,65 @@ const Overlay = ({
     setPrompt(prompt);
   }, [setSelectedNews, setAudioBlob, audioRef]);
 
+  const handleNext = useCallback(() => {
+    setAudioBlob(null);
+    setSelectedNews(null);
+    setLastSegmentType(null);
+    setScriptLines([]);
+    setCurrentLineState({
+      lineIndex: 0,
+      speaker: "",
+      text: "",
+      audioBlob: null,
+      blendShapes: [],
+    });
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+
+    const nextNews = newsItems[currentNewsIndex + 1];
+
+    const prompt = nextSegmentPrompt(nextNews);
+    setSelectedNews(nextNews);
+    setPrompt(prompt);
+  }, [
+    audioRef,
+    currentNewsIndex,
+    newsItems,
+    setAudioBlob,
+    setCurrentLineState,
+    setScriptLines,
+    setSelectedNews,
+  ]);
+
+  const handleStop = useCallback(() => {
+    setAudioBlob(null);
+    setSelectedNews(null);
+    setLastSegmentType(null);
+    setScriptLines([]);
+    setCurrentLineState({
+      lineIndex: 0,
+      speaker: "",
+      text: "",
+      audioBlob: null,
+      blendShapes: [],
+    });
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+    setIsPlaying(false);
+    setIsStreaming(false);
+  }, [
+    audioRef,
+    setAudioBlob,
+    setCurrentLineState,
+    setIsPlaying,
+    setScriptLines,
+    setSelectedNews,
+  ]);
+
   const onSettingsClick = useCallback(() => {
     setIsSettingsOpen(true);
   }, []);
@@ -283,13 +359,23 @@ const Overlay = ({
       />
 
       {(isStreaming || isPlaying) && (
-        <LiveBanner
-          currentSpeaker={
-            currentLineState.speaker === "HOST1" ? "Sam" : "DogWifHat"
-          }
-          subtitleText={currentLineState.text}
-          isSubtitlesVisible={isSubtitlesVisible}
-        />
+        <>
+          <LiveBanner
+            currentSpeaker={
+              currentLineState.speaker === "HOST1" ? "Sam" : "DogWifHat"
+            }
+            subtitleText={currentLineState.text}
+            isSubtitlesVisible={isSubtitlesVisible}
+          />
+          <PlayerPanel
+            title={selectedNews?.title || "..."}
+            isPlaying={isPlaying}
+            onPlay={() => console.log("play")}
+            onPause={() => console.log("pause")}
+            onNext={handleNext}
+            onStop={handleStop}
+          />
+        </>
       )}
 
       <NewsTickerBanner newsItems={newsItems} />
