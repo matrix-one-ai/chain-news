@@ -40,8 +40,13 @@ function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
-  const { setWalletAddress, setLoggedIn, walletAddress, isLoggedIn } =
-    useAuthStore();
+  const {
+    setWalletAddress,
+    setLoggedIn,
+    walletAddress,
+    isLoggedIn,
+    setIsAdmin,
+  } = useAuthStore();
 
   useEffect(() => {
     if (provider && web3auth?.connected) {
@@ -70,18 +75,16 @@ function Web3AuthLogin() {
           }
 
           const data = await response.json();
+
+          setIsAdmin(Boolean(data.isAdmin));
+          
           console.log("User info posted successfully:", data);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
       })();
     }
-  }, [
-    setWalletAddress,
-    provider,
-    web3auth?.connected,
-    web3auth?.connectedAdapterName,
-  ]);
+  }, [setWalletAddress, provider, web3auth?.connected, web3auth?.connectedAdapterName, setIsAdmin]);
 
   useEffect(() => {
     const init = async () => {

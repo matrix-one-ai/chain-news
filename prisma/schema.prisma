@@ -52,6 +52,7 @@ model User {
   chainId        String
   chainNamespace String
   adapter        String
+  isAdmin        Boolean  @default(false)
   createdAt      DateTime @default(now())
   lastLogin      DateTime @default(now())
 }

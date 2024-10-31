@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     const { walletAddress, chainId, chainNamespace, adapter } =
       await req.json();
 
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { walletAddress },
       update: {
         adapter,
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       message: "web3auth user saved successfully",
+      isAdmin: user.isAdmin,
     });
   } catch (error) {
     console.log("web3auth login error:", error);

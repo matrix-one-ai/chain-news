@@ -86,7 +86,7 @@ const Overlay = ({
     "chat" | "news" | "joke" | null
   >(null);
 
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, isAdmin } = useAuthStore();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -288,8 +288,12 @@ const Overlay = ({
   ]);
 
   const onSettingsClick = useCallback(() => {
-    setIsSettingsOpen(true);
-  }, []);
+    if (isLoggedIn && isAdmin) {
+      setIsSettingsOpen(true);
+    }
+  }, [isAdmin, isLoggedIn]);
+
+  console.log(isAdmin);
 
   return (
     <Box
@@ -322,18 +326,23 @@ const Overlay = ({
       )}
 
       <Tooltip
-        title="You need to login to use settings"
-        disableFocusListener={isLoggedIn}
-        disableHoverListener={isLoggedIn}
-        disableTouchListener={isLoggedIn}
-        disableInteractive={isLoggedIn}
+        title={
+          !isLoggedIn
+            ? "You need to login to use settings"
+            : isAdmin
+            ? ""
+            : "You need to be an admin to use settings"
+        }
+        disableFocusListener={isLoggedIn && isAdmin}
+        disableHoverListener={isLoggedIn && isAdmin}
+        disableTouchListener={isLoggedIn && isAdmin}
+        disableInteractive={isLoggedIn && isAdmin}
         placement="right"
       >
         <span>
           <IconButton
             aria-label="settings"
             onClick={onSettingsClick}
-            disabled={!isLoggedIn}
             sx={{
               touchAction: "all",
               userSelect: "all",
