@@ -16,8 +16,7 @@ export async function GET() {
       auth: process.env.GOOGLE_CLOUD_KEY,
     });
 
-    const liveChatId =
-      "KicKGFVDZHdMcW1kcEVvZU9vaC1DdUN2WFhkZxILVUtLYW9jSTg2TDA";
+    const liveChatId = process.env.YOUTUBE_LIVE_CHAT_ID!;
     let nextPageToken: string | undefined = undefined;
     let allChats: any[] = [];
 
