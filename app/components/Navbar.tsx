@@ -14,6 +14,7 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
+import { useAuthStore } from "../zustand/store";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -38,8 +39,8 @@ function truncateAddress(address: string): string {
 function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [address, setAddress] = useState<string | null>(null);
+
+  const authStore = useAuthStore();
 
   useEffect(() => {
     if (provider && web3auth?.connected) {
@@ -47,7 +48,7 @@ function Web3AuthLogin() {
         const rpc = new RPC(provider);
         const accounts = await rpc.getAccounts();
         const walletAddress = accounts[0];
-        setAddress(walletAddress);
+        authStore.setWalletAddress(walletAddress);
 
         try {
           const response = await fetch("/api/web3auth/login", {
@@ -74,7 +75,12 @@ function Web3AuthLogin() {
         }
       })();
     }
-  }, [provider, web3auth?.connected, web3auth?.connectedAdapterName]);
+  }, [
+    authStore,
+    provider,
+    web3auth?.connected,
+    web3auth?.connectedAdapterName,
+  ]);
 
   useEffect(() => {
     const init = async () => {
@@ -117,7 +123,7 @@ function Web3AuthLogin() {
         setProvider(web3auth.provider);
 
         if (web3auth.connected) {
-          setLoggedIn(true);
+          authStore.setLoggedIn(true);
         }
       } catch (error) {
         console.error(error);
@@ -125,7 +131,7 @@ function Web3AuthLogin() {
     };
 
     init();
-  }, []);
+  }, [authStore]);
 
   const login = async () => {
     if (!web3auth) {
@@ -135,7 +141,7 @@ function Web3AuthLogin() {
     const web3authProvider = await web3auth.connect();
 
     if (web3auth.connected) {
-      setLoggedIn(true);
+      authStore.setLoggedIn(true);
     }
     setProvider(web3authProvider);
   };
@@ -147,7 +153,7 @@ function Web3AuthLogin() {
     }
     await web3auth.logout();
     setProvider(null);
-    setLoggedIn(false);
+    authStore.setLoggedIn(false);
   };
 
   function uiConsole(...args: any[]): void {
@@ -160,7 +166,8 @@ function Web3AuthLogin() {
 
   const loggedInView = (
     <Button onClick={logout} color="warning" variant="outlined">
-      Log Out ({address ? truncateAddress(address) : ""})
+      Log Out (
+      {authStore.walletAddress ? truncateAddress(authStore.walletAddress) : ""})
     </Button>
   );
 
@@ -170,7 +177,7 @@ function Web3AuthLogin() {
     </Button>
   );
 
-  return <Box>{loggedIn ? loggedInView : unloggedInView}</Box>;
+  return <Box>{authStore.isLoggedIn ? loggedInView : unloggedInView}</Box>;
 }
 
 export default function Navbar() {

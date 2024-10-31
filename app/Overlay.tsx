@@ -7,7 +7,7 @@ import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
@@ -21,6 +21,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
 import PlayerPanel from "./components/PlayerPanel";
+import { useAuthStore } from "./zustand/store";
 
 interface OverlayProps {
   selectedNews: News | null;
@@ -84,6 +85,8 @@ const Overlay = ({
   const [lastSegmentType, setLastSegmentType] = useState<
     "chat" | "news" | "joke" | null
   >(null);
+
+  const authStore = useAuthStore();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -182,15 +185,25 @@ const Overlay = ({
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
-      setSelectedNews(newsItem);
-      if (isPromptUnlocked) {
-        setPrompt(customPrompt);
+      if (authStore.isLoggedIn) {
+        setSelectedNews(newsItem);
+        if (isPromptUnlocked) {
+          setPrompt(customPrompt);
+        } else {
+          const prompt = startNewsPrompt(newsItem, segmentDuration);
+          setPrompt(prompt);
+        }
       } else {
-        const prompt = startNewsPrompt(newsItem, segmentDuration);
-        setPrompt(prompt);
+        console.log("User not logged in");
       }
     },
-    [customPrompt, isPromptUnlocked, segmentDuration, setSelectedNews]
+    [
+      authStore.isLoggedIn,
+      customPrompt,
+      isPromptUnlocked,
+      segmentDuration,
+      setSelectedNews,
+    ]
   );
 
   const handleStreamStart = useCallback(() => {
@@ -308,25 +321,35 @@ const Overlay = ({
         </div>
       )}
 
-      <IconButton
-        aria-label="settings"
-        onClick={onSettingsClick}
-        sx={{
-          touchAction: "all",
-          userSelect: "all",
-          pointerEvents: "all",
-          ...((isPlaying || isStreaming) && {
-            position: "fixed",
-            top: 60,
-            left: 0,
-          }),
-        }}
+      <Tooltip
+        title="You need to login to use settings"
+        disableFocusListener={authStore.isLoggedIn}
+        disableHoverListener={authStore.isLoggedIn}
+        disableTouchListener={authStore.isLoggedIn}
+        disableInteractive={authStore.isLoggedIn}
+        placement="right"
       >
-        <SettingsIcon />
-      </IconButton>
+        <IconButton
+          aria-label="settings"
+          onClick={onSettingsClick}
+          disabled={!authStore.isLoggedIn}
+          sx={{
+            touchAction: "all",
+            userSelect: "all",
+            pointerEvents: "all",
+            ...((isPlaying || isStreaming) && {
+              position: "fixed",
+              top: 60,
+              left: 0,
+            }),
+          }}
+        >
+          <SettingsIcon />
+        </IconButton>
+      </Tooltip>
 
       <SettingsModal
-        isOpen={isSettingsOpen}
+        isOpen={isSettingsOpen && authStore.isLoggedIn}
         isStreaming={isStreaming}
         isPlaying={isPlaying}
         segmentDuration={segmentDuration}

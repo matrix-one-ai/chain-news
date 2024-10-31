@@ -1,7 +1,15 @@
 import { memo, useCallback, useEffect, useRef } from "react";
 import { Message, useChat } from "ai/react";
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
+import { useAuthStore } from "../zustand/store";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -22,6 +30,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     handleOnFinish,
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    const authStore = useAuthStore();
 
     const {
       messages,
@@ -102,28 +112,44 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           }}
         >
           <Stack spacing={1}>
-            <TextField
-              multiline
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Enter your message"
-              rows={4}
-              fullWidth
-              sx={{
-                backdropFilter: "blur(1px)",
-              }}
-            />
-
-            <Button
-              variant="contained"
-              color="secondary"
-              type="submit"
-              disabled={isLoading || isAudioLoading || !input}
-              fullWidth
-              style={{ marginTop: "10px" }}
+            <Tooltip
+              title="You need to login to send messages"
+              disableFocusListener={authStore.isLoggedIn}
+              disableHoverListener={authStore.isLoggedIn}
+              disableTouchListener={authStore.isLoggedIn}
+              disableInteractive={authStore.isLoggedIn}
+              placement="top"
             >
-              {isLoading || isAudioLoading ? "Loading..." : "Send"}
-            </Button>
+              <Box>
+                <TextField
+                  multiline
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Enter your message"
+                  rows={4}
+                  fullWidth
+                  sx={{
+                    backdropFilter: "blur(1px)",
+                  }}
+                />
+
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  type="submit"
+                  disabled={
+                    isLoading ||
+                    isAudioLoading ||
+                    !input ||
+                    !authStore.isLoggedIn
+                  }
+                  fullWidth
+                  style={{ marginTop: "10px" }}
+                >
+                  {isLoading || isAudioLoading ? "Loading..." : "Send"}
+                </Button>
+              </Box>
+            </Tooltip>
           </Stack>
         </form>
       </Box>

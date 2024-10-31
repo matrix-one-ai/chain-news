@@ -45,7 +45,8 @@
     "react-fast-marquee": "^1.6.5",
     "rss-parser": "^3.13.0",
     "three": "^0.169.0",
-    "twitter-api-v2": "^1.18.1"
+    "twitter-api-v2": "^1.18.1",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/html-to-text": "^9.0.4",
