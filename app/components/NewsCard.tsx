@@ -60,15 +60,15 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   const percentChangeColor = percentChange < 0 ? "#ff2e2e" : "secondary.main";
   const plusOrMinus = percentChange < 0 ? "" : "+";
 
-  const authStore = useAuthStore();
+  const { isLoggedIn } = useAuthStore();
 
   return (
     <Tooltip
       title="You need to login to play articles"
-      disableFocusListener={authStore.isLoggedIn}
-      disableHoverListener={authStore.isLoggedIn}
-      disableTouchListener={authStore.isLoggedIn}
-      disableInteractive={authStore.isLoggedIn}
+      disableFocusListener={isLoggedIn}
+      disableHoverListener={isLoggedIn}
+      disableTouchListener={isLoggedIn}
+      disableInteractive={isLoggedIn}
       placement="left"
     >
       <Box

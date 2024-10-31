@@ -86,7 +86,7 @@ const Overlay = ({
     "chat" | "news" | "joke" | null
   >(null);
 
-  const authStore = useAuthStore();
+  const { isLoggedIn } = useAuthStore();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -185,7 +185,7 @@ const Overlay = ({
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
-      if (authStore.isLoggedIn) {
+      if (isLoggedIn) {
         setSelectedNews(newsItem);
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
@@ -198,7 +198,7 @@ const Overlay = ({
       }
     },
     [
-      authStore.isLoggedIn,
+      isLoggedIn,
       customPrompt,
       isPromptUnlocked,
       segmentDuration,
@@ -323,33 +323,35 @@ const Overlay = ({
 
       <Tooltip
         title="You need to login to use settings"
-        disableFocusListener={authStore.isLoggedIn}
-        disableHoverListener={authStore.isLoggedIn}
-        disableTouchListener={authStore.isLoggedIn}
-        disableInteractive={authStore.isLoggedIn}
+        disableFocusListener={isLoggedIn}
+        disableHoverListener={isLoggedIn}
+        disableTouchListener={isLoggedIn}
+        disableInteractive={isLoggedIn}
         placement="right"
       >
-        <IconButton
-          aria-label="settings"
-          onClick={onSettingsClick}
-          disabled={!authStore.isLoggedIn}
-          sx={{
-            touchAction: "all",
-            userSelect: "all",
-            pointerEvents: "all",
-            ...((isPlaying || isStreaming) && {
-              position: "fixed",
-              top: 60,
-              left: 0,
-            }),
-          }}
-        >
-          <SettingsIcon />
-        </IconButton>
+        <span>
+          <IconButton
+            aria-label="settings"
+            onClick={onSettingsClick}
+            disabled={!isLoggedIn}
+            sx={{
+              touchAction: "all",
+              userSelect: "all",
+              pointerEvents: "all",
+              ...((isPlaying || isStreaming) && {
+                position: "fixed",
+                top: 60,
+                left: 0,
+              }),
+            }}
+          >
+            <SettingsIcon />
+          </IconButton>
+        </span>
       </Tooltip>
 
       <SettingsModal
-        isOpen={isSettingsOpen && authStore.isLoggedIn}
+        isOpen={isSettingsOpen && isLoggedIn}
         isStreaming={isStreaming}
         isPlaying={isPlaying}
         segmentDuration={segmentDuration}

@@ -31,7 +31,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
-    const authStore = useAuthStore();
+    const { isLoggedIn } = useAuthStore();
 
     const {
       messages,
@@ -114,10 +114,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           <Stack spacing={1}>
             <Tooltip
               title="You need to login to send messages"
-              disableFocusListener={authStore.isLoggedIn}
-              disableHoverListener={authStore.isLoggedIn}
-              disableTouchListener={authStore.isLoggedIn}
-              disableInteractive={authStore.isLoggedIn}
+              disableFocusListener={isLoggedIn}
+              disableHoverListener={isLoggedIn}
+              disableTouchListener={isLoggedIn}
+              disableInteractive={isLoggedIn}
               placement="top"
             >
               <Box>
@@ -138,10 +138,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   color="secondary"
                   type="submit"
                   disabled={
-                    isLoading ||
-                    isAudioLoading ||
-                    !input ||
-                    !authStore.isLoggedIn
+                    isLoading || isAudioLoading || !input || !isLoggedIn
                   }
                   fullWidth
                   style={{ marginTop: "10px" }}
