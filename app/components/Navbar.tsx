@@ -77,14 +77,18 @@ function Web3AuthLogin() {
           const data = await response.json();
 
           setIsAdmin(Boolean(data.isAdmin));
-          
-          console.log("User info posted successfully:", data);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
       })();
     }
-  }, [setWalletAddress, provider, web3auth?.connected, web3auth?.connectedAdapterName, setIsAdmin]);
+  }, [
+    setWalletAddress,
+    provider,
+    web3auth?.connected,
+    web3auth?.connectedAdapterName,
+    setIsAdmin,
+  ]);
 
   useEffect(() => {
     const init = async () => {

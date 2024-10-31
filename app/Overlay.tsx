@@ -293,8 +293,6 @@ const Overlay = ({
     }
   }, [isAdmin, isLoggedIn]);
 
-  console.log(isAdmin);
-
   return (
     <Box
       sx={{
