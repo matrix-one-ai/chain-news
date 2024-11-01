@@ -38,7 +38,7 @@ model YoutubeChat {
 }
 
 model TwitterAPI {
-  id           Int     @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   state        String
   codeVerifier String
   refreshToken String?
@@ -55,4 +55,22 @@ model User {
   isAdmin        Boolean  @default(false)
   createdAt      DateTime @default(now())
   lastLogin      DateTime @default(now())
+  ipAddress      String   @default("")
+  ipInfoId       Int?
+  ipInfo         IPInfo?  @relation(fields: [ipInfoId], references: [id])
+}
+
+model IPInfo {
+  id        Int      @id @default(autoincrement())
+  ip        String   @unique
+  hostname  String?
+  city      String?
+  region    String?
+  country   String?
+  loc       String?
+  org       String?
+  postal    String?
+  timezone  String?
+  createdAt DateTime @default(now())
+  users     User[]
 }
