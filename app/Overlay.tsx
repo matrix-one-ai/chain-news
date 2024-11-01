@@ -129,11 +129,10 @@ const Overlay = ({
         setCurrentNewsIndex((prev) => prev + 1);
       } else if (!newsItem) {
         // Handle Conclusion
-        setIsPlaying(false);
-        setCurrentNewsIndex(-1);
         setSelectedNews(null);
         prompt = concludeNewsPrompt();
-        setLastSegmentType(null);
+        setLastSegmentType("chat");
+        setCurrentNewsIndex(0); // infinite loop replay stream
       } else if (currentNewsIndex === 0) {
         // Handle Start of News
         setSelectedNews(newsItem);
