@@ -253,6 +253,10 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
     [fetchAudio]
   );
 
+  const onPromptError = useCallback((error: any) => {
+    console.log("Error in prompt:", error);
+  }, []);
+
   return (
     <>
       <Scene
@@ -273,6 +277,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         isPlaying={isPlaying}
         currentLineState={currentLineState}
         onPromptFinish={onPromptFinish}
+        onPromptError={onPromptError}
         setSelectedNews={setSelectedNews}
         setAudioBlob={(blob: Blob | null) =>
           setCurrentLineState((prev) => ({ ...prev, audioBlob: blob }))

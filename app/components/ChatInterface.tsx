@@ -18,6 +18,7 @@ interface ChatInterfaceProps {
   isPromptUnlocked: boolean;
   customPrompt: string;
   handleOnFinish: (message: Message, options: any) => void;
+  handleOnError: (error: any) => void;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = memo(
@@ -28,6 +29,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     isPromptUnlocked,
     customPrompt,
     handleOnFinish,
+    handleOnError,
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +45,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
       stop,
     } = useChat({
       onFinish: handleOnFinish,
+      onError: handleOnError,
     });
 
     useEffect(() => {

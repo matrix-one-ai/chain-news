@@ -38,6 +38,7 @@ interface OverlayProps {
     blendShapes: any[];
   };
   onPromptFinish: (message: Message, options: any) => void;
+  onPromptError: (error: any) => void;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
@@ -64,6 +65,7 @@ const Overlay = ({
   currentLineState,
   isPlaying,
   onPromptFinish,
+  onPromptError,
   setSelectedNews,
   setAudioBlob,
   setIsPlaying,
@@ -382,6 +384,7 @@ const Overlay = ({
         customPrompt={customPrompt}
         isPromptUnlocked={isPromptUnlocked}
         handleOnFinish={onPromptFinish}
+        handleOnError={handleNext}
       />
 
       <NewsList
