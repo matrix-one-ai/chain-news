@@ -47,12 +47,26 @@ export async function POST(request: Request) {
       blendShapes.push(JSON.parse(event.animation));
     };
 
+    // Remove invalid control characters
+    const sanitizedText = text.replace(
+      /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,
+      ""
+    );
+
+    // Escape XML special characters
+    const escapedText = sanitizedText
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
     const ssml = `
       <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis"
              xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="en-US">
         <voice name="${voice}">
           <mstts:viseme type="FacialExpression"/>
-          ${text}
+          ${escapedText}
         </voice>
       </speak>`;
 
