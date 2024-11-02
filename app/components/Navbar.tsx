@@ -30,6 +30,7 @@ import RPC from "../helpers/solanaRPC";
 import { useAuthStore, useOverlayState } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
+import { truncateAddress } from "../helpers/crypto";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -43,13 +44,6 @@ const chainConfig = {
   blockExplorerUrl: "https://explorer.solana.com/?cluster=devnet",
   logo: "https://images.toruswallet.io/sol.svg",
 };
-
-function truncateAddress(address: string): string {
-  if (!address || address.length < 10) {
-    return address;
-  }
-  return `${address.slice(0, 4)}...${address.slice(-4)}`;
-}
 
 function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
@@ -213,7 +207,7 @@ function Web3AuthLogin() {
   const menuItems = useMemo(
     () => [
       {
-        name: "User Profile",
+        name: "User Settings",
         onClick: () => {
           setIsUserPageOpen(true);
           setIsMenuOpen(false);

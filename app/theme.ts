@@ -29,16 +29,16 @@ const theme = createTheme({
   typography: {
     fontFamily: "var(--font-ibm-plex-mono)",
     h1: {
-      fontFamily: "var(--font-ibm-plex-sans)",
+      fontFamily: "var(--font-ibm-plex-mono)",
     },
     h2: {
-      fontFamily: "var(--font-ibm-plex-sans)",
+      fontFamily: "var(--font-ibm-plex-mono)",
     },
     h3: {
-      fontFamily: "var(--font-ibm-plex-sans)",
+      fontFamily: "var(--font-ibm-plex-mono)",
     },
     h4: {
-      fontFamily: "var(--font-ibm-plex-sans)",
+      fontFamily: "var(--font-ibm-plex-mono)",
     },
     h5: {
       fontFamily: "var(--font-ibm-plex-mono)",

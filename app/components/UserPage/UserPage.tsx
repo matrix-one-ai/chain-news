@@ -9,17 +9,18 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useOverlayState } from "../zustand/store";
+import { useOverlayState } from "../../zustand/store";
 import PersonIcon from "@mui/icons-material/Person";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LockIcon from "@mui/icons-material/Lock";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import UserSettings from "./UserSettings";
 
 const UserPage = ({}) => {
   const { isUserPageOpen, setIsUserPageOpen } = useOverlayState();
 
-  const [selectedIndex, setSelectedIndex] = useState(1);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -33,7 +34,7 @@ const UserPage = ({}) => {
   const menuItems = useMemo(
     () => [
       {
-        name: "User Profile",
+        name: "User Settings",
         icon: <PersonIcon />,
         onClick: () => {},
       },
@@ -80,7 +81,6 @@ const UserPage = ({}) => {
           direction="row"
           sx={{
             touchAction: "all",
-            userSelect: "all",
             pointerEvents: "all",
             color: "white",
           }}
@@ -94,12 +94,11 @@ const UserPage = ({}) => {
             }}
           >
             {menuItems.map((item, index) => (
-              <>
+              <Box key={index}>
                 {index === menuItems.length - 1 ? (
                   <Box sx={{ height: "calc(100vh - 64px - 20.5rem)" }} />
                 ) : null}
                 <ListItemButton
-                  key={index}
                   selected={selectedIndex === index}
                   onClick={(event) =>
                     handleListItemClick(event, index, item.onClick)
@@ -123,24 +122,37 @@ const UserPage = ({}) => {
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.name} />
                 </ListItemButton>
-              </>
+              </Box>
             ))}
           </List>
-          <Stack
+
+          <Box
             sx={{
-              flexDirection: "column",
-              alignItems: "center",
+              height: "calc(100vh - 64px)",
+              overflowY: "auto",
               width: "100%",
-              padding: "2rem",
-              touchAction: "none",
-              userSelect: "none",
-              pointerEvents: "none",
             }}
           >
-            <Typography variant="h4">
-              {menuItems[selectedIndex].name}
-            </Typography>
-          </Stack>
+            <Box
+              sx={{
+                margin: "0 auto",
+                padding: "2rem",
+                maxWidth: "50rem",
+              }}
+            >
+              <Typography
+                variant="h4"
+                sx={{
+                  mb: 3,
+                }}
+              >
+                {menuItems[selectedIndex].name}
+              </Typography>
+              {menuItems[selectedIndex].name === "User Settings" && (
+                <UserSettings />
+              )}
+            </Box>
+          </Box>
         </Stack>
       </Box>
     </Fade>
