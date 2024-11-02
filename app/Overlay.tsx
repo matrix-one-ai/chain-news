@@ -22,6 +22,7 @@ import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
 import PlayerPanel from "./components/PlayerPanel";
 import { useAuthStore } from "./zustand/store";
+import UserPage from "./components/UserPage";
 
 interface OverlayProps {
   selectedNews: News | null;
@@ -413,6 +414,8 @@ const Overlay = ({
       )}
 
       <NewsTickerBanner newsItems={newsItems} />
+
+      <UserPage />
     </Box>
   );
 };

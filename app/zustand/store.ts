@@ -17,3 +17,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   setWalletAddress: (address: string) => set({ walletAddress: address }),
   setIsAdmin: (isAdmin: boolean) => set({ isAdmin: isAdmin }),
 }));
+
+interface OverlayState {
+  isUserPageOpen: boolean;
+  setIsUserPageOpen: (isOpen: boolean) => void;
+}
+
+export const useOverlayState = create<OverlayState>((set) => ({
+  isUserPageOpen: false,
+  setIsUserPageOpen: (isOpen: boolean) => set({ isUserPageOpen: isOpen }),
+}));
