@@ -3,10 +3,6 @@
     {
       "path": "/api/rss",
       "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/twitter/post/cron",
-      "schedule": "0 */2 * * *"
     }
   ]
 }
