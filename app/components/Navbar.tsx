@@ -1,8 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import WaterMark from "./WaterMark";
-import { AppBar, Box, Button, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  Fade,
+  IconButton,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import {
   CHAIN_NAMESPACES,
   IAdapter,
@@ -15,6 +28,8 @@ import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
 import { useAuthStore } from "../zustand/store";
+
+import CopyAllIcon from "@mui/icons-material/CopyAll";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -141,6 +156,14 @@ function Web3AuthLogin() {
     init();
   }, [setLoggedIn]);
 
+  const uiConsole = useCallback((...args: any[]) => {
+    const el = document.querySelector("#console>p");
+    if (el) {
+      el.innerHTML = JSON.stringify(args || {}, null, 2);
+      console.log(...args);
+    }
+  }, []);
+
   const login = async () => {
     if (!web3auth) {
       uiConsole("web3auth not initialized yet");
@@ -154,7 +177,7 @@ function Web3AuthLogin() {
     setProvider(web3authProvider);
   };
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (!web3auth) {
       uiConsole("web3auth not initialized yet");
       return;
@@ -162,26 +185,177 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-  };
+  }, [web3auth, setLoggedIn, uiConsole]);
 
-  function uiConsole(...args: any[]): void {
-    const el = document.querySelector("#console>p");
-    if (el) {
-      el.innerHTML = JSON.stringify(args || {}, null, 2);
-      console.log(...args);
-    }
-  }
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleOpenUserMenu = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setIsMenuOpen(true);
+      setAnchorElUser(event.currentTarget);
+    },
+    []
+  );
+
+  const handleCloseUserMenu = useCallback(() => {
+    setIsMenuOpen(false);
+    setAnchorElUser(null);
+  }, []);
+
+  useEffect(() => {
+    setAnchorElUser(null);
+    setIsMenuOpen(false);
+  }, [isLoggedIn]);
+
+  const menuItems = useMemo(
+    () => [
+      {
+        name: "User Profile",
+        onClick: () => {
+          console.log("User Profile");
+        },
+      },
+      {
+        name: "Subscription",
+        onClick: () => {
+          console.log("Subscription");
+        },
+      },
+      {
+        name: "Terms of Use",
+        onClick: () => {
+          console.log("Terms of Use");
+        },
+      },
+      {
+        name: "Privacy Policy",
+        onClick: () => {
+          console.log("Privacy Policy");
+        },
+      },
+      {
+        name: "Logout",
+        onClick: logout,
+      },
+    ],
+    [logout]
+  );
 
   const loggedInView = (
-    <Button onClick={logout} color="warning" variant="outlined">
-      Log Out ({walletAddress ? truncateAddress(walletAddress) : ""})
-    </Button>
+    <Box>
+      <Fade in>
+        <Stack direction="row" spacing={2}>
+          <Stack
+            sx={{
+              flexDirection: "row",
+              backgroundColor: "#FFD66E",
+              borderRadius: "0.5rem",
+              padding: "0 0.75rem",
+            }}
+          >
+            <Stack
+              sx={{
+                justifyContent: "center",
+                flexDirection: "column",
+                touchAction: "none",
+                userSelect: "none",
+                pointerEvents: "none",
+              }}
+            >
+              <Typography
+                sx={{ color: "black", mr: 1, opacity: 0.5 }}
+                variant="body2"
+                fontSize={10}
+              >
+                Your address
+              </Typography>
+              <Typography
+                sx={{ color: "black", mr: 1 }}
+                variant="body2"
+                fontSize={13}
+              >
+                {truncateAddress(walletAddress || "")}
+              </Typography>
+            </Stack>
+            <IconButton
+              onClick={() => {
+                navigator.clipboard.writeText(walletAddress || "");
+              }}
+              size="small"
+              sx={{
+                color: "black",
+                opacity: 0.8,
+                ml: 2,
+              }}
+            >
+              <CopyAllIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+
+          <IconButton
+            onClick={handleOpenUserMenu}
+            sx={{
+              p: 0,
+              border: "2px solid #AC7AFE",
+              pointer: "cursor",
+              "&:hover": {
+                backgroundColor: "#FFD66E",
+              },
+            }}
+          >
+            <Avatar
+              alt="Profile"
+              src="/images/user-profile-placeholder.png"
+              sx={{}}
+            />
+          </IconButton>
+        </Stack>
+      </Fade>
+      <Menu
+        sx={{
+          mt: "45px",
+          "& .MuiList-root": {
+            backgroundColor: "#171325",
+            margin: "0 0",
+            padding: "0 0",
+          },
+        }}
+        id="menu-appbar"
+        anchorEl={anchorElUser}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={isMenuOpen}
+        onClose={handleCloseUserMenu}
+      >
+        {menuItems.map((item) => (
+          <MenuItem
+            key={item.name}
+            onClick={item.onClick}
+            sx={{
+              backgroundColor: "#171325",
+              padding: "0.5rem 1rem",
+            }}
+          >
+            <ListItemText sx={{ textAlign: "left" }}>{item.name}</ListItemText>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   );
 
   const unloggedInView = (
-    <Button onClick={login} color="warning" variant="contained">
-      Login
-    </Button>
+    <Fade in>
+      <Button onClick={login} color="warning" variant="contained">
+        Log In
+      </Button>
+    </Fade>
   );
 
   return <Box>{isLoggedIn ? loggedInView : unloggedInView}</Box>;

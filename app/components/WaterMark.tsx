@@ -9,6 +9,9 @@ const WaterMark = memo(() => {
       spacing={1}
       sx={{
         alignItems: "center",
+        touchAction: "none",
+        userSelect: "none",
+        pointerEvents: "none",
       }}
     >
       <Box
