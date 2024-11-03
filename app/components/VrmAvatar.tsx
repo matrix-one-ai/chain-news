@@ -106,14 +106,11 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
 }) => {
   const [gltf, setGltf] = useState<GLTF | null>(null);
   const [mixer, setMixer] = useState<THREE.AnimationMixer | null>(null);
-  const [idleActions, setIdleActions] = useState<THREE.AnimationAction[]>([]);
-  const [talkActions, setTalkActions] = useState<THREE.AnimationAction[]>([]);
-  const [currentAction, setCurrentAction] =
-    useState<THREE.AnimationAction | null>(null);
+  const [idleClips, setIdleClips] = useState<THREE.AnimationClip[]>([]);
+  const [talkClips, setTalkClips] = useState<THREE.AnimationClip[]>([]);
   const [audioReady, setAudioReady] = useState(false);
   const [processedFrames, setProcessedFrames] = useState<ProcessedFrame[]>([]);
   const [decryptedVrm, setDecryptedVrm] = useState<DecryptedVRM | null>(null);
-  const [isTalking, setIsTalking] = useState(false);
   const audioBlobCounterRef = useRef<number>(0);
 
   const { camera } = useThree();
@@ -193,12 +190,6 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
     }
   }, [avatarKey, fetchAndDecryptVRM]);
 
-  // Ref for audio event handlers to ensure cleanup
-  const audioEventHandlersRef = useRef<{
-    onCanPlayThrough: (event: Event) => void;
-    onError: (e: Event) => void;
-  } | null>(null);
-
   // Effect to process blend shapes data
   useEffect(() => {
     if (blendShapes && blendShapes.length > 0) {
@@ -248,30 +239,27 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             setMixer(newMixer);
 
             // Load idle animations
-            const loadedIdleActions = await Promise.all(
+            const loadedIdleClips = await Promise.all(
               idleAnimations.map(async (url) => {
                 const clip = await loadMixamoAnimation(url, vrm);
-                const action = newMixer.clipAction(clip);
-                return action;
+                return clip;
               })
             );
-            setIdleActions(loadedIdleActions);
+            setIdleClips(loadedIdleClips);
 
             // Load talk animations
-            const loadedTalkActions = await Promise.all(
+            const loadedTalkClips = await Promise.all(
               talkAnimations.map(async (url) => {
                 const clip = await loadMixamoAnimation(url, vrm);
-                const action = newMixer.clipAction(clip);
-                return action;
+                return clip;
               })
             );
-            setTalkActions(loadedTalkActions);
+            setTalkClips(loadedTalkClips);
 
             // Play the first idle animation by default
-            if (loadedIdleActions.length > 0) {
-              const action = loadedIdleActions[0];
-              action.play();
-              setCurrentAction(action);
+            if (loadedIdleClips.length > 0) {
+              const idleClip = loadedIdleClips[0];
+              newMixer.clipAction(idleClip).play();
             }
           },
           (event) => {
@@ -303,7 +291,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
       audioBlob &&
       blendShapes.length > 0 &&
       gltf &&
-      (talkActions.length > 0 || idleActions.length > 0) &&
+      (idleClips.length > 0 || talkClips.length > 0) &&
       mixer
     ) {
       // Increment the audioBlob counter
@@ -332,34 +320,32 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         setAudioReady(true);
         audio.play();
 
-        if (shouldPlayTalkAnimation && talkActions.length > 0) {
-          // Set isTalking to true and play a random talk animation
-          setIsTalking(true);
-
+        if (shouldPlayTalkAnimation && talkClips.length > 0) {
           // Play a random talkAnimation
-          const randomIndex = Math.floor(Math.random() * talkActions.length);
-          const talkAction = talkActions[randomIndex];
+          const randomTalkClip =
+            talkClips[Math.floor(Math.random() * talkClips.length)];
 
-          // Cross-fade from currentAction to talkAction
-          if (currentAction) {
-            currentAction.fadeOut(0.5);
+          // fadeOut idle transition when talk is finished, idle back again
+          for (const idleClip of idleClips) {
+            mixer.existingAction(idleClip)?.fadeOut(0.5);
           }
-          talkAction.reset().fadeIn(0.5).play();
-          setCurrentAction(talkAction);
-        } else {
-          // Continue with idle animations
-          setIsTalking(false);
-          if (currentAction && idleActions.includes(currentAction)) {
-            // Do nothing, continue current idle animation
-          } else if (idleActions.length > 0) {
-            const nextIdleAction =
-              idleActions[Math.floor(Math.random() * idleActions.length)];
-            if (currentAction) {
-              currentAction.fadeOut(0.5);
-            }
-            nextIdleAction.reset().fadeIn(0.5).play();
-            setCurrentAction(nextIdleAction);
-          }
+
+          const talkAction = mixer
+            .clipAction(randomTalkClip)
+            .reset()
+            .fadeIn(0.5)
+            .setLoop(THREE.LoopOnce, 1)
+            .play();
+
+          setTimeout(() => {
+            const randomIdleClip =
+              idleClips[Math.floor(Math.random() * idleClips.length)];
+            talkAction.crossFadeTo(
+              mixer.clipAction(randomIdleClip).reset().fadeIn(0.5).play(),
+              0.5,
+              true
+            );
+          }, randomTalkClip.duration * 1000 - 500);
         }
       };
 
@@ -367,34 +353,24 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         console.error("Error loading audio:", e);
       };
 
-      // Attach event listeners
-      audio.addEventListener("canplaythrough", handleCanPlayThrough);
-      audio.addEventListener("error", handleAudioError);
-
-      // Store event handlers for cleanup
-      audioEventHandlersRef.current = {
-        onCanPlayThrough: handleCanPlayThrough,
-        onError: handleAudioError,
+      const handleAbort = () => {
+        console.warn("Audio play was aborted.");
       };
 
-      // Cleanup function
+      audio.addEventListener("canplaythrough", handleCanPlayThrough);
+      audio.addEventListener("error", handleAudioError);
+      audio.removeEventListener("abort", handleAbort);
+
       return () => {
         if (audio) {
-          const handlers = audioEventHandlersRef.current;
-          if (handlers) {
-            audio.removeEventListener(
-              "canplaythrough",
-              handlers.onCanPlayThrough
-            );
-            audio.removeEventListener("error", handlers.onError);
-          }
+          audio.removeEventListener("canplaythrough", handleCanPlayThrough);
+          audio.removeEventListener("error", handleAudioError);
+          audio.removeEventListener("abort", handleAbort);
           URL.revokeObjectURL(audio.src);
-          audio.src = "";
         }
       };
     } else {
       setAudioReady(false);
-      setIsTalking(false); // Reset talking state
       if (gltf) {
         const expressionManager = (gltf.userData.vrm as VRM).expressionManager;
         if (expressionManager) {
@@ -404,42 +380,12 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
       }
     }
     // Dependencies adjusted to avoid unnecessary re-renders
-  }, [audioBlob, blendShapes, gltf, audioRef, talkActions, idleActions, mixer]);
+  }, [audioBlob, blendShapes, gltf, audioRef, talkClips, idleClips, mixer]);
 
   // Frame update for animations and blend shapes synchronization
   useFrame((_, delta) => {
     if (mixer) {
       mixer.update(delta);
-
-      if (currentAction) {
-        const clipDuration = currentAction.getClip().duration;
-        const timeRemaining = clipDuration - currentAction.time;
-
-        // Check if current action is about to finish
-        if (timeRemaining <= 0.5) {
-          if (isTalking && talkActions.includes(currentAction)) {
-            // Talk animation has finished, switch back to idle animations
-            setIsTalking(false);
-
-            if (idleActions.length > 0) {
-              const nextIdleAction =
-                idleActions[Math.floor(Math.random() * idleActions.length)];
-              currentAction.fadeOut(0.5);
-              nextIdleAction.reset().fadeIn(0.5).play();
-              setCurrentAction(nextIdleAction);
-            }
-          } else if (!isTalking && idleActions.includes(currentAction)) {
-            // Transition between idle animations
-            const currentIndex = idleActions.indexOf(currentAction);
-            const nextIndex = (currentIndex + 1) % idleActions.length;
-            const nextAction = idleActions[nextIndex];
-
-            currentAction.fadeOut(0.5);
-            nextAction.reset().fadeIn(0.5).play();
-            setCurrentAction(nextAction);
-          }
-        }
-      }
     }
 
     if (gltf) {
@@ -534,7 +480,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
     }
   });
 
-  return gltf && idleActions.length > 0 ? (
+  return gltf && idleClips.length > 0 ? (
     <Suspense fallback={null}>
       <primitive
         object={gltf.scene}

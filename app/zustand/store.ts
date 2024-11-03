@@ -71,7 +71,7 @@ interface SettingsState {
 
 export const useSettingsState = create<SettingsState>((set) => ({
   isSettingsOpen: false,
-  isSubtitlesVisible: false,
+  isSubtitlesVisible: true,
   isPromptUnlocked: false,
   customPrompt: customPromptDefault(),
   setIsSettingsOpen: (isOpen: boolean) => set({ isSettingsOpen: isOpen }),
