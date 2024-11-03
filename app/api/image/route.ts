@@ -1,17 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const url = req.nextUrl.searchParams.get("url");
+  const urlParam = req.nextUrl.searchParams.get("url");
 
-  const response = await fetch(url as string);
-  const imageBuffer = await response.arrayBuffer();
+  if (!urlParam) {
+    return NextResponse.json(
+      { error: "Missing 'url' parameter." },
+      { status: 400 }
+    );
+  }
 
-  return new NextResponse(imageBuffer, {
-    headers: {
-      "Content-Type": response.headers.get("Content-Type") || "image/jpeg",
-      "Content-Length":
-        response.headers.get("Content-Length") ||
-        imageBuffer.byteLength.toString(),
-    },
-  });
+  let url: string;
+
+  try {
+    url = decodeURIComponent(urlParam);
+    new URL(url); // Validate URL format
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid 'url' parameter." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return NextResponse.json(
+        { error: `Failed to fetch the image. Status: ${response.status}` },
+        { status: response.status }
+      );
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    const contentType = response.headers.get("Content-Type") || "image/jpeg";
+    const contentLength =
+      response.headers.get("Content-Length") ||
+      imageBuffer.byteLength.toString();
+
+    return new NextResponse(imageBuffer, {
+      headers: {
+        "Content-Type": contentType,
+        "Content-Length": contentLength,
+      },
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Error fetching the image." },
+      { status: 500 }
+    );
+  }
 }
