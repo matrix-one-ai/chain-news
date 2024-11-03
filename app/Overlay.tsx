@@ -11,7 +11,6 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
-  customPromptDefault,
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
@@ -21,7 +20,11 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
 import PlayerPanel from "./components/PlayerPanel";
-import { useAuthStore, useLiveStreamState } from "./zustand/store";
+import {
+  useAuthStore,
+  useLiveStreamState,
+  useSettingsState,
+} from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
 
 interface OverlayProps {
@@ -74,14 +77,9 @@ const Overlay = ({
   setCurrentLineState,
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isSubtitlesVisible, setIsSubtitlesVisible] = useState<boolean>(true);
-  const [isPromptUnlocked, setIsPromptUnlocked] = useState<boolean>(false);
-  const [customPrompt, setCustomPrompt] = useState<string>(
-    customPromptDefault()
-  );
 
   const { isLoggedIn, isAdmin } = useAuthStore();
+
   const {
     isStreaming,
     streamStarted,
@@ -90,10 +88,16 @@ const Overlay = ({
     lastSegmentType,
     setIsStreaming,
     setStreamStarted,
-    setSegmentDuration,
     setCurrentSegmentIndex,
     setLastSegmentType,
   } = useLiveStreamState();
+
+  const {
+    isSubtitlesVisible,
+    isPromptUnlocked,
+    customPrompt,
+    setIsSettingsOpen,
+  } = useSettingsState();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -215,7 +219,7 @@ const Overlay = ({
     setCurrentSegmentIndex(0); // sets -1 to 0
     setStreamStarted(true);
     setIsSettingsOpen(false);
-  }, [setCurrentSegmentIndex, setStreamStarted]);
+  }, [setCurrentSegmentIndex, setIsSettingsOpen, setStreamStarted]);
 
   const handleStreamStop = useCallback(() => {
     setStreamStarted(false);
@@ -305,7 +309,7 @@ const Overlay = ({
     if (isLoggedIn && isAdmin) {
       setIsSettingsOpen(true);
     }
-  }, [isAdmin, isLoggedIn]);
+  }, [isAdmin, isLoggedIn, setIsSettingsOpen]);
 
   return (
     <Box
@@ -372,17 +376,9 @@ const Overlay = ({
       </Tooltip>
 
       <SettingsModal
-        isOpen={isSettingsOpen && isLoggedIn}
         isPlaying={isPlaying}
-        isSubtitlesVisible={isSubtitlesVisible}
-        isPromptUnlocked={isPromptUnlocked}
-        customPrompt={customPrompt}
-        onClose={() => setIsSettingsOpen(false)}
         onStartStream={handleStreamStart}
         onStopStream={handleStreamStop}
-        onToggleSubtitles={() => setIsSubtitlesVisible((prev) => !prev)}
-        onTogglePromptUnlock={() => setIsPromptUnlocked((prev) => !prev)}
-        setCustomPrompt={setCustomPrompt}
       />
 
       <ChatInterface

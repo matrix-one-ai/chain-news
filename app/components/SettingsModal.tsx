@@ -11,42 +11,43 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useLiveStreamState } from "../zustand/store";
+import {
+  useAuthStore,
+  useLiveStreamState,
+  useSettingsState,
+} from "../zustand/store";
 
 interface SettingsModalProps {
-  isOpen: boolean;
   isPlaying: boolean;
-  isSubtitlesVisible: boolean;
-  isPromptUnlocked: boolean;
-  customPrompt: string;
-  onClose: () => void;
   onStartStream: () => void;
   onStopStream: () => void;
-  onToggleSubtitles: () => void;
-  onTogglePromptUnlock: () => void;
-  setCustomPrompt: (customPrompt: string) => void;
 }
 
 const SettingsModal = ({
-  isOpen,
   isPlaying,
-  isSubtitlesVisible,
-  isPromptUnlocked,
-  customPrompt,
-  onClose,
   onStartStream,
   onStopStream,
-  onToggleSubtitles,
-  onTogglePromptUnlock,
-  setCustomPrompt,
 }: SettingsModalProps) => {
+  const { isLoggedIn } = useAuthStore();
+
   const { isStreaming, segmentDuration, setIsStreaming, setSegmentDuration } =
     useLiveStreamState();
 
+  const {
+    isSettingsOpen,
+    isSubtitlesVisible,
+    isPromptUnlocked,
+    customPrompt,
+    setIsSettingsOpen,
+    setIsSubtitlesVisible,
+    setIsPromptUnlocked,
+    setCustomPrompt,
+  } = useSettingsState();
+
   return (
     <Modal
-      open={isOpen}
-      onClose={onClose}
+      open={isSettingsOpen && isLoggedIn}
+      onClose={() => setIsSettingsOpen(false)}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
@@ -114,7 +115,7 @@ const SettingsModal = ({
             control={
               <Checkbox
                 checked={isSubtitlesVisible}
-                onChange={onToggleSubtitles}
+                onChange={() => setIsSubtitlesVisible(!isSubtitlesVisible)}
               />
             }
             label="Show Subtitles"
@@ -126,7 +127,7 @@ const SettingsModal = ({
             control={
               <Checkbox
                 checked={isPromptUnlocked}
-                onChange={onTogglePromptUnlock}
+                onChange={() => setIsPromptUnlocked(!isPromptUnlocked)}
               />
             }
             label="Unlock system prompt"

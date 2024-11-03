@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { customPromptDefault } from "../helpers/prompts";
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -55,4 +56,28 @@ export const useLiveStreamState = create<LiveStreamState>((set) => ({
     set({ currentSegmentIndex: index }),
   setLastSegmentType: (type: "chat" | "news" | "joke" | null) =>
     set({ lastSegmentType: type }),
+}));
+
+interface SettingsState {
+  isSettingsOpen: boolean;
+  isSubtitlesVisible: boolean;
+  isPromptUnlocked: boolean;
+  customPrompt: string;
+  setIsSettingsOpen: (isOpen: boolean) => void;
+  setIsSubtitlesVisible: (isVisible: boolean) => void;
+  setIsPromptUnlocked: (isUnlocked: boolean) => void;
+  setCustomPrompt: (prompt: string) => void;
+}
+
+export const useSettingsState = create<SettingsState>((set) => ({
+  isSettingsOpen: false,
+  isSubtitlesVisible: false,
+  isPromptUnlocked: false,
+  customPrompt: customPromptDefault(),
+  setIsSettingsOpen: (isOpen: boolean) => set({ isSettingsOpen: isOpen }),
+  setIsSubtitlesVisible: (isVisible: boolean) =>
+    set({ isSubtitlesVisible: isVisible }),
+  setIsPromptUnlocked: (isUnlocked: boolean) =>
+    set({ isPromptUnlocked: isUnlocked }),
+  setCustomPrompt: (prompt: string) => set({ customPrompt: prompt }),
 }));
