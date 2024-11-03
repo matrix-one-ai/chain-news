@@ -11,20 +11,17 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useLiveStreamState } from "../zustand/store";
 
 interface SettingsModalProps {
   isOpen: boolean;
-  isStreaming: boolean;
   isPlaying: boolean;
-  segmentDuration: number;
   isSubtitlesVisible: boolean;
   isPromptUnlocked: boolean;
   customPrompt: string;
   onClose: () => void;
-  onToggleStreaming: () => void;
   onStartStream: () => void;
   onStopStream: () => void;
-  onSegmentDurationChange: (segmentDuration: number) => void;
   onToggleSubtitles: () => void;
   onTogglePromptUnlock: () => void;
   setCustomPrompt: (customPrompt: string) => void;
@@ -32,21 +29,20 @@ interface SettingsModalProps {
 
 const SettingsModal = ({
   isOpen,
-  isStreaming,
   isPlaying,
-  segmentDuration,
   isSubtitlesVisible,
   isPromptUnlocked,
   customPrompt,
   onClose,
-  onToggleStreaming,
   onStartStream,
   onStopStream,
-  onSegmentDurationChange,
   onToggleSubtitles,
   onTogglePromptUnlock,
   setCustomPrompt,
 }: SettingsModalProps) => {
+  const { isStreaming, segmentDuration, setIsStreaming, setSegmentDuration } =
+    useLiveStreamState();
+
   return (
     <Modal
       open={isOpen}
@@ -78,7 +74,7 @@ const SettingsModal = ({
         <FormGroup>
           <FormControlLabel
             control={<Switch checked={isStreaming} />}
-            onChange={onToggleStreaming}
+            onChange={() => setIsStreaming(!isStreaming)}
             label="Streamer Mode"
           />
         </FormGroup>
@@ -103,7 +99,7 @@ const SettingsModal = ({
           </Typography>
           <Slider
             value={segmentDuration}
-            onChange={(e, value) => onSegmentDurationChange(value as number)}
+            onChange={(e, value) => setSegmentDuration(value as number)}
             aria-labelledby="segment-duration-slider"
             valueLabelDisplay="auto"
             step={0.5}

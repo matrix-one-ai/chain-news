@@ -35,6 +35,8 @@ export async function GET() {
       try {
         const response = await youtube.liveChatMessages.list(params);
 
+        console.log(response.data.items)
+
         if (response.data.items && response.data.items.length > 0) {
           allChats = allChats.concat(response.data.items);
         } else {

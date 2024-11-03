@@ -21,7 +21,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
 import PlayerPanel from "./components/PlayerPanel";
-import { useAuthStore } from "./zustand/store";
+import { useAuthStore, useLiveStreamState } from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
 
 interface OverlayProps {
@@ -74,9 +74,6 @@ const Overlay = ({
   setCurrentLineState,
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
-  const [isStreaming, setIsStreaming] = useState<boolean>(false);
-  const [streamStarted, setStreamStarted] = useState<boolean>(false);
-  const [segmentDuration, setSegmentDuration] = useState<number>(1);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [isSubtitlesVisible, setIsSubtitlesVisible] = useState<boolean>(true);
   const [isPromptUnlocked, setIsPromptUnlocked] = useState<boolean>(false);
@@ -84,12 +81,19 @@ const Overlay = ({
     customPromptDefault()
   );
 
-  const [currentNewsIndex, setCurrentNewsIndex] = useState(-1);
-  const [lastSegmentType, setLastSegmentType] = useState<
-    "chat" | "news" | "joke" | null
-  >(null);
-
   const { isLoggedIn, isAdmin } = useAuthStore();
+  const {
+    isStreaming,
+    streamStarted,
+    segmentDuration,
+    currentSegmentIndex,
+    lastSegmentType,
+    setIsStreaming,
+    setStreamStarted,
+    setSegmentDuration,
+    setCurrentSegmentIndex,
+    setLastSegmentType,
+  } = useLiveStreamState();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -106,84 +110,83 @@ const Overlay = ({
     }
   }, []);
 
-  // streaming loop
-  useEffect(() => {
-    const main = async () => {
-      const newsItem = newsItems[currentNewsIndex];
+  const streamLoop = useCallback(async () => {
+    const newsItem = newsItems[currentSegmentIndex];
 
-      console.log("Getting next news item:", newsItem);
-      console.log("Current News Index:", currentNewsIndex);
+    console.log("Getting next news item:", newsItem);
+    console.log("Current News Index:", currentSegmentIndex);
 
-      let prompt = "";
+    let prompt = "";
 
-      const chats = await fetchChats();
+    const chats = await fetchChats();
 
-      if (
-        chats?.length > 0 &&
-        lastSegmentType !== "chat" &&
-        currentNewsIndex > 0
-      ) {
-        // Handle Chat Segment
-        setSelectedNews(null);
-        prompt = chatsResponsePrompt(chats);
-        setLastSegmentType("chat");
-        setCurrentNewsIndex((prev) => prev + 1);
-      } else if (!newsItem) {
-        // Handle Conclusion
-        setSelectedNews(null);
-        prompt = concludeNewsPrompt();
-        setLastSegmentType("chat");
-        setCurrentNewsIndex(0); // infinite loop replay stream
-      } else if (currentNewsIndex === 0) {
-        // Handle Start of News
-        setSelectedNews(newsItem);
-        prompt = isPromptUnlocked
-          ? customPrompt
-          : startNewsPrompt(newsItem, segmentDuration);
-        setLastSegmentType("news");
-        setCurrentNewsIndex((prev) => prev + 1);
-      }
-      // else if (currentNewsIndex % 5 === 0) {
-      //   setSelectedNews(null);
-      //   setCurrentNewsIndex((prev) => prev + 1);
-      //   prompt = streamPromoPrompt();
-      //   setLastSegmentType('promo');
-      // }
-      else if (currentNewsIndex % 4 === 0) {
-        // Handle Joke Breaks
-        setSelectedNews(null);
-        setCurrentNewsIndex((prev) => prev + 1);
-        prompt = jokeBreakPrompt();
-        setLastSegmentType("joke");
-      } else {
-        // Handle Next News Segment
-        setSelectedNews(newsItem);
-        prompt = nextSegmentPrompt(newsItem);
-        setLastSegmentType("news");
-        setCurrentNewsIndex((prev) => prev + 1);
-      }
-
-      setIsPlaying(true);
-      setPrompt(prompt);
-    };
-
-    if (isStreaming && !isPlaying && streamStarted) {
-      main();
+    if (
+      chats?.length > 0 &&
+      lastSegmentType !== "chat" &&
+      currentSegmentIndex > 0
+    ) {
+      // Handle Chat Segment
+      setSelectedNews(null);
+      prompt = chatsResponsePrompt(chats);
+      setLastSegmentType("chat");
+      setCurrentSegmentIndex(currentSegmentIndex + 1);
+    } else if (!newsItem) {
+      // Handle Conclusion
+      setSelectedNews(null);
+      prompt = concludeNewsPrompt();
+      setLastSegmentType("chat");
+      setCurrentSegmentIndex(0); // infinite loop replay stream
+    } else if (currentSegmentIndex === 0) {
+      // Handle Start of News
+      setSelectedNews(newsItem);
+      prompt = isPromptUnlocked
+        ? customPrompt
+        : startNewsPrompt(newsItem, segmentDuration);
+      setLastSegmentType("news");
+      setCurrentSegmentIndex(currentSegmentIndex + 1);
     }
+    // else if (currentSegmentIndex % 5 === 0) {
+    //   setSelectedNews(null);
+    //   setCurrentSegmentIndex(currentSegmentIndex + 1);
+    //   prompt = streamPromoPrompt();
+    //   setLastSegmentType('promo');
+    // }
+    else if (currentSegmentIndex % 4 === 0) {
+      // Handle Joke Breaks
+      setSelectedNews(null);
+      setCurrentSegmentIndex(currentSegmentIndex + 1);
+      prompt = jokeBreakPrompt();
+      setLastSegmentType("joke");
+    } else {
+      // Handle Next News Segment
+      setSelectedNews(newsItem);
+      prompt = nextSegmentPrompt(newsItem);
+      setLastSegmentType("news");
+      setCurrentSegmentIndex(currentSegmentIndex + 1);
+    }
+
+    setIsPlaying(true);
+    setPrompt(prompt);
   }, [
-    currentNewsIndex,
-    customPrompt,
-    fetchChats,
-    isPlaying,
-    isPromptUnlocked,
-    isStreaming,
     newsItems,
-    segmentDuration,
+    currentSegmentIndex,
+    fetchChats,
+    lastSegmentType,
     setIsPlaying,
     setSelectedNews,
-    streamStarted,
-    lastSegmentType,
+    setLastSegmentType,
+    setCurrentSegmentIndex,
+    isPromptUnlocked,
+    customPrompt,
+    segmentDuration,
   ]);
+
+  // streaming loop
+  useEffect(() => {
+    if (isStreaming && !isPlaying && streamStarted) {
+      streamLoop();
+    }
+  }, [currentSegmentIndex, isPlaying, isStreaming, streamLoop, streamStarted]);
 
   const handleNewsClick = useCallback(
     (newsItem: News) => {
@@ -209,10 +212,10 @@ const Overlay = ({
   );
 
   const handleStreamStart = useCallback(() => {
-    setCurrentNewsIndex(0); // sets -1 to 0
+    setCurrentSegmentIndex(0); // sets -1 to 0
     setStreamStarted(true);
     setIsSettingsOpen(false);
-  }, []);
+  }, [setCurrentSegmentIndex, setStreamStarted]);
 
   const handleStreamStop = useCallback(() => {
     setStreamStarted(false);
@@ -228,7 +231,13 @@ const Overlay = ({
     const prompt = concludeNewsPrompt();
 
     setPrompt(prompt);
-  }, [setSelectedNews, setAudioBlob, audioRef]);
+  }, [
+    setStreamStarted,
+    setSelectedNews,
+    setIsStreaming,
+    setAudioBlob,
+    audioRef,
+  ]);
 
   const handleNext = useCallback(() => {
     setAudioBlob(null);
@@ -247,17 +256,18 @@ const Overlay = ({
       audioRef.current.src = "";
     }
 
-    const nextNews = newsItems[currentNewsIndex + 1];
+    const nextNews = newsItems[currentSegmentIndex + 1];
 
     const prompt = nextSegmentPrompt(nextNews);
     setSelectedNews(nextNews);
     setPrompt(prompt);
   }, [
     audioRef,
-    currentNewsIndex,
+    currentSegmentIndex,
     newsItems,
     setAudioBlob,
     setCurrentLineState,
+    setLastSegmentType,
     setScriptLines,
     setSelectedNews,
   ]);
@@ -285,6 +295,8 @@ const Overlay = ({
     setAudioBlob,
     setCurrentLineState,
     setIsPlaying,
+    setIsStreaming,
+    setLastSegmentType,
     setScriptLines,
     setSelectedNews,
   ]);
@@ -361,17 +373,13 @@ const Overlay = ({
 
       <SettingsModal
         isOpen={isSettingsOpen && isLoggedIn}
-        isStreaming={isStreaming}
         isPlaying={isPlaying}
-        segmentDuration={segmentDuration}
         isSubtitlesVisible={isSubtitlesVisible}
         isPromptUnlocked={isPromptUnlocked}
         customPrompt={customPrompt}
         onClose={() => setIsSettingsOpen(false)}
-        onToggleStreaming={() => setIsStreaming((prev) => !prev)}
         onStartStream={handleStreamStart}
         onStopStream={handleStreamStop}
-        onSegmentDurationChange={setSegmentDuration}
         onToggleSubtitles={() => setIsSubtitlesVisible((prev) => !prev)}
         onTogglePromptUnlock={() => setIsPromptUnlocked((prev) => !prev)}
         setCustomPrompt={setCustomPrompt}
