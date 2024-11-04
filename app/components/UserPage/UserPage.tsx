@@ -16,6 +16,7 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LockIcon from "@mui/icons-material/Lock";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import UserSettings from "./UserSettings";
+import UserSubscription from "./UserSubscription";
 
 export enum UserPageTab {
   USER_SETTINGS,
@@ -164,8 +165,13 @@ const UserPage = ({}) => {
               >
                 {menuItems[selectedUserTab].name}
               </Typography>
+
               {menuItems[selectedUserTab].key === UserPageTab.USER_SETTINGS && (
                 <UserSettings />
+              )}
+
+              {menuItems[selectedUserTab].key === UserPageTab.SUBSCRIPTION && (
+                <UserSubscription />
               )}
             </Box>
           </Box>
