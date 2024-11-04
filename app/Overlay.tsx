@@ -22,8 +22,8 @@ import NewsList from "./components/NewsList";
 import PlayerPanel from "./components/PlayerPanel";
 import {
   useAuthStore,
-  useLiveStreamState,
-  useSettingsState,
+  useLiveStreamStore,
+  useSettingsStore,
 } from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
 
@@ -90,14 +90,14 @@ const Overlay = ({
     setStreamStarted,
     setCurrentSegmentIndex,
     setLastSegmentType,
-  } = useLiveStreamState();
+  } = useLiveStreamStore();
 
   const {
     isSubtitlesVisible,
     isPromptUnlocked,
     customPrompt,
     setIsSettingsOpen,
-  } = useSettingsState();
+  } = useSettingsStore();
 
   const fetchChats = useCallback(async () => {
     try {

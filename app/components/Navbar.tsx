@@ -27,7 +27,11 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import { useAuthStore, useOverlayState } from "../zustand/store";
+import {
+  useAuthStore,
+  useOverlayStore,
+  useUserPageStore,
+} from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
@@ -202,13 +206,15 @@ function Web3AuthLogin() {
     setIsMenuOpen(false);
   }, [isLoggedIn]);
 
-  const { setIsUserPageOpen } = useOverlayState();
+  const { setIsUserPageOpen } = useOverlayStore();
+  const { setSelectedUserTab } = useUserPageStore();
 
   const menuItems = useMemo(
     () => [
       {
         name: "User Settings",
         onClick: () => {
+          setSelectedUserTab(0);
           setIsUserPageOpen(true);
           setIsMenuOpen(false);
         },
@@ -216,6 +222,7 @@ function Web3AuthLogin() {
       {
         name: "Subscription",
         onClick: () => {
+          setSelectedUserTab(1);
           setIsUserPageOpen(true);
           setIsMenuOpen(false);
         },
@@ -223,6 +230,7 @@ function Web3AuthLogin() {
       {
         name: "Terms of Use",
         onClick: () => {
+          setSelectedUserTab(2);
           setIsUserPageOpen(true);
           setIsMenuOpen(false);
         },
@@ -230,6 +238,7 @@ function Web3AuthLogin() {
       {
         name: "Privacy Policy",
         onClick: () => {
+          setSelectedUserTab(3);
           setIsUserPageOpen(true);
           setIsMenuOpen(false);
         },
@@ -239,7 +248,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout, setIsUserPageOpen]
+    [logout, setIsUserPageOpen, setSelectedUserTab]
   );
 
   const loggedInView = (

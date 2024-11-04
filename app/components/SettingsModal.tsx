@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import {
   useAuthStore,
-  useLiveStreamState,
-  useSettingsState,
+  useLiveStreamStore,
+  useSettingsStore,
 } from "../zustand/store";
 
 interface SettingsModalProps {
@@ -31,7 +31,7 @@ const SettingsModal = ({
   const { isLoggedIn } = useAuthStore();
 
   const { isStreaming, segmentDuration, setIsStreaming, setSegmentDuration } =
-    useLiveStreamState();
+    useLiveStreamStore();
 
   const {
     isSettingsOpen,
@@ -42,7 +42,7 @@ const SettingsModal = ({
     setIsSubtitlesVisible,
     setIsPromptUnlocked,
     setCustomPrompt,
-  } = useSettingsState();
+  } = useSettingsStore();
 
   return (
     <Modal

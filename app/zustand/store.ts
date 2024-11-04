@@ -24,7 +24,7 @@ interface OverlayState {
   setIsUserPageOpen: (isOpen: boolean) => void;
 }
 
-export const useOverlayState = create<OverlayState>((set) => ({
+export const useOverlayStore = create<OverlayState>((set) => ({
   isUserPageOpen: false,
   setIsUserPageOpen: (isOpen: boolean) => set({ isUserPageOpen: isOpen }),
 }));
@@ -42,7 +42,7 @@ interface LiveStreamState {
   setLastSegmentType: (type: "chat" | "news" | "joke" | null) => void;
 }
 
-export const useLiveStreamState = create<LiveStreamState>((set) => ({
+export const useLiveStreamStore = create<LiveStreamState>((set) => ({
   isStreaming: false,
   streamStarted: false,
   segmentDuration: 1,
@@ -69,7 +69,7 @@ interface SettingsState {
   setCustomPrompt: (prompt: string) => void;
 }
 
-export const useSettingsState = create<SettingsState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set) => ({
   isSettingsOpen: false,
   isSubtitlesVisible: true,
   isPromptUnlocked: false,
@@ -80,4 +80,14 @@ export const useSettingsState = create<SettingsState>((set) => ({
   setIsPromptUnlocked: (isUnlocked: boolean) =>
     set({ isPromptUnlocked: isUnlocked }),
   setCustomPrompt: (prompt: string) => set({ customPrompt: prompt }),
+}));
+
+interface UserPageState {
+  selectedUserTab: number;
+  setSelectedUserTab: (index: number) => void;
+}
+
+export const useUserPageStore = create<UserPageState>((set) => ({
+  selectedUserTab: 0,
+  setSelectedUserTab: (index: number) => set({ selectedUserTab: index }),
 }));
