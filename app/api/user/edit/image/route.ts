@@ -16,6 +16,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
 
+        console.log("Pathname:", pathname);
+        console.log("Client Payload:", clientPayload);
+
         return {
           allowedContentTypes: ["image/jpeg", "image/png", "image/gif"],
           tokenPayload: JSON.stringify({
@@ -27,6 +30,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         // Get notified of client upload completion
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
+
+        console.log("Blob URL:", blob.url);
+        console.log("Token Payload:", tokenPayload);
 
         try {
           // Run any logic after the file upload completed
