@@ -120,10 +120,10 @@ function Web3AuthLogin() {
         const web3auth = new Web3Auth({
           clientId,
           uiConfig: {
-            appName: "ChainNews.One",
+            appName: "Matrix One",
             mode: "dark",
-            logoLight: "https://web3auth.io/images/web3authlog.png",
-            logoDark: "https://web3auth.io/images/web3authlogodark.png",
+            logoLight: "/images/web3auth-logo.svg",
+            logoDark: "/images/web3auth-logo.svg",
             defaultLanguage: "en",
             loginGridCol: 3,
             primaryButton: "externalLogin",
