@@ -61,6 +61,7 @@ function Web3AuthLogin() {
     setLoggedIn,
     setIsAdmin,
     setImageUrl,
+    setNickname,
   } = useAuthStore();
 
   useEffect(() => {
@@ -93,18 +94,20 @@ function Web3AuthLogin() {
 
           setIsAdmin(Boolean(data.isAdmin));
           setImageUrl(data.imageUrl);
+          setNickname(data.nickname);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
       })();
     }
   }, [
-    setWalletAddress,
     provider,
     web3auth?.connected,
     web3auth?.connectedAdapterName,
+    setWalletAddress,
     setIsAdmin,
     setImageUrl,
+    setNickname,
   ]);
 
   useEffect(() => {

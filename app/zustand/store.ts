@@ -4,10 +4,12 @@ import { customPromptDefault } from "../helpers/prompts";
 interface AuthState {
   isLoggedIn: boolean;
   walletAddress: string | null;
+  nickname: string | null;
   isAdmin: boolean;
   imageUrl: string | null;
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
+  setNickname: (nickname: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
   setImageUrl: (url: string) => void;
 }
@@ -15,10 +17,12 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   walletAddress: null,
+  nickname: null,
   isAdmin: false,
   imageUrl: null,
   setLoggedIn: (loggedIn: boolean) => set({ isLoggedIn: loggedIn }),
   setWalletAddress: (address: string) => set({ walletAddress: address }),
+  setNickname: (nickname: string) => set({ nickname: nickname }),
   setIsAdmin: (isAdmin: boolean) => set({ isAdmin: isAdmin }),
   setImageUrl: (url: string) => set({ imageUrl: url }),
 }));

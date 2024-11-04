@@ -49,6 +49,7 @@ model TwitterAPI {
 model User {
   id             Int      @id @default(autoincrement())
   walletAddress  String   @unique
+  nickname       String?
   chainId        String
   chainNamespace String
   adapter        String

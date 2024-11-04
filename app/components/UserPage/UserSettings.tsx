@@ -1,27 +1,37 @@
-import { truncateAddress } from "@/app/helpers/crypto";
-import { useAuthStore } from "@/app/zustand/store";
+import { useCallback, useRef, useState } from "react";
+
+import { truncateAddress } from "../../helpers/crypto";
+import { useAuthStore } from "../../zustand/store";
 import {
   Box,
   CircularProgress,
   IconButton,
   Stack,
+  TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Image from "next/image";
-import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { upload } from "@vercel/blob/client";
-import { useCallback, useRef, useState } from "react";
+
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
 
 const UserInfoBox = ({
   title,
   value,
   actionIcon,
+  isEditing,
   actionFunction,
+  onInputChange,
 }: {
   title: string;
   value: string;
   actionIcon?: React.ReactNode;
+  isEditing?: boolean;
   actionFunction?: () => void;
+  onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return (
     <Stack
@@ -45,14 +55,29 @@ const UserInfoBox = ({
         >
           {title}
         </Typography>
-        <Typography
-          variant="h6"
-          sx={{
-            color: "#ffffff",
-          }}
-        >
-          {value}
-        </Typography>
+        {isEditing ? (
+          <TextField
+            variant="standard"
+            size="small"
+            defaultValue={value}
+            sx={{
+              color: "#ffffff",
+              "& .MuiInputBase-root": {
+                color: "#ffffff",
+              },
+            }}
+            onChange={onInputChange}
+          />
+        ) : (
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#ffffff",
+            }}
+          >
+            {value}
+          </Typography>
+        )}
       </Box>
       <IconButton
         onClick={actionFunction}
@@ -71,7 +96,12 @@ const UserSettings = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const { walletAddress, imageUrl, setImageUrl } = useAuthStore();
+  const { walletAddress, nickname, imageUrl, setImageUrl, setNickname } =
+    useAuthStore();
+
+  const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
+  const [newNickname, setNewNickname] = useState<string | null>(nickname);
+  const [isNicknameLoading, setIsNicknameLoading] = useState<boolean>(false);
 
   const handleFileUpload = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,7 +200,7 @@ const UserSettings = () => {
               cursor: "pointer",
 
               "&:hover": {
-                color: "#AC7AFE",
+                color: "primary.main",
               },
             }}
           >
@@ -196,7 +226,63 @@ const UserSettings = () => {
         }}
       />
 
-      <UserInfoBox title="NICKNAME" value={"@nickname"} />
+      <UserInfoBox
+        title="NICKNAME"
+        value={nickname || "@nickname"}
+        actionIcon={
+          <Tooltip
+            title={
+              isEditingNickname ? "Save new nickname" : "Change your nickname"
+            }
+          >
+            {isNicknameLoading ? (
+              <CircularProgress size="1rem" />
+            ) : isEditingNickname ? (
+              <SaveIcon />
+            ) : (
+              <EditIcon />
+            )}
+          </Tooltip>
+        }
+        actionFunction={async () => {
+          if (isEditingNickname && walletAddress && newNickname) {
+            // Save nickname
+            console.log("Saving nickname");
+            setIsNicknameLoading(true);
+
+            try {
+              const saveResp = await fetch("/api/user/nickname/edit", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  walletAddress,
+                  nickname: newNickname,
+                }),
+              });
+
+              if (!saveResp.ok) {
+                throw new Error("Failed to save nickname");
+              }
+
+              setIsNicknameLoading(false);
+              setNickname(newNickname);
+              setIsEditingNickname(false);
+            } catch (e) {
+              setIsNicknameLoading(false);
+              console.error(e);
+            }
+          } else {
+            setIsEditingNickname((prev) => !prev);
+          }
+        }}
+        onInputChange={(e) => {
+          console.log(e.target.value);
+          setNewNickname(e.target.value);
+        }}
+        isEditing={isEditingNickname}
+      />
 
       <UserInfoBox title="EMAIL ADDRESS" value={"123@xyz.one"} />
 
