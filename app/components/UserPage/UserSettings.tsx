@@ -91,9 +91,24 @@ const UserSettings = () => {
 
         const newBlob = await upload(file.name, file, {
           access: "public",
-          handleUploadUrl: "/api/user/edit/image",
+          handleUploadUrl: "/api/user/image/upload",
           clientPayload: walletAddress as string,
         });
+
+        const editResp = await fetch("/api/user/image/edit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            walletAddress,
+            imageUrl: newBlob.url,
+          }),
+        });
+
+        if (!editResp.ok) {
+          throw new Error("Failed to edit image");
+        }
 
         setImageUrl(newBlob.url);
         setIsUploadingImage(false);
