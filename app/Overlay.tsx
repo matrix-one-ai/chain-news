@@ -11,6 +11,7 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
+  greetUserLoginPrompt,
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
@@ -78,7 +79,7 @@ const Overlay = ({
 }: OverlayProps) => {
   const [prompt, setPrompt] = useState<string>("");
 
-  const { isLoggedIn, isAdmin } = useAuthStore();
+  const { isLoggedIn, isAdmin, nickname } = useAuthStore();
 
   const {
     isStreaming,
@@ -98,6 +99,15 @@ const Overlay = ({
     customPrompt,
     setIsSettingsOpen,
   } = useSettingsStore();
+
+  const [hasPlayedGreeting, setHasPlayedGreeting] = useState(false);
+
+  useEffect(() => {
+    if (!isPlaying && isLoggedIn && !hasPlayedGreeting) {
+      setPrompt(greetUserLoginPrompt(nickname));
+      setHasPlayedGreeting(true);
+    }
+  }, [hasPlayedGreeting, isLoggedIn, isPlaying, nickname]);
 
   const fetchChats = useCallback(async () => {
     try {

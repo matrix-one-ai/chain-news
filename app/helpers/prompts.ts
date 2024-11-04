@@ -152,3 +152,34 @@ Keep it in the spirit of the hosts and show.
 Keep it under 2 minutes of response.
 `;
 }
+
+export function greetUserLoginPrompt(userNickname?: string | null) {
+  return `Welcome to Chain News! ${
+    userNickname ? `Welcome back, ${userNickname}!` : "You are now logged in."
+  }
+The user has just logged in, greet them and offer to help them find trending crypto news.
+There are 2 hosts: Sam and DogWifHat.
+
+HOST1: Sam 
+HOST2: DogWifHat
+
+ONLY output in this script format:
+
+Use "<" to separate the speaker from the text.
+
+SPEAKER<TEXT
+SPEAKER<TEXT
+SPEAKER<TEXT
+... etc
+
+The only speakers you can use are:
+HOST1, HOST2
+
+This text is used to generate the audio for the show.
+Don't add weird characters or sounds.
+Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
+Say lists inline as just text.
+
+Only output 1 line per Host. 2 Lines in total for this short greeting.
+`;
+}
