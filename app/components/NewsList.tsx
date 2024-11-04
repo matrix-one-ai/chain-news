@@ -110,7 +110,7 @@ const NewsList = memo(
     );
 
     useEffect(() => {
-      const fetchNews = async () => {
+      const fetchPrices = async () => {
         try {
           const response = await fetch("/api/moralis/prices");
           if (!response.ok) {
@@ -121,7 +121,7 @@ const NewsList = memo(
         } catch (err: any) {}
       };
 
-      fetchNews();
+      fetchPrices();
     }, []);
 
     return (
