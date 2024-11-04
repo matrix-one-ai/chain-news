@@ -4,6 +4,7 @@ import RSSParser from "rss-parser";
 import { htmlToText } from "html-to-text";
 import { generateText } from "ai";
 import { createAzure } from "@ai-sdk/azure";
+import { put } from "@vercel/blob";
 
 const azure = createAzure({
   resourceName: process.env.AZURE_OPENAI_RESOURCE!,
@@ -202,6 +203,41 @@ export async function GET() {
       parsedNews.items.forEach((item: News, index: number) => {
         item.tokenTicker = tokens[index];
       });
+
+      const uploadPromises = parsedNews.items.map(async (item: News) => {
+        if (item.imageUrl) {
+          const imageResp = await fetch(item.imageUrl);
+
+          if (!imageResp.ok) {
+            return;
+          }
+
+          const imageBuffer = await imageResp.arrayBuffer();
+          const contentType =
+            imageResp.headers.get("Content-Type") || "image/jpeg";
+
+          const blob = new Blob([new Uint8Array(imageBuffer)], {
+            type: contentType,
+          });
+
+          const upload = await put(
+            `news/${provider.provider}/${item.title.replace(
+              /[^a-zA-Z0-9]/g,
+              ""
+            )}`,
+            blob,
+            {
+              access: "public",
+            }
+          );
+
+          console.log(upload.url);
+
+          item.imageUrl = upload.url;
+        }
+      });
+
+      await Promise.all(uploadPromises);
 
       await prisma.news.deleteMany({
         where: {
