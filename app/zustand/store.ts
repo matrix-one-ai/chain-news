@@ -5,18 +5,22 @@ interface AuthState {
   isLoggedIn: boolean;
   walletAddress: string | null;
   isAdmin: boolean;
+  imageUrl: string | null;
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
+  setImageUrl: (url: string) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   walletAddress: null,
   isAdmin: false,
+  imageUrl: null,
   setLoggedIn: (loggedIn: boolean) => set({ isLoggedIn: loggedIn }),
   setWalletAddress: (address: string) => set({ walletAddress: address }),
   setIsAdmin: (isAdmin: boolean) => set({ isAdmin: isAdmin }),
+  setImageUrl: (url: string) => set({ imageUrl: url }),
 }));
 
 interface OverlayState {

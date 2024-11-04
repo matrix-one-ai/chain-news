@@ -1,8 +1,16 @@
 import { truncateAddress } from "@/app/helpers/crypto";
 import { useAuthStore } from "@/app/zustand/store";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
+import { upload } from "@vercel/blob/client";
+import { useCallback, useRef, useState } from "react";
 
 const UserInfoBox = ({
   title,
@@ -60,7 +68,43 @@ const UserInfoBox = ({
 };
 
 const UserSettings = () => {
-  const { walletAddress } = useAuthStore();
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const { walletAddress, imageUrl, setImageUrl } = useAuthStore();
+
+  const handleFileUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        event.preventDefault();
+        if (!walletAddress) {
+          throw new Error("No wallet address found");
+        }
+
+        if (!inputFileRef.current?.files) {
+          throw new Error("No file selected");
+        }
+
+        setIsUploadingImage(true);
+
+        const file = inputFileRef.current.files[0];
+
+        const newBlob = await upload(file.name, file, {
+          access: "public",
+          handleUploadUrl: "/api/user/edit/image",
+          clientPayload: walletAddress as string,
+        });
+
+        setImageUrl(newBlob.url);
+        setIsUploadingImage(false);
+      } catch (e) {
+        console.error(e);
+        setIsUploadingImage(false);
+      }
+    },
+    [setImageUrl, walletAddress]
+  );
+
   return (
     <Stack
       sx={{
@@ -80,7 +124,7 @@ const UserSettings = () => {
         }}
       >
         <Image
-          src="/images/user-profile-placeholder.png"
+          src={imageUrl || "/images/user-profile-placeholder.png"}
           alt="profile"
           width={150}
           height={150}
@@ -89,24 +133,43 @@ const UserSettings = () => {
             border: "2px solid #AC7AFE",
           }}
         />
-        <Typography
-          variant="body2"
-          sx={{
-            mt: 2,
-            color: "#858193",
-            textDecoration: "underline",
-            touchAction: "all",
-            userSelect: "none",
-            pointerEvents: "all",
-            cursor: "pointer",
+        {isUploadingImage ? (
+          <CircularProgress
+            color="secondary"
+            size="1.25rem"
+            sx={{
+              mt: 2,
+            }}
+          />
+        ) : (
+          <Typography
+            variant="body2"
+            component="label"
+            sx={{
+              mt: 2,
+              color: "#858193",
+              textDecoration: "underline",
+              touchAction: "all",
+              userSelect: "none",
+              pointerEvents: "all",
+              cursor: "pointer",
 
-            "&:hover": {
-              color: "#AC7AFE",
-            },
-          }}
-        >
-          Change profile picture
-        </Typography>
+              "&:hover": {
+                color: "#AC7AFE",
+              },
+            }}
+          >
+            Change profile picture
+            <input
+              ref={inputFileRef}
+              type="file"
+              style={{
+                display: "none",
+              }}
+              onChange={handleFileUpload}
+            />
+          </Typography>
+        )}
       </Stack>
 
       <UserInfoBox

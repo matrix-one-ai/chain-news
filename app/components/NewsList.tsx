@@ -105,7 +105,7 @@ const NewsList = memo(
               return 1;
             }
             return 0;
-          }).slice(0, 5),
+          }),
       [newsItems, debouncedSearchQuery, selectedFilter, tokenPrices]
     );
 

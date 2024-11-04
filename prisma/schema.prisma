@@ -53,6 +53,7 @@ model User {
   chainNamespace String
   adapter        String
   isAdmin        Boolean  @default(false)
+  imageUrl       String?
   createdAt      DateTime @default(now())
   lastLogin      DateTime @default(now())
   ipAddress      String   @default("")

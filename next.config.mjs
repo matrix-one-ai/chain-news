@@ -33,6 +33,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.decrypt.co",
       },
+      {
+        protocol: "https",
+        hostname: "fnfscfgwilvky5z8.public.blob.vercel-storage.com",
+      },
     ],
   },
 };

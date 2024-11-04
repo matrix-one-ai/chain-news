@@ -54,11 +54,13 @@ function Web3AuthLogin() {
   const [provider, setProvider] = useState<IProvider | null>(null);
 
   const {
-    setWalletAddress,
-    setLoggedIn,
     walletAddress,
     isLoggedIn,
+    imageUrl,
+    setWalletAddress,
+    setLoggedIn,
     setIsAdmin,
+    setImageUrl,
   } = useAuthStore();
 
   useEffect(() => {
@@ -90,6 +92,7 @@ function Web3AuthLogin() {
           const data = await response.json();
 
           setIsAdmin(Boolean(data.isAdmin));
+          setImageUrl(data.imageUrl);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
@@ -101,6 +104,7 @@ function Web3AuthLogin() {
     web3auth?.connected,
     web3auth?.connectedAdapterName,
     setIsAdmin,
+    setImageUrl,
   ]);
 
   useEffect(() => {
@@ -315,7 +319,7 @@ function Web3AuthLogin() {
           >
             <Avatar
               alt="Profile"
-              src="/images/user-profile-placeholder.png"
+              src={imageUrl || "/images/user-profile-placeholder.png"}
               sx={{}}
             />
           </IconButton>

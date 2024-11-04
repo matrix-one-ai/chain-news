@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "web3auth user saved successfully",
       isAdmin: dbTX[0].isAdmin,
+      imageUrl: dbTX[0].imageUrl,
     });
   } catch (error) {
     console.log("web3auth login error:", error);
