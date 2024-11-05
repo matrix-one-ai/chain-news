@@ -1,5 +1,5 @@
 import { News } from "@prisma/client";
-import NewsCard from "./NewsCard";
+import NewsCard, { NewsItem } from "./NewsCard";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
@@ -13,6 +13,9 @@ import {
 import { newsCategoryIcons } from "./NewsCard";
 import Marquee from "react-fast-marquee";
 import { CancelOutlined } from "@mui/icons-material";
+import { useNewsStore } from "../zustand/store";
+import useNewsFetch from "../hooks/useNewsFetch";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 const newsFilters = Object.keys(newsCategoryIcons).map((key) => ({
   label: key,
@@ -26,16 +29,25 @@ const stripPrefix = (str: string) => {
 interface NewsListProps {
   newsItems: News[];
   isVisible: boolean;
-  onNewsClick: (newsItem: News) => void;
+  onNewsClick: (newsItem: News | null) => void;
 }
 
 const NewsList = memo(
   ({ newsItems, isVisible, onNewsClick }: NewsListProps) => {
+    const { news, pageSize, fetching, incrementPage } = useNewsStore();
+    useNewsFetch();
+    const targetRef = useInfiniteScroll(incrementPage);
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
     const [tokenPrices, setTokenPrices] = useState<any>(null);
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [debouncedSearchQuery, setDebouncedSearchQuery] =
       useState<string>("");
+
+    // Dummy news while fetching news data of next page
+    const dummyNews: Array<null> = useMemo(
+      () => Array(pageSize).fill(null),
+      [pageSize],
+    );
 
     const handleFilterClick = useCallback((category: string | null) => {
       setSelectedFilter(category);
@@ -62,52 +74,30 @@ const NewsList = memo(
       };
     }, [searchQuery]);
 
-    const filteredNewsItems = useMemo(
-      () =>
-        newsItems
-          .filter(
-            (newsItem) =>
-              selectedFilter === null || newsItem.category === selectedFilter,
-          )
-          .filter((newsItem) =>
-            newsItem.title
-              .toLowerCase()
-              .includes(debouncedSearchQuery.toLowerCase()),
-          )
-          .map((newsItem) => {
-            const tokenPrice = tokenPrices?.find((token: any) => {
-              if (!newsItem.tokenTicker) {
-                return false;
-              }
-              const strippedTokenTicker = stripPrefix(
-                newsItem.tokenTicker || "",
-              );
-              const strippedTokenName = stripPrefix(token.tokenName);
-              const strippedTokenSymbol = stripPrefix(token.tokenSymbol);
-              return (
-                strippedTokenSymbol === strippedTokenTicker ||
-                strippedTokenName.includes(strippedTokenTicker)
-              );
-            });
+    // Interpolate news data with token price data
+    const interpolatedNews: NewsItem[] = useMemo(() => {
+      return news.map((newsItem) => {
+        const tokenPrice = tokenPrices?.find((token: any) => {
+          if (!newsItem.tokenTicker) {
+            return false;
+          }
+          const strippedTokenTicker = stripPrefix(newsItem.tokenTicker || "");
+          const strippedTokenName = stripPrefix(token.tokenName);
+          const strippedTokenSymbol = stripPrefix(token.tokenSymbol);
+          return (
+            strippedTokenSymbol === strippedTokenTicker ||
+            strippedTokenName.includes(strippedTokenTicker)
+          );
+        });
 
-            return {
-              ...newsItem,
-              tokenSymbol: tokenPrice?.tokenSymbol,
-              usdPrice: tokenPrice?.usdPrice,
-              percentChange24h: tokenPrice?.["24hrPercentChange"],
-            };
-          })
-          .sort((a, b) => {
-            if (a.usdPrice !== undefined && b.usdPrice === undefined) {
-              return -1;
-            }
-            if (a.usdPrice === undefined && b.usdPrice !== undefined) {
-              return 1;
-            }
-            return 0;
-          }),
-      [newsItems, debouncedSearchQuery, selectedFilter, tokenPrices],
-    );
+        return {
+          ...newsItem,
+          tokenSymbol: tokenPrice?.tokenSymbol,
+          usdPrice: tokenPrice?.usdPrice,
+          percentChange24h: tokenPrice?.["24hrPercentChange"],
+        };
+      });
+    }, [news, tokenPrices]);
 
     useEffect(() => {
       const fetchPrices = async () => {
@@ -223,13 +213,18 @@ const NewsList = memo(
               overflowY: "auto",
             }}
           >
-            {filteredNewsItems.map((newsItem, index) => (
+            {(fetching
+              ? [...interpolatedNews, ...dummyNews] // When fetching news data of next page, let show skeleton loader for dummy data
+              : interpolatedNews
+            ).map((newsItem, index) => (
               <NewsCard
-                key={newsItem.title + index}
+                key={`news-item-${index}`}
                 newsItem={newsItem}
                 onClick={onNewsClick}
               />
             ))}
+            {/* Target element for infinite scroll */}
+            <Box ref={targetRef} style={{ height: 1 }} />
           </div>
         </Box>
       </Fade>
