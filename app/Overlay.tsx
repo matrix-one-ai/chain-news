@@ -194,7 +194,9 @@ const Overlay = ({
   }, [currentSegmentIndex, isPlaying, isStreaming, streamLoop, streamStarted]);
 
   const handleNewsClick = useCallback(
-    (newsItem: News) => {
+    (newsItem: News | null) => {
+      if (newsItem === null) return;
+
       if (isLoggedIn) {
         setSelectedNews(newsItem);
         if (isPromptUnlocked) {
