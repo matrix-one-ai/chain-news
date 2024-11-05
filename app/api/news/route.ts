@@ -1,11 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const revalidate = 60 * 5;
 
 const prisma = new PrismaClient();
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+
   try {
     const feed = await prisma.news.findMany({
       select: {
@@ -21,6 +25,8 @@ export async function GET() {
         tokenTicker: true,
       },
       orderBy: { datePublished: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
 
     return NextResponse.json(feed);
