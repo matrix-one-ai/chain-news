@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { customPromptDefault } from "../helpers/prompts";
+import { News } from "@prisma/client";
 
 interface AppMountedState {
   mounted: boolean;
@@ -123,4 +124,29 @@ interface PromptState {
 export const usePromptStore = create<PromptState>((set) => ({
   prompt: "",
   setPrompt: (prompt: string) => set({ prompt: prompt }),
+}));
+
+interface NewsState {
+  news: News[];
+  page: number;
+  pageSize: number;
+  fetching: boolean;
+  addNews: (newNews: News[]) => void;
+  incrementPage: () => void;
+  setFetching: (fetching: boolean) => void;
+}
+
+export const useNewsStore = create<NewsState>((set) => ({
+  news: [],
+  page: 1,
+  pageSize: 20,
+  fetching: false,
+  addNews: (newNews) => set((state) => ({ news: [...state.news, ...newNews] })),
+  incrementPage: () =>
+    set((state) => {
+      if (state.fetching) return state;
+
+      return { page: state.page + 1 };
+    }),
+  setFetching: (fetching) => set(() => ({ fetching })),
 }));
