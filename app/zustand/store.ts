@@ -132,6 +132,7 @@ interface NewsState {
   newsSearchOptions: AtLeast<News, "category" | "title">[];
   page: number;
   pageSize: number;
+  totalPage: number;
   fetching: boolean;
   fetchingSearchOptions: boolean;
   setNews: (news: News[]) => void;
@@ -140,6 +141,7 @@ interface NewsState {
     newsSearchOptions: AtLeast<News, "category" | "title">[],
   ) => void;
   setPage: (page: number) => void;
+  setTotalPage: (totalPage: number) => void;
   incrementPage: () => void;
   setFetching: (fetching: boolean) => void;
   setFetchingSearchOptions: (fetchingSearchOptions: boolean) => void;
@@ -150,6 +152,7 @@ export const useNewsStore = create<NewsState>((set) => ({
   newsSearchOptions: [],
   page: 1,
   pageSize: 20,
+  totalPage: 1,
   fetching: false,
   fetchingSearchOptions: false,
   setNews: (news) => set(() => ({ news })),
@@ -157,9 +160,10 @@ export const useNewsStore = create<NewsState>((set) => ({
   setNewsSearchOptions: (newsSearchOptions) =>
     set(() => ({ newsSearchOptions })),
   setPage: (page) => set(() => ({ page })),
+  setTotalPage: (totalPage) => set(() => ({ totalPage })),
   incrementPage: () =>
     set((state) => {
-      if (state.fetching) return state;
+      if (state.fetching || state.page === state.totalPage) return state;
 
       return { page: state.page + 1 };
     }),

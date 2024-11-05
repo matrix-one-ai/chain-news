@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "null", 10);
-  const pageSize = parseInt(searchParams.get("pageSize") || "null", 10);
+  const pageSize = parseInt(searchParams.get("pagesize") || "null", 10);
   const select = JSON.parse(searchParams.get("select") || "null"); // columns to select
   const where = JSON.parse(searchParams.get("where") || "null");
 

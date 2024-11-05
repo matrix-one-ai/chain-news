@@ -231,9 +231,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
             />
           ))}
           {/* Target element for infinite scroll */}
-          {interpolatedNews.length >= pageSize && (
-            <Box ref={targetRef} style={{ height: 1 }} />
-          )}
+          <Box ref={targetRef} style={{ height: 1 }} />
         </div>
       </Box>
     </Fade>

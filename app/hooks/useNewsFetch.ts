@@ -9,8 +9,15 @@ import { useAppMountedStore, useNewsStore } from "../zustand/store";
  */
 export function useNewsFetch(title: string, category: string | null): void {
   const { mounted } = useAppMountedStore();
-  const { page, pageSize, setNews, setPage, setFetching, addNews } =
-    useNewsStore();
+  const {
+    page,
+    pageSize,
+    setNews,
+    setPage,
+    setTotalPage,
+    setFetching,
+    addNews,
+  } = useNewsStore();
 
   // Reset page number and news data when title or category changes
   useEffect(() => {
@@ -24,14 +31,14 @@ export function useNewsFetch(title: string, category: string | null): void {
       setFetching(true);
 
       const response = await fetch(
-        `/api/news?page=${page}&pageSize=${pageSize}&where=${JSON.stringify({
+        `/api/news?page=${page}&pagesize=${pageSize}&where=${JSON.stringify({
           ...(title && { title: { contains: title } }),
           ...(category && { category }),
         })}`,
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error("Failed to fetch news data");
       }
 
       const data = await response.json();
@@ -49,6 +56,34 @@ export function useNewsFetch(title: string, category: string | null): void {
 
     fetchNews();
   }, [fetchNews, mounted]);
+
+  // Fetch news total page with filter options
+  const fetchNewsTotalPage = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `/api/news/total-page?pagesize=${pageSize}&where=${JSON.stringify({
+          ...(title && { title: { contains: title } }),
+          ...(category && { category }),
+        })}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch news page count");
+      }
+
+      const data = await response.json();
+
+      setTotalPage(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [pageSize, title, category, setTotalPage]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    fetchNewsTotalPage();
+  }, [fetchNewsTotalPage, mounted]);
 }
 
 /**
@@ -80,7 +115,7 @@ export function useNewsSearchOptionsFetch(
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error("Failed to fetch news search options");
       }
 
       const data = await response.json();
