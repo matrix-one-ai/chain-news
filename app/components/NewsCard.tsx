@@ -114,7 +114,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
               <Skeleton
                 variant="rectangular"
                 animation="wave"
-                width={350}
+                width={305}
                 height={380}
               />
             )}
