@@ -214,7 +214,7 @@ const Overlay = ({
       setPrompt,
       customPrompt,
       segmentDuration,
-    ]
+    ],
   );
 
   const handleStreamStart = useCallback(() => {
