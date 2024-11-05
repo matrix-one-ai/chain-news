@@ -49,7 +49,7 @@ const NewsList = memo(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
       },
-      []
+      [],
     );
 
     useEffect(() => {
@@ -67,12 +67,12 @@ const NewsList = memo(
         newsItems
           .filter(
             (newsItem) =>
-              selectedFilter === null || newsItem.category === selectedFilter
+              selectedFilter === null || newsItem.category === selectedFilter,
           )
           .filter((newsItem) =>
             newsItem.title
               .toLowerCase()
-              .includes(debouncedSearchQuery.toLowerCase())
+              .includes(debouncedSearchQuery.toLowerCase()),
           )
           .map((newsItem) => {
             const tokenPrice = tokenPrices?.find((token: any) => {
@@ -80,7 +80,7 @@ const NewsList = memo(
                 return false;
               }
               const strippedTokenTicker = stripPrefix(
-                newsItem.tokenTicker || ""
+                newsItem.tokenTicker || "",
               );
               const strippedTokenName = stripPrefix(token.tokenName);
               const strippedTokenSymbol = stripPrefix(token.tokenSymbol);
@@ -106,7 +106,7 @@ const NewsList = memo(
             }
             return 0;
           }),
-      [newsItems, debouncedSearchQuery, selectedFilter, tokenPrices]
+      [newsItems, debouncedSearchQuery, selectedFilter, tokenPrices],
     );
 
     useEffect(() => {
@@ -137,7 +137,7 @@ const NewsList = memo(
         <Box>
           <Autocomplete
             options={newsItems.sort(
-              (a, b) => -b.category.localeCompare(a.category)
+              (a, b) => -b.category.localeCompare(a.category),
             )}
             groupBy={(option) => option.category}
             getOptionLabel={(option) => option.title}
@@ -234,7 +234,7 @@ const NewsList = memo(
         </Box>
       </Fade>
     );
-  }
+  },
 );
 
 NewsList.displayName = "NewsList";
