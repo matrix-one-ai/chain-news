@@ -5,6 +5,7 @@ import { News } from "@prisma/client";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
 import { Message } from "ai";
+import { useAppMountedStore } from "./zustand/store";
 
 interface ClientHomeProps {
   newsData: News[];
@@ -16,6 +17,7 @@ const speakerVoiceMap = {
 };
 
 const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
+  const { setMounted } = useAppMountedStore();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
@@ -256,6 +258,12 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
   const onPromptError = useCallback((error: any) => {
     console.log("Error in prompt:", error);
   }, []);
+
+  // * In development env, react component will be mounted 2 times due to react strict mode.
+  // * This is a hack to prevent that.
+  useEffect(() => {
+    setMounted();
+  }, [setMounted]);
 
   return (
     <>

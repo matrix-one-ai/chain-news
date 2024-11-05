@@ -1,6 +1,16 @@
 import { create } from "zustand";
 import { customPromptDefault } from "../helpers/prompts";
 
+interface AppMountedState {
+  mounted: boolean;
+  setMounted: () => void;
+}
+
+export const useAppMountedStore = create<AppMountedState>((set) => ({
+  mounted: false,
+  setMounted: () => set({ mounted: true }),
+}));
+
 interface AuthState {
   isLoggedIn: boolean;
   walletAddress: string | null;
