@@ -110,7 +110,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
       >
         <Fade in={true} timeout={500}>
           <Box>
-            {loading && (
+            {(loading || newsItem === null) && (
               <Skeleton
                 variant="rectangular"
                 animation="wave"
@@ -122,7 +122,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
               <>
                 <Box
                   sx={{
-                    position: "relative",
+                    position: loading ? "absolute" : "relative",
                     visibility: loading ? "hidden" : "visible",
                   }}
                 >
@@ -160,6 +160,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                   sx={{
                     padding: "0.75rem",
                     paddingTop: "0",
+                    position: loading ? "absolute" : "relative",
+                    visibility: loading ? "hidden" : "visible",
                   }}
                 >
                   <Typography
