@@ -99,3 +99,13 @@ export const useUserPageStore = create<UserPageState>((set) => ({
   selectedUserTab: 0,
   setSelectedUserTab: (index: number) => set({ selectedUserTab: index }),
 }));
+
+interface PromptState {
+  prompt: string;
+  setPrompt: (prompt: string) => void;
+}
+
+export const usePromptStore = create<PromptState>((set) => ({
+  prompt: "",
+  setPrompt: (prompt: string) => set({ prompt: prompt }),
+}));

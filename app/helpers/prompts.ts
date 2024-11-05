@@ -183,3 +183,34 @@ Say lists inline as just text.
 Only output 1 line per Host. 2 Lines in total for this short greeting.
 `;
 }
+
+export function goodbyeUserLogoutPrompt(userNickname?: string | null) {
+  return `Goodbye from Chain News! ${
+    userNickname ? `Goodbye, ${userNickname}!` : "You are now logged out."
+  }
+The user has just logged out, thank them for watching and invite them to come back soon.
+There are 2 hosts: Sam and DogWifHat.
+
+HOST1: Sam 
+HOST2: DogWifHat
+
+ONLY output in this script format:
+
+Use "<" to separate the speaker from the text.
+
+SPEAKER<TEXT
+SPEAKER<TEXT
+SPEAKER<TEXT
+... etc
+
+The only speakers you can use are:
+HOST1, HOST2
+
+This text is used to generate the audio for the show.
+Don't add weird characters or sounds.
+Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
+Say lists inline as just text.
+
+Only output 1 line per Host. 2 Lines in total for this short greeting.
+`;
+}

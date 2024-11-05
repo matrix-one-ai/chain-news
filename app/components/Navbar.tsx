@@ -30,11 +30,16 @@ import RPC from "../helpers/solanaRPC";
 import {
   useAuthStore,
   useOverlayStore,
+  usePromptStore,
   useUserPageStore,
 } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
+import {
+  goodbyeUserLogoutPrompt,
+  greetUserLoginPrompt,
+} from "../helpers/prompts";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -52,6 +57,8 @@ const chainConfig = {
 function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
+
+  const { prompt, setPrompt } = usePromptStore();
 
   const {
     walletAddress,
@@ -169,7 +176,7 @@ function Web3AuthLogin() {
     }
   }, []);
 
-  const login = async () => {
+  const login = useCallback(async () => {
     if (!web3auth) {
       uiConsole("web3auth not initialized yet");
       return;
@@ -179,8 +186,10 @@ function Web3AuthLogin() {
     if (web3auth.connected) {
       setLoggedIn(true);
     }
+
+    setPrompt(greetUserLoginPrompt());
     setProvider(web3authProvider);
-  };
+  }, [web3auth, setLoggedIn, setPrompt, uiConsole]);
 
   const logout = useCallback(async () => {
     if (!web3auth) {
@@ -190,7 +199,8 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-  }, [web3auth, setLoggedIn, uiConsole]);
+    setPrompt(goodbyeUserLogoutPrompt());
+  }, [web3auth, setLoggedIn, setPrompt, uiConsole]);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

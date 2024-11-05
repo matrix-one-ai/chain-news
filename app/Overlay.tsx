@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import { Message } from "ai/react";
@@ -11,7 +11,6 @@ import { Box, IconButton, Tooltip } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
-  greetUserLoginPrompt,
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
@@ -24,6 +23,7 @@ import PlayerPanel from "./components/PlayerPanel";
 import {
   useAuthStore,
   useLiveStreamStore,
+  usePromptStore,
   useSettingsStore,
 } from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
@@ -77,9 +77,8 @@ const Overlay = ({
   setScriptLines,
   setCurrentLineState,
 }: OverlayProps) => {
-  const [prompt, setPrompt] = useState<string>("");
-
-  const { isLoggedIn, isAdmin, nickname } = useAuthStore();
+  const { prompt, setPrompt } = usePromptStore();
+  const { isLoggedIn, isAdmin } = useAuthStore();
 
   const {
     isStreaming,
@@ -99,15 +98,6 @@ const Overlay = ({
     customPrompt,
     setIsSettingsOpen,
   } = useSettingsStore();
-
-  const [hasPlayedGreeting, setHasPlayedGreeting] = useState(false);
-
-  useEffect(() => {
-    if (!isPlaying && isLoggedIn && !hasPlayedGreeting) {
-      setPrompt(greetUserLoginPrompt(nickname));
-      setHasPlayedGreeting(true);
-    }
-  }, [hasPlayedGreeting, isLoggedIn, isPlaying, nickname]);
 
   const fetchChats = useCallback(async () => {
     try {
@@ -187,6 +177,7 @@ const Overlay = ({
     fetchChats,
     lastSegmentType,
     setIsPlaying,
+    setPrompt,
     setSelectedNews,
     setLastSegmentType,
     setCurrentSegmentIndex,
@@ -218,10 +209,11 @@ const Overlay = ({
     },
     [
       isLoggedIn,
-      customPrompt,
-      isPromptUnlocked,
-      segmentDuration,
       setSelectedNews,
+      isPromptUnlocked,
+      setPrompt,
+      customPrompt,
+      segmentDuration,
     ]
   );
 
@@ -251,6 +243,7 @@ const Overlay = ({
     setIsStreaming,
     setAudioBlob,
     audioRef,
+    setPrompt,
   ]);
 
   const handleNext = useCallback(() => {
@@ -282,6 +275,7 @@ const Overlay = ({
     setAudioBlob,
     setCurrentLineState,
     setLastSegmentType,
+    setPrompt,
     setScriptLines,
     setSelectedNews,
   ]);
