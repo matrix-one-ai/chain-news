@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { customPromptDefault } from "../helpers/prompts";
 import { News } from "@prisma/client";
+import { AtLeast } from "../types/common";
 
 interface AppMountedState {
   mounted: boolean;
@@ -128,20 +129,30 @@ export const usePromptStore = create<PromptState>((set) => ({
 
 interface NewsState {
   news: News[];
+  newsSearchOptions: AtLeast<News, "category" | "title">[];
   page: number;
   pageSize: number;
   fetching: boolean;
+  fetchingSearchOptions: boolean;
   addNews: (newNews: News[]) => void;
+  setNewsSearchOptions: (
+    newsSearchOptions: AtLeast<News, "category" | "title">[],
+  ) => void;
   incrementPage: () => void;
   setFetching: (fetching: boolean) => void;
+  setFetchingSearchOptions: (fetchingSearchOptions: boolean) => void;
 }
 
 export const useNewsStore = create<NewsState>((set) => ({
   news: [],
+  newsSearchOptions: [],
   page: 1,
   pageSize: 20,
   fetching: false,
+  fetchingSearchOptions: false,
   addNews: (newNews) => set((state) => ({ news: [...state.news, ...newNews] })),
+  setNewsSearchOptions: (newsSearchOptions) =>
+    set(() => ({ newsSearchOptions })),
   incrementPage: () =>
     set((state) => {
       if (state.fetching) return state;
@@ -149,4 +160,6 @@ export const useNewsStore = create<NewsState>((set) => ({
       return { page: state.page + 1 };
     }),
   setFetching: (fetching) => set(() => ({ fetching })),
+  setFetchingSearchOptions: (fetchingSearchOptions) =>
+    set(() => ({ fetchingSearchOptions })),
 }));

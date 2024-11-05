@@ -14,7 +14,7 @@ import { newsCategoryIcons } from "./NewsCard";
 import Marquee from "react-fast-marquee";
 import { CancelOutlined } from "@mui/icons-material";
 import { useNewsStore } from "../zustand/store";
-import useNewsFetch from "../hooks/useNewsFetch";
+import { useNewsFetch, useNewsSearchOptionsFetch } from "../hooks/useNewsFetch";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 const newsFilters = Object.keys(newsCategoryIcons).map((key) => ({
@@ -32,8 +32,16 @@ interface NewsListProps {
 }
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
-  const { news, pageSize, fetching, incrementPage } = useNewsStore();
+  const {
+    news,
+    newsSearchOptions,
+    pageSize,
+    fetching,
+    fetchingSearchOptions,
+    incrementPage,
+  } = useNewsStore();
   useNewsFetch();
+  useNewsSearchOptionsFetch();
   const targetRef = useInfiniteScroll(incrementPage);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [tokenPrices, setTokenPrices] = useState<any>(null);
@@ -123,7 +131,9 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     >
       <Box>
         <Autocomplete
-          options={news.sort((a, b) => -b.category.localeCompare(a.category))}
+          options={newsSearchOptions.sort(
+            (a, b) => -b.category.localeCompare(a.category),
+          )}
           groupBy={(option) => option.category}
           getOptionLabel={(option) => option.title}
           size="small"
@@ -150,6 +160,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
               label="Search"
             />
           )}
+          loading={fetchingSearchOptions}
         />
 
         {selectedFilter && (

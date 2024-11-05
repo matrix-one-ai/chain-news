@@ -5,7 +5,7 @@ import { useAppMountedStore, useNewsStore } from "../zustand/store";
  * Hooks for fetching news data
  * @returns void
  */
-function useNewsFetch(): void {
+export function useNewsFetch(): void {
   const { mounted } = useAppMountedStore();
   const { page, pageSize, setFetching, addNews } = useNewsStore();
 
@@ -38,4 +38,42 @@ function useNewsFetch(): void {
   }, [fetchNews, mounted]);
 }
 
-export default useNewsFetch;
+/**
+ * Hooks for fetching search options for news
+ * @returns void
+ */
+export function useNewsSearchOptionsFetch(): void {
+  const { mounted } = useAppMountedStore();
+  const { setFetchingSearchOptions, setNewsSearchOptions } = useNewsStore();
+
+  const fetchNewsSearchOptions = useCallback(async () => {
+    try {
+      setFetchingSearchOptions(true);
+
+      const response = await fetch(
+        `/api/news?select=${JSON.stringify({
+          category: true,
+          title: true,
+        })}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const data = await response.json();
+
+      setNewsSearchOptions(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setFetchingSearchOptions(false);
+    }
+  }, [setFetchingSearchOptions, setNewsSearchOptions]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    fetchNewsSearchOptions();
+  }, [fetchNewsSearchOptions, mounted]);
+}
