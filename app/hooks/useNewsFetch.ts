@@ -3,18 +3,31 @@ import { useAppMountedStore, useNewsStore } from "../zustand/store";
 
 /**
  * Hooks for fetching news data
+ * @param title
+ * @param category
  * @returns void
  */
-export function useNewsFetch(): void {
+export function useNewsFetch(title: string, category: string | null): void {
   const { mounted } = useAppMountedStore();
-  const { page, pageSize, setFetching, addNews } = useNewsStore();
+  const { page, pageSize, setNews, setPage, setFetching, addNews } =
+    useNewsStore();
 
+  // Reset page number and news data when title or category changes
+  useEffect(() => {
+    setPage(1);
+    setNews([]);
+  }, [title, category, setPage, setNews]);
+
+  // Fetch news data with pagination and filter options
   const fetchNews = useCallback(async () => {
     try {
       setFetching(true);
 
       const response = await fetch(
-        `/api/news?page=${page}&pageSize=${pageSize}`,
+        `/api/news?page=${page}&pageSize=${pageSize}&where=${JSON.stringify({
+          ...(title && { title: { contains: title } }),
+          ...(category && { category }),
+        })}`,
       );
 
       if (!response.ok) {
@@ -29,7 +42,7 @@ export function useNewsFetch(): void {
     } finally {
       setFetching(false);
     }
-  }, [setFetching, page, pageSize, addNews]);
+  }, [setFetching, page, pageSize, title, category, addNews]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -40,12 +53,18 @@ export function useNewsFetch(): void {
 
 /**
  * Hooks for fetching search options for news
+ * @param title
+ * @param category
  * @returns void
  */
-export function useNewsSearchOptionsFetch(): void {
+export function useNewsSearchOptionsFetch(
+  title: string,
+  category: string | null,
+): void {
   const { mounted } = useAppMountedStore();
   const { setFetchingSearchOptions, setNewsSearchOptions } = useNewsStore();
 
+  // Fetches news categories and titles with the given title and category
   const fetchNewsSearchOptions = useCallback(async () => {
     try {
       setFetchingSearchOptions(true);
@@ -54,6 +73,9 @@ export function useNewsSearchOptionsFetch(): void {
         `/api/news?select=${JSON.stringify({
           category: true,
           title: true,
+        })}&where=${JSON.stringify({
+          ...(title && { title: { contains: title } }),
+          ...(category && { category }),
         })}`,
       );
 
@@ -69,7 +91,7 @@ export function useNewsSearchOptionsFetch(): void {
     } finally {
       setFetchingSearchOptions(false);
     }
-  }, [setFetchingSearchOptions, setNewsSearchOptions]);
+  }, [setFetchingSearchOptions, setNewsSearchOptions, title, category]);
 
   useEffect(() => {
     if (!mounted) return;

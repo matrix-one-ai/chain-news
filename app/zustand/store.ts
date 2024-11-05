@@ -134,10 +134,12 @@ interface NewsState {
   pageSize: number;
   fetching: boolean;
   fetchingSearchOptions: boolean;
+  setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
     newsSearchOptions: AtLeast<News, "category" | "title">[],
   ) => void;
+  setPage: (page: number) => void;
   incrementPage: () => void;
   setFetching: (fetching: boolean) => void;
   setFetchingSearchOptions: (fetchingSearchOptions: boolean) => void;
@@ -150,9 +152,11 @@ export const useNewsStore = create<NewsState>((set) => ({
   pageSize: 20,
   fetching: false,
   fetchingSearchOptions: false,
+  setNews: (news) => set(() => ({ news })),
   addNews: (newNews) => set((state) => ({ news: [...state.news, ...newNews] })),
   setNewsSearchOptions: (newsSearchOptions) =>
     set(() => ({ newsSearchOptions })),
+  setPage: (page) => set(() => ({ page })),
   incrementPage: () =>
     set((state) => {
       if (state.fetching) return state;

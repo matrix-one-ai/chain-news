@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get("page") || "null", 10);
   const pageSize = parseInt(searchParams.get("pageSize") || "null", 10);
   const select = JSON.parse(searchParams.get("select") || "null"); // columns to select
+  const where = JSON.parse(searchParams.get("where") || "null");
 
   try {
     const feed = await prisma.news.findMany({
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest) {
               tokenTicker: true,
             }
           : select,
+      where: where === null ? {} : where,
       ...(isNaN(page) || isNaN(pageSize)
         ? {}
         : { skip: (page - 1) * pageSize, take: pageSize }),

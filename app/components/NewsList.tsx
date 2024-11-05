@@ -40,13 +40,14 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     fetchingSearchOptions,
     incrementPage,
   } = useNewsStore();
-  useNewsFetch();
-  useNewsSearchOptionsFetch();
   const targetRef = useInfiniteScroll(incrementPage);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [tokenPrices, setTokenPrices] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
+
+  useNewsFetch(debouncedSearchQuery, selectedFilter);
+  useNewsSearchOptionsFetch(debouncedSearchQuery, selectedFilter);
 
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
@@ -230,7 +231,9 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
             />
           ))}
           {/* Target element for infinite scroll */}
-          <Box ref={targetRef} style={{ height: 1 }} />
+          {interpolatedNews.length >= pageSize && (
+            <Box ref={targetRef} style={{ height: 1 }} />
+          )}
         </div>
       </Box>
     </Fade>
