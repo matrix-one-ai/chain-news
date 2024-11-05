@@ -329,6 +329,7 @@ const Overlay = ({
         touchAction: "none",
         userSelect: "none",
         pointerEvents: "none",
+        zIndex: 1000,
       }}
     >
       {progress < 100 && (

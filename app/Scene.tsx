@@ -6,6 +6,7 @@ import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
 import MatrixTunnel from "./components/MatrixTunnel";
+import { useSettingsStore } from "./zustand/store";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -35,6 +36,8 @@ const Scene = ({
   speaker,
   setProgress,
 }: SceneProps) => {
+  const { showTraderViewWidget } = useSettingsStore();
+
   const screenUrl = useMemo(
     () =>
       selectedNews
@@ -98,6 +101,7 @@ const Scene = ({
           url={screenUrl}
           position={[0, 1.6, -1.25]}
           rotation={[0, 0, 0]}
+          isIframe={showTraderViewWidget}
         />
       </Suspense>
       <Suspense fallback={null}>

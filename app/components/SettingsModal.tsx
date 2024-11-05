@@ -38,10 +38,12 @@ const SettingsModal = ({
     isSubtitlesVisible,
     isPromptUnlocked,
     customPrompt,
+    showTraderViewWidget,
     setIsSettingsOpen,
     setIsSubtitlesVisible,
     setIsPromptUnlocked,
     setCustomPrompt,
+    setShowTraderViewWidget,
   } = useSettingsStore();
 
   return (
@@ -119,6 +121,18 @@ const SettingsModal = ({
               />
             }
             label="Show Subtitles"
+          />
+        </FormGroup>
+
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showTraderViewWidget}
+                onChange={() => setShowTraderViewWidget(!showTraderViewWidget)}
+              />
+            }
+            label="Show TraderView Widget"
           />
         </FormGroup>
 

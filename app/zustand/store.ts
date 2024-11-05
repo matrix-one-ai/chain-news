@@ -71,10 +71,12 @@ interface SettingsState {
   isSubtitlesVisible: boolean;
   isPromptUnlocked: boolean;
   customPrompt: string;
+  showTraderViewWidget: boolean;
   setIsSettingsOpen: (isOpen: boolean) => void;
   setIsSubtitlesVisible: (isVisible: boolean) => void;
   setIsPromptUnlocked: (isUnlocked: boolean) => void;
   setCustomPrompt: (prompt: string) => void;
+  setShowTraderViewWidget: (show: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
@@ -82,12 +84,15 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   isSubtitlesVisible: true,
   isPromptUnlocked: false,
   customPrompt: customPromptDefault(),
+  showTraderViewWidget: false,
   setIsSettingsOpen: (isOpen: boolean) => set({ isSettingsOpen: isOpen }),
   setIsSubtitlesVisible: (isVisible: boolean) =>
     set({ isSubtitlesVisible: isVisible }),
   setIsPromptUnlocked: (isUnlocked: boolean) =>
     set({ isPromptUnlocked: isUnlocked }),
   setCustomPrompt: (prompt: string) => set({ customPrompt: prompt }),
+  setShowTraderViewWidget: (show: boolean) =>
+    set({ showTraderViewWidget: show }),
 }));
 
 interface UserPageState {
