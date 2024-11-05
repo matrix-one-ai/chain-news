@@ -7,16 +7,12 @@ import Scene from "./Scene";
 import { Message } from "ai";
 import { useAppMountedStore } from "./zustand/store";
 
-interface ClientHomeProps {
-  newsData: News[];
-}
-
 const speakerVoiceMap = {
   HOST1: "en-US-AvaMultilingualNeural",
   HOST2: "en-US-AndrewMultilingualNeural",
 };
 
-const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
+const ClientHome: React.FC = () => {
   const { setMounted } = useAppMountedStore();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
@@ -278,7 +274,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
 
       <Overlay
         selectedNews={selectedNews}
-        newsItems={newsData}
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
