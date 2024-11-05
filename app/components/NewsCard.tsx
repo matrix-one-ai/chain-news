@@ -162,9 +162,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                       <Chip label={`${newsItem.tokenTicker}`} size="small" />
                       <Chip
                         label={`$${newsItem.usdPrice.toFixed(
-                          2
+                          2,
                         )} (${plusOrMinus}${parseFloat(
-                          newsItem.percentChange24h
+                          newsItem.percentChange24h,
                         ).toFixed(2)}%)`}
                         size="small"
                         sx={{ color: percentChangeColor }}
