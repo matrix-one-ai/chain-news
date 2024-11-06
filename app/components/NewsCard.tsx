@@ -23,7 +23,7 @@ import {
 import Image from "next/image";
 import { load } from "cheerio";
 import { useAuthStore } from "../zustand/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface NewsItem extends News {
   tokenSymbol?: string;
@@ -75,6 +75,11 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
 
   const [loading, setLoading] = useState(true);
 
+  // Reset loading status whenever news image is changed
+  useEffect(() => {
+    setLoading(true);
+  }, [newsItem?.imageUrl]);
+
   return (
     <Tooltip
       title="You need to login to play articles"
@@ -110,7 +115,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
       >
         <Fade in={true} timeout={500}>
           <Box>
-            {(loading || newsItem === null) && (
+            {loading && (
               <Skeleton
                 variant="rectangular"
                 animation="wave"
