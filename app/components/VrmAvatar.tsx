@@ -334,7 +334,6 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             .clipAction(randomTalkClip)
             .reset()
             .fadeIn(0.5)
-            .setLoop(THREE.LoopOnce, 1)
             .play();
 
           setTimeout(() => {
