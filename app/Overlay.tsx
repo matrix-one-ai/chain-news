@@ -23,6 +23,7 @@ import PlayerPanel from "./components/PlayerPanel";
 import {
   useAuthStore,
   useLiveStreamStore,
+  useNewsStore,
   usePromptStore,
   useSettingsStore,
 } from "./zustand/store";
@@ -30,7 +31,6 @@ import UserPage from "./components/UserPage/UserPage";
 
 interface OverlayProps {
   selectedNews: News | null;
-  newsItems: News[];
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
   isAudioLoading: boolean;
@@ -63,7 +63,6 @@ interface OverlayProps {
 
 const Overlay = ({
   selectedNews,
-  newsItems,
   audioRef,
   progress,
   isAudioLoading,
@@ -79,6 +78,7 @@ const Overlay = ({
 }: OverlayProps) => {
   const { prompt, setPrompt } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
+  const { news } = useNewsStore();
 
   const {
     isStreaming,
@@ -115,7 +115,7 @@ const Overlay = ({
   }, []);
 
   const streamLoop = useCallback(async () => {
-    const newsItem = newsItems[currentSegmentIndex];
+    const newsItem = news[currentSegmentIndex];
 
     console.log("Getting next news item:", newsItem);
     console.log("Current News Index:", currentSegmentIndex);
@@ -172,7 +172,7 @@ const Overlay = ({
     setIsPlaying(true);
     setPrompt(prompt);
   }, [
-    newsItems,
+    news,
     currentSegmentIndex,
     fetchChats,
     lastSegmentType,
@@ -194,7 +194,9 @@ const Overlay = ({
   }, [currentSegmentIndex, isPlaying, isStreaming, streamLoop, streamStarted]);
 
   const handleNewsClick = useCallback(
-    (newsItem: News) => {
+    (newsItem: News | null) => {
+      if (newsItem === null) return;
+
       if (isLoggedIn) {
         setSelectedNews(newsItem);
         if (isPromptUnlocked) {
@@ -214,7 +216,7 @@ const Overlay = ({
       setPrompt,
       customPrompt,
       segmentDuration,
-    ]
+    ],
   );
 
   const handleStreamStart = useCallback(() => {
@@ -263,7 +265,7 @@ const Overlay = ({
       audioRef.current.src = "";
     }
 
-    const nextNews = newsItems[currentSegmentIndex + 1];
+    const nextNews = news[currentSegmentIndex + 1];
 
     const prompt = nextSegmentPrompt(nextNews);
     setSelectedNews(nextNews);
@@ -271,7 +273,7 @@ const Overlay = ({
   }, [
     audioRef,
     currentSegmentIndex,
-    newsItems,
+    news,
     setAudioBlob,
     setCurrentLineState,
     setLastSegmentType,
@@ -397,7 +399,6 @@ const Overlay = ({
       />
 
       <NewsList
-        newsItems={newsItems}
         onNewsClick={handleNewsClick}
         isVisible={!isStreaming && !isPlaying}
       />
@@ -422,7 +423,7 @@ const Overlay = ({
         </>
       )}
 
-      <NewsTickerBanner newsItems={newsItems} />
+      <NewsTickerBanner newsItems={news} />
 
       <UserPage />
     </Box>

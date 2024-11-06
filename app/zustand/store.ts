@@ -1,5 +1,17 @@
 import { create } from "zustand";
 import { customPromptDefault } from "../helpers/prompts";
+import { News } from "@prisma/client";
+import { AtLeast } from "../types/common";
+
+interface AppMountedState {
+  mounted: boolean;
+  setMounted: () => void;
+}
+
+export const useAppMountedStore = create<AppMountedState>((set) => ({
+  mounted: false,
+  setMounted: () => set({ mounted: true }),
+}));
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -113,4 +125,49 @@ interface PromptState {
 export const usePromptStore = create<PromptState>((set) => ({
   prompt: "",
   setPrompt: (prompt: string) => set({ prompt: prompt }),
+}));
+
+interface NewsState {
+  news: News[];
+  newsSearchOptions: AtLeast<News, "category" | "title">[];
+  page: number;
+  pageSize: number;
+  totalPage: number;
+  fetching: boolean;
+  fetchingSearchOptions: boolean;
+  setNews: (news: News[]) => void;
+  addNews: (newNews: News[]) => void;
+  setNewsSearchOptions: (
+    newsSearchOptions: AtLeast<News, "category" | "title">[],
+  ) => void;
+  setPage: (page: number) => void;
+  setTotalPage: (totalPage: number) => void;
+  incrementPage: () => void;
+  setFetching: (fetching: boolean) => void;
+  setFetchingSearchOptions: (fetchingSearchOptions: boolean) => void;
+}
+
+export const useNewsStore = create<NewsState>((set) => ({
+  news: [],
+  newsSearchOptions: [],
+  page: 1,
+  pageSize: 20,
+  totalPage: 1,
+  fetching: false,
+  fetchingSearchOptions: false,
+  setNews: (news) => set(() => ({ news })),
+  addNews: (newNews) => set((state) => ({ news: [...state.news, ...newNews] })),
+  setNewsSearchOptions: (newsSearchOptions) =>
+    set(() => ({ newsSearchOptions })),
+  setPage: (page) => set(() => ({ page })),
+  setTotalPage: (totalPage) => set(() => ({ totalPage })),
+  incrementPage: () =>
+    set((state) => {
+      if (state.fetching || state.page >= state.totalPage) return state;
+
+      return { page: state.page + 1 };
+    }),
+  setFetching: (fetching) => set(() => ({ fetching })),
+  setFetchingSearchOptions: (fetchingSearchOptions) =>
+    set(() => ({ fetchingSearchOptions })),
 }));

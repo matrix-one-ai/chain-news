@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Chip, Fade, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  Fade,
+  Skeleton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { News } from "@prisma/client";
 import {
   EmojiEvents,
@@ -15,14 +23,17 @@ import {
 import Image from "next/image";
 import { load } from "cheerio";
 import { useAuthStore } from "../zustand/store";
+import { useEffect, useState } from "react";
+
+export interface NewsItem extends News {
+  tokenSymbol?: string;
+  usdPrice?: number;
+  percentChange24h?: string;
+}
 
 interface NewsCardProps {
-  newsItem: News & {
-    tokenSymbol?: string;
-    usdPrice?: number;
-    percentChange24h?: string;
-  };
-  onClick: (newsItem: News) => void;
+  newsItem: NewsItem | null;
+  onClick: (newsItem: News | null) => void;
 }
 
 const parseHTML = (htmlString: string): string => {
@@ -56,11 +67,18 @@ export type NewsCategory =
   | "Gaming";
 
 const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
-  const percentChange = parseFloat(newsItem.percentChange24h || "0");
+  const percentChange = parseFloat(newsItem?.percentChange24h || "0");
   const percentChangeColor = percentChange < 0 ? "#ff2e2e" : "secondary.main";
   const plusOrMinus = percentChange < 0 ? "" : "+";
 
   const { isLoggedIn } = useAuthStore();
+
+  const [loading, setLoading] = useState(true);
+
+  // Reset loading status whenever news image is changed
+  useEffect(() => {
+    setLoading(true);
+  }, [newsItem?.imageUrl]);
 
   return (
     <Tooltip
@@ -97,82 +115,103 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
       >
         <Fade in={true} timeout={500}>
           <Box>
-            <Box
-              sx={{
-                position: "relative",
-              }}
-            >
-              <Image
-                src={newsItem.imageUrl as string}
-                alt={newsItem.title}
-                width={350}
-                height={250}
-                style={{
-                  margin: 0,
-                }}
+            {loading && (
+              <Skeleton
+                variant="rectangular"
+                animation="wave"
+                width={305}
+                height={380}
               />
-
-              {newsItem.category && (
-                <Chip
-                  label={newsItem.category}
-                  icon={newsCategoryIcons[newsItem.category as NewsCategory]}
+            )}
+            {newsItem !== null && (
+              <>
+                <Box
                   sx={{
-                    padding: "2px 10px",
-                    position: "absolute",
-                    top: -1,
-                    left: -1,
-                    backgroundColor: "error.main",
-                    borderRadius: "5px 0 5px 0",
+                    position: loading ? "absolute" : "relative",
+                    visibility: loading ? "hidden" : "visible",
                   }}
-                  size="small"
-                />
-              )}
-            </Box>
+                >
+                  <Image
+                    src={newsItem.imageUrl as string}
+                    alt={newsItem.title}
+                    width={350}
+                    height={250}
+                    style={{
+                      margin: 0,
+                    }}
+                    onLoad={() => setLoading(false)}
+                  />
 
-            <Box
-              sx={{
-                padding: "0.75rem",
-                paddingTop: "0",
-              }}
-            >
-              <Typography
-                variant="h6"
-                color="white"
-                fontSize={18}
-                className="glitch"
-              >
-                {parseHTML(newsItem.title)}
-              </Typography>
-
-              <Typography variant="body2" color="info">
-                {newsItem.providerTitle}
-              </Typography>
-
-              <Stack
-                sx={{
-                  marginTop: "10px",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                {newsItem.tokenTicker &&
-                  newsItem.usdPrice &&
-                  newsItem.percentChange24h && (
-                    <>
-                      <Chip label={`${newsItem.tokenTicker}`} size="small" />
-                      <Chip
-                        label={`$${newsItem.usdPrice.toFixed(
-                          2
-                        )} (${plusOrMinus}${parseFloat(
-                          newsItem.percentChange24h
-                        ).toFixed(2)}%)`}
-                        size="small"
-                        sx={{ color: percentChangeColor }}
-                      />
-                    </>
+                  {newsItem.category && (
+                    <Chip
+                      label={newsItem.category}
+                      icon={
+                        newsCategoryIcons[newsItem.category as NewsCategory]
+                      }
+                      sx={{
+                        padding: "2px 10px",
+                        position: "absolute",
+                        top: -1,
+                        left: -1,
+                        backgroundColor: "error.main",
+                        borderRadius: "5px 0 5px 0",
+                      }}
+                      size="small"
+                    />
                   )}
-              </Stack>
-            </Box>
+                </Box>
+
+                <Box
+                  sx={{
+                    padding: "0.75rem",
+                    paddingTop: "0",
+                    position: loading ? "absolute" : "relative",
+                    visibility: loading ? "hidden" : "visible",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    fontSize={18}
+                    className="glitch"
+                  >
+                    {parseHTML(newsItem.title)}
+                  </Typography>
+
+                  <Typography variant="body2" color="info">
+                    {newsItem.providerTitle}
+                  </Typography>
+
+                  <Stack
+                    sx={{
+                      marginTop: "10px",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    {newsItem.tokenTicker &&
+                      newsItem.usdPrice &&
+                      newsItem.percentChange24h && (
+                        <>
+                          <Chip
+                            label={`${newsItem.tokenTicker}`}
+                            size="small"
+                          />
+                          <Chip
+                            label={`$${newsItem.usdPrice.toFixed(
+                              2,
+                            )} (${plusOrMinus}${parseFloat(
+                              newsItem.percentChange24h,
+                            ).toFixed(2)}%)`}
+                            size="small"
+                            sx={{ color: percentChangeColor }}
+                          />
+                        </>
+                      )}
+                  </Stack>
+                </Box>
+              </>
+            )}
           </Box>
         </Fade>
       </Box>

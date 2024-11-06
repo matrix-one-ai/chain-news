@@ -5,17 +5,15 @@ import { News } from "@prisma/client";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
 import { Message } from "ai";
-
-interface ClientHomeProps {
-  newsData: News[];
-}
+import { useAppMountedStore } from "./zustand/store";
 
 const speakerVoiceMap = {
   HOST1: "en-US-AvaMultilingualNeural",
   HOST2: "en-US-AndrewMultilingualNeural",
 };
 
-const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
+const ClientHome: React.FC = () => {
+  const { setMounted } = useAppMountedStore();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
@@ -71,7 +69,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0)
+          c.charCodeAt(0),
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -215,7 +213,7 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -250,12 +248,18 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
       setIsPlaying(true);
       setIsAudioLoading(false);
     },
-    [fetchAudio]
+    [fetchAudio],
   );
 
   const onPromptError = useCallback((error: any) => {
     console.log("Error in prompt:", error);
   }, []);
+
+  // * In development env, react component will be mounted 2 times due to react strict mode.
+  // * This is a hack to prevent that.
+  useEffect(() => {
+    setMounted();
+  }, [setMounted]);
 
   return (
     <>
@@ -270,7 +274,6 @@ const ClientHome: React.FC<ClientHomeProps> = ({ newsData }) => {
 
       <Overlay
         selectedNews={selectedNews}
-        newsItems={newsData}
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
