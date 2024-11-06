@@ -78,6 +78,6 @@ export async function GET() {
     return NextResponse.json(response.raw);
   } catch (e) {
     console.log(e);
-    return NextResponse.error();
+    return NextResponse.json({ error: e }, { status: 500 });
   }
 }
