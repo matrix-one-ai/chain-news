@@ -25,6 +25,9 @@ export async function POST(req: Request) {
       model: azure("gpt-4o"),
       system: "You are a helpful assistant.",
       messages,
+      frequencyPenalty: 0.5,
+      presencePenalty: 0.5,
+      temperature: 0.5,
     });
 
     return stream.toDataStreamResponse();
