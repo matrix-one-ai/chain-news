@@ -163,7 +163,7 @@ export const useNewsStore = create<NewsState>((set) => ({
   setTotalPage: (totalPage) => set(() => ({ totalPage })),
   incrementPage: () =>
     set((state) => {
-      if (state.fetching || state.page === state.totalPage) return state;
+      if (state.fetching || state.page >= state.totalPage) return state;
 
       return { page: state.page + 1 };
     }),
