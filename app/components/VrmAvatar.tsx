@@ -340,7 +340,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             const randomIdleClip =
               idleClips[Math.floor(Math.random() * idleClips.length)];
             talkAction.crossFadeTo(
-              mixer.clipAction(randomIdleClip).reset().fadeIn(0.5).play(),
+              mixer.clipAction(randomIdleClip).reset().play(),
               0.5,
               true
             );
