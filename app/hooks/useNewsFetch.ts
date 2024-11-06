@@ -1,5 +1,6 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useRef } from "react";
 import { useAppMountedStore, useNewsStore } from "../zustand/store";
+import { AbortableFetch } from "../utils/abortablePromise";
 
 /**
  * Hooks for fetching news data
@@ -18,24 +19,33 @@ export function useNewsFetch(title: string, category: string | null): void {
     setFetching,
     addNews,
   } = useNewsStore();
+  const abortableNewsFetch = useRef<AbortableFetch | null>(null);
+  const abortableNewsTotalPageFetch = useRef<AbortableFetch | null>(null);
 
-  // Reset page number and news data when title or category changes
+  // Reset operation when title or category changes
   useEffect(() => {
+    // Halt previous fetches
+    abortableNewsFetch.current?.abort();
+    abortableNewsTotalPageFetch.current?.abort();
+
+    // Reset page and news data
     setPage(1);
+    setTotalPage(1);
     setNews([]);
-  }, [title, category, setPage, setNews]);
+  }, [title, category, setPage, setNews, setTotalPage]);
 
   // Fetch news data with pagination and filter options
   const fetchNews = useCallback(async () => {
     try {
       setFetching(true);
 
-      const response = await fetch(
+      abortableNewsFetch.current = new AbortableFetch(
         `/api/news?page=${page}&pagesize=${pageSize}&where=${JSON.stringify({
           ...(title && { title: { contains: title } }),
           ...(category && { category }),
         })}`,
       );
+      const response = await abortableNewsFetch.current.fetch;
 
       if (!response.ok) {
         throw new Error("Failed to fetch news data");
@@ -44,8 +54,10 @@ export function useNewsFetch(title: string, category: string | null): void {
       const data = await response.json();
 
       addNews(data);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+      }
     } finally {
       setFetching(false);
     }
@@ -60,12 +72,13 @@ export function useNewsFetch(title: string, category: string | null): void {
   // Fetch news total page with filter options
   const fetchNewsTotalPage = useCallback(async () => {
     try {
-      const response = await fetch(
+      abortableNewsTotalPageFetch.current = new AbortableFetch(
         `/api/news/total-page?pagesize=${pageSize}&where=${JSON.stringify({
           ...(title && { title: { contains: title } }),
           ...(category && { category }),
         })}`,
       );
+      const response = await abortableNewsTotalPageFetch.current.fetch;
 
       if (!response.ok) {
         throw new Error("Failed to fetch news page count");
@@ -74,8 +87,10 @@ export function useNewsFetch(title: string, category: string | null): void {
       const data = await response.json();
 
       setTotalPage(data);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+      }
     }
   }, [pageSize, title, category, setTotalPage]);
 
@@ -88,31 +103,37 @@ export function useNewsFetch(title: string, category: string | null): void {
 
 /**
  * Hooks for fetching search options for news
- * @param title
  * @param category
  * @returns void
  */
-export function useNewsSearchOptionsFetch(
-  title: string,
-  category: string | null,
-): void {
+export function useNewsSearchOptionsFetch(category: string | null): void {
   const { mounted } = useAppMountedStore();
   const { setFetchingSearchOptions, setNewsSearchOptions } = useNewsStore();
+  const abortableNewsSearchOptionsFetch = useRef<AbortableFetch | null>(null);
+
+  // Reset operation when category changes
+  useEffect(() => {
+    // Halt previous fetche
+    abortableNewsSearchOptionsFetch.current?.abort();
+
+    // Reset search options data
+    setNewsSearchOptions([]);
+  }, [category, setNewsSearchOptions]);
 
   // Fetches news categories and titles with the given title and category
   const fetchNewsSearchOptions = useCallback(async () => {
     try {
       setFetchingSearchOptions(true);
 
-      const response = await fetch(
+      abortableNewsSearchOptionsFetch.current = new AbortableFetch(
         `/api/news?select=${JSON.stringify({
           category: true,
           title: true,
         })}&where=${JSON.stringify({
-          ...(title && { title: { contains: title } }),
           ...(category && { category }),
         })}`,
       );
+      const response = await abortableNewsSearchOptionsFetch.current.fetch;
 
       if (!response.ok) {
         throw new Error("Failed to fetch news search options");
@@ -121,12 +142,14 @@ export function useNewsSearchOptionsFetch(
       const data = await response.json();
 
       setNewsSearchOptions(data);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+      }
     } finally {
       setFetchingSearchOptions(false);
     }
-  }, [setFetchingSearchOptions, setNewsSearchOptions, title, category]);
+  }, [setFetchingSearchOptions, setNewsSearchOptions, category]);
 
   useEffect(() => {
     if (!mounted) return;

@@ -47,7 +47,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
 
   useNewsFetch(debouncedSearchQuery, selectedFilter);
-  useNewsSearchOptionsFetch(debouncedSearchQuery, selectedFilter);
+  useNewsSearchOptionsFetch(selectedFilter);
 
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
