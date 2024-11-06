@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const pageSize = parseInt(searchParams.get("pagesize") || "null", 10);
-  const where = JSON.parse(searchParams.get("where") || "null");
+  const where = JSON.parse(
+    decodeURIComponent(searchParams.get("where") || "null"),
+  );
 
   try {
     if (isNaN(pageSize)) return NextResponse.json(1);

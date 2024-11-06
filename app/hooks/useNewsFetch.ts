@@ -40,10 +40,12 @@ export function useNewsFetch(title: string, category: string | null): void {
       setFetching(true);
 
       abortableNewsFetch.current = new AbortableFetch(
-        `/api/news?page=${page}&pagesize=${pageSize}&where=${JSON.stringify({
-          ...(title && { title: { contains: title } }),
-          ...(category && { category }),
-        })}`,
+        `/api/news?page=${page}&pagesize=${pageSize}&where=${encodeURIComponent(
+          JSON.stringify({
+            ...(title && { title: { contains: title } }),
+            ...(category && { category }),
+          }),
+        )}`,
       );
       const response = await abortableNewsFetch.current.fetch;
 
@@ -73,10 +75,12 @@ export function useNewsFetch(title: string, category: string | null): void {
   const fetchNewsTotalPage = useCallback(async () => {
     try {
       abortableNewsTotalPageFetch.current = new AbortableFetch(
-        `/api/news/total-page?pagesize=${pageSize}&where=${JSON.stringify({
-          ...(title && { title: { contains: title } }),
-          ...(category && { category }),
-        })}`,
+        `/api/news/total-page?pagesize=${pageSize}&where=${encodeURIComponent(
+          JSON.stringify({
+            ...(title && { title: { contains: title } }),
+            ...(category && { category }),
+          }),
+        )}`,
       );
       const response = await abortableNewsTotalPageFetch.current.fetch;
 
@@ -129,9 +133,11 @@ export function useNewsSearchOptionsFetch(category: string | null): void {
         `/api/news?select=${JSON.stringify({
           category: true,
           title: true,
-        })}&where=${JSON.stringify({
-          ...(category && { category }),
-        })}`,
+        })}&where=${encodeURIComponent(
+          JSON.stringify({
+            ...(category && { category }),
+          }),
+        )}`,
       );
       const response = await abortableNewsSearchOptionsFetch.current.fetch;
 

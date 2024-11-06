@@ -10,7 +10,9 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get("page") || "null", 10);
   const pageSize = parseInt(searchParams.get("pagesize") || "null", 10);
   const select = JSON.parse(searchParams.get("select") || "null"); // columns to select
-  const where = JSON.parse(searchParams.get("where") || "null");
+  const where = JSON.parse(
+    decodeURIComponent(searchParams.get("where") || "null"),
+  );
 
   try {
     const feed = await prisma.news.findMany({
