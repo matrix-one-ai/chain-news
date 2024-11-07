@@ -84,8 +84,14 @@ Say goodbye and see you next time.`;
 }
 
 export function sendChatMessage(message: string) {
-  return `Your job is to deliver the latest news in the world of cryptocurrency on our platform Chain News.
-Your audience is watching on live stream.
+  return `A user has submitted the following message in the chat:
+
+${message}
+
+Please talk to the user and respond to their requests.
+
+This interaction is NOT on the live stream. 
+They are using it like a chatbot. Do not intro and conclude like a show. Keep it casual, direct to the user's request and informative.
 
 There are 2 hosts: Sam and DogWifHat.
 
@@ -108,18 +114,15 @@ Sam, DogWifHat
 
 Sam should have more script lines then DogWifHat.
 
+Only output about 2-6 script lines for a single chat response. This type of response needs to feel personal and realtime.
+
 This text is used to generate the audio for the show.
 Don't add weird characters or sounds.
 Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
 Say lists inline as just text.
 DO NOT use emotes. No parenthetical or wryly. No non-verbal expressions.
 DO NOT ADD: "Laughs", "Giggles", etc. Before the text.
-
-A user has submitted the following message in the chat:
-
-${message}
-
-Please talk to the user.`;
+`;
 }
 
 export function customPromptDefault() {
