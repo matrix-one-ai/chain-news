@@ -1,0 +1,45 @@
+import { createAzure } from "@ai-sdk/azure";
+import { generateText } from "ai";
+import { NextResponse } from "next/server";
+import { use } from "react";
+
+export const runtime = "nodejs";
+export const revalidate = 0;
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_OPENAI_RESOURCE!,
+  apiKey: process.env.AZURE_OPENAI_KEY!,
+});
+
+export const GET = async () => {
+  try {
+    const { text } = await generateText({
+      model: azure("gpt-4o"),
+      prompt: `
+        Write a short tweet as DogWifHat.
+        DogWifHat, is insightful and wise, the steady foundation of the team, wielding sarcasm with skill, and reliant on his close ties, balancing wit with dependability.
+      `,
+    });
+    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/twitter/post`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        username: "DogWifHatOne",
+      }),
+    });
+
+    return NextResponse.json({
+      message: "success",
+      text,
+    });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({
+      message: "error",
+      error: err,
+    });
+  }
+};

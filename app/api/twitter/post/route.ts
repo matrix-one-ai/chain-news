@@ -9,12 +9,12 @@ const prisma = new PrismaClient();
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { text } = await req.json();
+    const { text, username } = await req.json();
 
-    if (!text) {
+    if (!text || !username) {
       return NextResponse.json({
         message: "error",
-        error: "No text provided",
+        error: "No text provided or username",
       });
     }
 
@@ -23,7 +23,11 @@ export const POST = async (req: NextRequest) => {
       clientSecret: process.env.TWITTER_CLIENT_SECRET!,
     });
 
-    const twitterSession = await prisma.twitterAPI.findFirst();
+    const twitterSession = await prisma.twitterAPI.findFirst({
+      where: {
+        username,
+      },
+    });
 
     if (!twitterSession || !twitterSession.refreshToken) {
       return NextResponse.json({

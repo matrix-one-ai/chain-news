@@ -14,7 +14,7 @@ export const GET = async () => {
       clientSecret: process.env.TWITTER_CLIENT_SECRET!,
     });
 
-    const authLink = await client.generateOAuth2AuthLink(
+    const authLink = client.generateOAuth2AuthLink(
       `${process.env.NEXT_PUBLIC_URL}/api/twitter/callback`,
       {
         scope: [
@@ -28,8 +28,6 @@ export const GET = async () => {
     );
 
     console.log(authLink);
-
-    await prisma.twitterAPI.deleteMany();
 
     await prisma.twitterAPI.create({
       data: {

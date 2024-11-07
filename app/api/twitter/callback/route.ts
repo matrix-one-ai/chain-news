@@ -12,7 +12,18 @@ export const GET = async (req: NextRequest) => {
     const state = req.nextUrl.searchParams.get("state");
     const code = req.nextUrl.searchParams.get("code");
 
-    const twitterSession = await prisma.twitterAPI.findFirst();
+    if (!state || !code) {
+      return NextResponse.json({
+        message: "error",
+        error: "Missing parameters",
+      });
+    }
+
+    const twitterSession = await prisma.twitterAPI.findFirst({
+      where: {
+        state,
+      },
+    });
 
     if (!twitterSession) {
       return NextResponse.json({
