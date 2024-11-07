@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
 import { useAuthStore } from "../zustand/store";
+import { CoreMessage } from "ai";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -78,6 +79,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
       }
     }, [chatContainerRef, messages]);
 
+    const splitScriptLines = useCallback((content: string) => {
+      const splitMessage = content
+        .split("\n")
+        .filter((line) => line.length > 0);
+      const scriptLines = splitMessage.map((line) => {
+        const [speaker, text] = line.split("<");
+        return { speaker, text };
+      });
+      return scriptLines;
+    }, []);
+
     return !isStreaming ? (
       <Box
         sx={{
@@ -93,15 +105,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
             style={{
               maxHeight: "300px",
               overflowY: "auto",
-              backgroundColor: "#f0f0f0",
+              backgroundColor: "white",
+              backdropFilter: "blur(10px)",
               padding: "10px",
             }}
           >
             {messages.map((message, index) => (
               <Box key={index}>
                 <Typography variant="body1" fontWeight="bold">
-                  {message.role === "user" ? "User" : "AI"}:{" "}
-                  <Typography variant="body2">{message.content}</Typography>
+                  {message.role === "user" ? (
+                    <>
+                      {"User"}
+                      <Typography variant="body2">{message.content}</Typography>
+                    </>
+                  ) : (
+                    <>
+                      {"AI"}
+                      <Typography variant="body2">{message.content}</Typography>
+                      <Typography variant="body2">
+                        {splitScriptLines(message.content).map(
+                          ({ speaker, text }) => (
+                            <Typography
+                              key={text}
+                              variant="body2"
+                              sx={{
+                                mb: 1,
+                              }}
+                            >
+                              <Typography variant="body2" fontWeight="bold">
+                                {speaker}:
+                              </Typography>{" "}
+                              {text}
+                            </Typography>
+                          )
+                        )}
+                      </Typography>
+                    </>
+                  )}
                 </Typography>
               </Box>
             ))}

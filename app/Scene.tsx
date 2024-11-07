@@ -71,8 +71,8 @@ const Scene = ({
         rotation={[0, 0, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
-        audioBlob={speaker === "HOST1" ? audioBlob : null}
-        blendShapes={speaker === "HOST1" ? blendShapes : []}
+        audioBlob={speaker === "Sam" ? audioBlob : null}
+        blendShapes={speaker === "Sam" ? blendShapes : []}
       />
       <VrmAvatar
         avatarKey="dogwifhat-sit"
@@ -81,8 +81,8 @@ const Scene = ({
         rotation={[0, -Math.PI / 1.2, 0]}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
-        audioBlob={speaker === "HOST2" ? audioBlob : null}
-        blendShapes={speaker === "HOST2" ? blendShapes : []}
+        audioBlob={speaker === "DogWifHat" ? audioBlob : null}
+        blendShapes={speaker === "DogWifHat" ? blendShapes : []}
       />
       <Suspense fallback={null}>
         <Plane position={[0, 0.3, -0.35]} rotation={[0, 0, 0]} args={[1.5, 1]}>

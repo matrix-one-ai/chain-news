@@ -8,8 +8,8 @@ import { Message } from "ai";
 import { useAppMountedStore } from "./zustand/store";
 
 const speakerVoiceMap = {
-  HOST1: "en-US-AvaMultilingualNeural",
-  HOST2: "en-US-AndrewMultilingualNeural",
+  Sam: "en-US-AvaMultilingualNeural",
+  DogWifHat: "en-US-AndrewMultilingualNeural",
 };
 
 const ClientHome: React.FC = () => {
@@ -69,7 +69,7 @@ const ClientHome: React.FC = () => {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0),
+          c.charCodeAt(0)
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -213,7 +213,7 @@ const ClientHome: React.FC = () => {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -248,7 +248,7 @@ const ClientHome: React.FC = () => {
       setIsPlaying(true);
       setIsAudioLoading(false);
     },
-    [fetchAudio],
+    [fetchAudio]
   );
 
   const onPromptError = useCallback((error: any) => {

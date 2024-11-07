@@ -216,7 +216,7 @@ const Overlay = ({
       setPrompt,
       customPrompt,
       segmentDuration,
-    ],
+    ]
   );
 
   const handleStreamStart = useCallback(() => {
@@ -406,9 +406,7 @@ const Overlay = ({
       {(isStreaming || isPlaying) && (
         <>
           <LiveBanner
-            currentSpeaker={
-              currentLineState.speaker === "HOST1" ? "Sam" : "DogWifHat"
-            }
+            currentSpeaker={currentLineState.speaker}
             subtitleText={currentLineState.text}
             isSubtitlesVisible={isSubtitlesVisible}
           />
