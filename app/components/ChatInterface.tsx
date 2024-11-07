@@ -121,7 +121,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   ) : (
                     <>
                       {"AI"}
-                      <Typography variant="body2">{message.content}</Typography>
                       <Typography variant="body2">
                         {splitScriptLines(message.content).map(
                           ({ speaker, text }) => (
