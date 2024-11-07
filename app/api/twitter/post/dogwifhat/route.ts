@@ -1,7 +1,6 @@
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import { use } from "react";
 
 export const runtime = "nodejs";
 export const revalidate = 0;
