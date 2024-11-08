@@ -83,7 +83,7 @@ export function useNewsFetch(title: string, category: string | null): void {
 
       const data = await response.json();
 
-      addNews(data);
+      setNews(data);
     } catch (err: any) {
       if (err.name !== "AbortError") {
         console.error(err);
@@ -91,17 +91,18 @@ export function useNewsFetch(title: string, category: string | null): void {
     } finally {
       setFetching(false);
     }
-  }, [setFetching, addNews]);
+  }, [setFetching, setNews]);
 
   useEffect(() => {
     if (!mounted) return;
+    setNews([]);
 
     if (isStreaming) {
       fetchAllNews();
     } else {
       fetchNews();
     }
-  }, [isStreaming, fetchAllNews, fetchNews, mounted]);
+  }, [isStreaming, fetchAllNews, fetchNews, mounted, setNews]);
 
   // Fetch news total page with filter options
   const fetchNewsTotalPage = useCallback(async () => {
