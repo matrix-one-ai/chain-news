@@ -5,6 +5,8 @@ import { htmlToText } from "html-to-text";
 import { generateText } from "ai";
 import { createAzure } from "@ai-sdk/azure";
 import { put } from "@vercel/blob";
+import slug from "slug";
+import { generateHash } from "../../helpers/crypto";
 
 const azure = createAzure({
   resourceName: process.env.AZURE_OPENAI_RESOURCE!,
@@ -248,6 +250,7 @@ export async function GET() {
       await prisma.news.createMany({
         data: parsedNews.items.map((item: News) => ({
           provider: parsedNews.provider,
+          slug: `${slug(item.title)}-${generateHash(item.title)}`,
           providerTitle: parsedNews.providerTitle,
           providerDescription: parsedNews.providerDescription,
           providerUrl: parsedNews.providerUrl,

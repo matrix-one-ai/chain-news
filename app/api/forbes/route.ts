@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { createAzure } from "@ai-sdk/azure";
 import { generateText } from "ai";
 import { load } from "cheerio";
+import slug from "slug";
+import { generateHash } from "../../helpers/crypto";
 
 const azure = createAzure({
   resourceName: process.env.AZURE_OPENAI_RESOURCE!,
@@ -111,6 +113,7 @@ export async function POST() {
     await prisma.news.createMany({
       data: parsedNews.map((item) => ({
         provider: item.provider,
+        slug: `${slug(item.title)}-${generateHash(item.title)}`,
         providerTitle: item.providerTitle,
         providerDescription: item.providerDescription,
         providerUrl: item.providerUrl,
