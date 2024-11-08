@@ -33,7 +33,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
-    const { isPlaying } = useSceneStore();
+    const { mainHostAvatar, isPlaying } = useSceneStore();
     const { isLoggedIn } = useAuthStore();
 
     const {
@@ -65,11 +65,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
 
         const prompt = isPromptUnlocked
           ? customPrompt
-          : sendChatMessage(message);
+          : sendChatMessage(message, mainHostAvatar);
         append({ role: "user", content: prompt });
         setInput("");
       },
-      [append, customPrompt, isPromptUnlocked, setInput]
+      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput]
     );
 
     useEffect(() => {

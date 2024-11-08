@@ -31,6 +31,7 @@ import {
   useAuthStore,
   useOverlayStore,
   usePromptStore,
+  useSceneStore,
   useUserPageStore,
 } from "../zustand/store";
 
@@ -58,7 +59,7 @@ function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
-  const { prompt, setPrompt } = usePromptStore();
+  const { setPrompt } = usePromptStore();
 
   const {
     walletAddress,
@@ -70,6 +71,8 @@ function Web3AuthLogin() {
     setImageUrl,
     setNickname,
   } = useAuthStore();
+
+  const { mainHostAvatar } = useSceneStore();
 
   useEffect(() => {
     if (provider && web3auth?.connected) {
@@ -187,9 +190,9 @@ function Web3AuthLogin() {
       setLoggedIn(true);
     }
 
-    setPrompt(greetUserLoginPrompt());
+    setPrompt(greetUserLoginPrompt(mainHostAvatar));
     setProvider(web3authProvider);
-  }, [web3auth, setLoggedIn, setPrompt, uiConsole]);
+  }, [web3auth, setPrompt, mainHostAvatar, uiConsole, setLoggedIn]);
 
   const logout = useCallback(async () => {
     if (!web3auth) {
@@ -199,8 +202,8 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    setPrompt(goodbyeUserLogoutPrompt());
-  }, [web3auth, setLoggedIn, setPrompt, uiConsole]);
+    setPrompt(goodbyeUserLogoutPrompt(mainHostAvatar));
+  }, [web3auth, setLoggedIn, setPrompt, mainHostAvatar, uiConsole]);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

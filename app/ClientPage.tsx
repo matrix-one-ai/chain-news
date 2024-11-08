@@ -9,6 +9,7 @@ import { useAppMountedStore, useSceneStore } from "./zustand/store";
 
 const speakerVoiceMap = {
   Sam: "en-US-AvaMultilingualNeural",
+  Haiku: "en-US-EmmaMultilingualNeural4",
   DogWifHat: "en-US-AndrewMultilingualNeural",
 };
 
@@ -42,7 +43,7 @@ const ClientHome: React.FC = () => {
     blendShapes: [],
   });
 
-  const { isPlaying, setIsPlaying } = useSceneStore();
+  const { setIsPlaying } = useSceneStore();
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {

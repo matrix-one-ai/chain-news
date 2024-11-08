@@ -99,7 +99,7 @@ const Overlay = ({
   } = useSettingsStore();
 
   const { setIsPaywallModalOpen } = useOverlayStore();
-  const { isPlaying, setIsPlaying } = useSceneStore();
+  const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -147,7 +147,7 @@ const Overlay = ({
       setSelectedNews(newsItem);
       prompt = isPromptUnlocked
         ? customPrompt
-        : startNewsPrompt(newsItem, segmentDuration);
+        : startNewsPrompt(newsItem, segmentDuration, mainHostAvatar);
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
     }
@@ -186,6 +186,7 @@ const Overlay = ({
     isPromptUnlocked,
     customPrompt,
     segmentDuration,
+    mainHostAvatar,
   ]);
 
   // streaming loop
@@ -204,7 +205,11 @@ const Overlay = ({
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
         } else {
-          const prompt = startNewsPrompt(newsItem, segmentDuration);
+          const prompt = startNewsPrompt(
+            newsItem,
+            segmentDuration,
+            mainHostAvatar
+          );
           setPrompt(prompt);
         }
       } else {
@@ -218,6 +223,7 @@ const Overlay = ({
       setPrompt,
       customPrompt,
       segmentDuration,
+      mainHostAvatar,
     ]
   );
 

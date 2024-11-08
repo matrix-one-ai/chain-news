@@ -409,16 +409,16 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         const maxRotationAngle = Math.PI / 4; // 45 degrees
         const constrainedDirection = new THREE.Vector3(
           THREE.MathUtils.clamp(
-            avatarKey === "dogwifhat-sit" ? -direction.x : direction.x,
+            avatarKey === "vivian-best" ? direction.x : -direction.x,
             -maxRotationAngle,
             maxRotationAngle
           ),
           THREE.MathUtils.clamp(
-            avatarKey === "dogwifhat-sit" ? -direction.y : direction.y,
+            avatarKey === "vivian-best" ? direction.y : -direction.y,
             -maxRotationAngle,
             maxRotationAngle
           ),
-          avatarKey === "dogwifhat-sit" ? -direction.z : direction.z
+          avatarKey === "vivian-best" ? direction.z : -direction.z
         ).normalize();
 
         headBone.lookAt(headPosition.clone().add(constrainedDirection));
@@ -455,8 +455,10 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
               const blendShapeName = getBlendShapeKey(index + 1);
               if (blendShapeName) {
                 expressionManager.setValue(
-                  blendShapeName.charAt(0).toLowerCase() +
-                    blendShapeName.slice(1),
+                  avatarKey === "vivian-best" || avatarKey === "dogwifhat-sit"
+                    ? blendShapeName.charAt(0).toLowerCase() +
+                        blendShapeName.slice(1)
+                    : blendShapeName,
                   value
                 );
               }

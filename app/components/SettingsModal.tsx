@@ -3,9 +3,14 @@ import {
   Button,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
   FormGroup,
+  InputLabel,
+  MenuItem,
   Modal,
+  Select,
+  SelectChangeEvent,
   Slider,
   Switch,
   TextField,
@@ -14,6 +19,7 @@ import {
 import {
   useAuthStore,
   useLiveStreamStore,
+  useSceneStore,
   useSettingsStore,
 } from "../zustand/store";
 
@@ -45,6 +51,14 @@ const SettingsModal = ({
     setCustomPrompt,
     setShowTraderViewWidget,
   } = useSettingsStore();
+
+  const { mainHostAvatar, avatarConfigs, setMainHostAvatar } = useSceneStore();
+
+  const onMainHostAvatarChange = (event: SelectChangeEvent) => {
+    setMainHostAvatar(
+      avatarConfigs.find((config) => config.name === event.target.value) as any
+    );
+  };
 
   return (
     <Modal
@@ -136,6 +150,28 @@ const SettingsModal = ({
             label="Show TraderView Widget"
           />
         </FormGroup>
+
+        <FormControl
+          fullWidth
+          sx={{
+            my: 2,
+          }}
+        >
+          <InputLabel id="main-host-label">Main Host Avatar</InputLabel>
+          <Select
+            labelId="main-host-label"
+            value={mainHostAvatar.name}
+            label="Main Host Avatar"
+            onChange={onMainHostAvatarChange}
+            size="small"
+          >
+            {avatarConfigs.map((config) => (
+              <MenuItem key={config.vrmKey} value={config.name}>
+                {config.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <FormGroup>
           <FormControlLabel

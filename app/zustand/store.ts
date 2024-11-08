@@ -3,6 +3,25 @@ import { customPromptDefault } from "../helpers/prompts";
 import { News } from "@prisma/client";
 import { AtLeast } from "../types/common";
 
+export interface AvatarConfig {
+  name: string;
+  vrmKey: string;
+  rotation: [number, number, number];
+}
+
+const avatarConfigs: AvatarConfig[] = [
+  {
+    name: "Sam",
+    vrmKey: "vivian-best",
+    rotation: [0, 0, 0],
+  },
+  {
+    name: "Haiku",
+    vrmKey: "haiku",
+    rotation: [0, Math.PI, 0],
+  },
+];
+
 interface AppMountedState {
   mounted: boolean;
   setMounted: () => void;
@@ -100,7 +119,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   isSettingsOpen: false,
   isSubtitlesVisible: true,
   isPromptUnlocked: false,
-  customPrompt: customPromptDefault(),
+  customPrompt: customPromptDefault(avatarConfigs[0]),
   showTraderViewWidget: false,
   setIsSettingsOpen: (isOpen: boolean) => set({ isSettingsOpen: isOpen }),
   setIsSubtitlesVisible: (isVisible: boolean) =>
@@ -179,10 +198,16 @@ export const useNewsStore = create<NewsState>((set) => ({
 
 interface SceneState {
   isPlaying: boolean;
+  mainHostAvatar: AvatarConfig;
+  avatarConfigs: AvatarConfig[];
   setIsPlaying: (isPlaying: boolean) => void;
+  setMainHostAvatar: (avatar: AvatarConfig) => void;
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
   isPlaying: false,
+  mainHostAvatar: avatarConfigs[0],
+  avatarConfigs: avatarConfigs,
   setIsPlaying: (isPlaying: boolean) => set({ isPlaying: isPlaying }),
+  setMainHostAvatar: (avatar: AvatarConfig) => set({ mainHostAvatar: avatar }),
 }));

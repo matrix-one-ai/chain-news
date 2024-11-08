@@ -6,7 +6,7 @@ import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
 import MatrixTunnel from "./components/MatrixTunnel";
-import { useSettingsStore } from "./zustand/store";
+import { useSceneStore, useSettingsStore } from "./zustand/store";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -37,6 +37,7 @@ const Scene = ({
   setProgress,
 }: SceneProps) => {
   const { showTraderViewWidget } = useSettingsStore();
+  const { mainHostAvatar } = useSceneStore();
 
   const screenUrl = useMemo(
     () =>
@@ -65,14 +66,14 @@ const Scene = ({
       />
       <pointLight position={[-10, -10, -10]} decay={0} intensity={2} />
       <VrmAvatar
-        avatarKey="vivian-best"
+        avatarKey={mainHostAvatar.vrmKey}
         position={[0, 0, -0.65]}
         scale={[1, 1, 1]}
-        rotation={[0, 0, 0]}
+        rotation={mainHostAvatar.rotation}
         audioRef={audioRef}
         onLoadingProgress={setProgress}
-        audioBlob={speaker === "Sam" ? audioBlob : null}
-        blendShapes={speaker === "Sam" ? blendShapes : []}
+        audioBlob={speaker === mainHostAvatar.name ? audioBlob : null}
+        blendShapes={speaker === mainHostAvatar.name ? blendShapes : []}
       />
       <VrmAvatar
         avatarKey="dogwifhat-sit"
