@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import WaterMark from "./WaterMark";
 import {
   AppBar,
@@ -213,7 +214,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -233,42 +234,26 @@ function Web3AuthLogin() {
     () => [
       {
         name: "User Settings",
-        onClick: () => {
-          setSelectedUserTab(0);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: "/settings",
       },
       {
         name: "Subscription",
-        onClick: () => {
-          setSelectedUserTab(1);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: "/subscription",
       },
       {
         name: "Terms of Use",
-        onClick: () => {
-          setSelectedUserTab(2);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: "/terms",
       },
       {
         name: "Privacy Policy",
-        onClick: () => {
-          setSelectedUserTab(3);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: "/privacy",
       },
       {
         name: "Logout",
         onClick: logout,
       },
     ],
-    [logout, setIsUserPageOpen, setSelectedUserTab]
+    [logout],
   );
 
   const loggedInView = (
@@ -363,16 +348,21 @@ function Web3AuthLogin() {
         open={isMenuOpen}
         onClose={handleCloseUserMenu}
       >
-        {menuItems.map((item) => (
+        {menuItems.map(({ name, route, onClick }) => (
           <MenuItem
-            key={item.name}
-            onClick={item.onClick}
+            key={name}
+            onClick={onClick}
             sx={{
               backgroundColor: "#171325",
               padding: "0.5rem 1rem",
+              textAlign: "left",
             }}
           >
-            <ListItemText sx={{ textAlign: "left" }}>{item.name}</ListItemText>
+            {route ? (
+              <Link href={route}>{name}</Link>
+            ) : (
+              <ListItemText>{name}</ListItemText>
+            )}
           </MenuItem>
         ))}
       </Menu>
