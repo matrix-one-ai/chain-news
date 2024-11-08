@@ -25,6 +25,7 @@ model News {
   datePublished       DateTime
   createdAt           DateTime @default(now())
   tokenTicker         String?
+  slug                String?  @unique
 }
 
 model YoutubeChat {
@@ -39,8 +40,8 @@ model YoutubeChat {
 
 model TwitterAPI {
   id           Int       @id @default(autoincrement())
-  state        String
   codeVerifier String
+  state        String
   refreshToken String?
   expiresAt    DateTime?
   username     String?
@@ -49,16 +50,16 @@ model TwitterAPI {
 model User {
   id             Int      @id @default(autoincrement())
   walletAddress  String   @unique
-  nickname       String?
   chainId        String
   chainNamespace String
   adapter        String
-  isAdmin        Boolean  @default(false)
-  imageUrl       String?
   createdAt      DateTime @default(now())
   lastLogin      DateTime @default(now())
-  ipAddress      String   @default("")
+  isAdmin        Boolean  @default(false)
   ipInfoId       Int?
+  ipAddress      String   @default("")
+  imageUrl       String?
+  nickname       String?
   ipInfo         IPInfo?  @relation(fields: [ipInfoId], references: [id])
 }
 
