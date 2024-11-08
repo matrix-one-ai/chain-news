@@ -24,10 +24,12 @@ import {
   useAuthStore,
   useLiveStreamStore,
   useNewsStore,
+  useOverlayStore,
   usePromptStore,
   useSettingsStore,
 } from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
+import PaywallModal from "./components/PaywallModal";
 
 interface OverlayProps {
   selectedNews: News | null;
@@ -98,6 +100,8 @@ const Overlay = ({
     customPrompt,
     setIsSettingsOpen,
   } = useSettingsStore();
+
+  const { setIsPaywallModalOpen } = useOverlayStore();
 
   const fetchChats = useCallback(async () => {
     try {
@@ -317,6 +321,10 @@ const Overlay = ({
     }
   }, [isAdmin, isLoggedIn, setIsSettingsOpen]);
 
+  useEffect(() => {
+    setIsPaywallModalOpen(true);
+  }, [setIsPaywallModalOpen]);
+
   return (
     <Box
       sx={{
@@ -424,6 +432,8 @@ const Overlay = ({
       <NewsTickerBanner newsItems={news} />
 
       <UserPage />
+
+      <PaywallModal />
     </Box>
   );
 };

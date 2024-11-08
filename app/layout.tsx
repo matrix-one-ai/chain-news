@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Pixelify_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,6 +18,12 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-ibm-plex-mono",
+});
+
+const pixelifySans = Pixelify_Sans({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-pixelify-sans",
 });
 
 export const metadata: Metadata = {
@@ -54,7 +60,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
+      <body
+        className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${pixelifySans.variable}`}
+      >
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <Navbar />

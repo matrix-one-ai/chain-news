@@ -41,12 +41,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 
 interface OverlayState {
   isUserPageOpen: boolean;
+  isPaywallModalOpen: boolean;
   setIsUserPageOpen: (isOpen: boolean) => void;
+  setIsPaywallModalOpen: (isOpen: boolean) => void;
 }
 
 export const useOverlayStore = create<OverlayState>((set) => ({
   isUserPageOpen: false,
+  isPaywallModalOpen: false,
   setIsUserPageOpen: (isOpen: boolean) => set({ isUserPageOpen: isOpen }),
+  setIsPaywallModalOpen: (isOpen: boolean) =>
+    set({ isPaywallModalOpen: isOpen }),
 }));
 
 interface LiveStreamState {
@@ -138,7 +143,7 @@ interface NewsState {
   setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
-    newsSearchOptions: AtLeast<News, "category" | "title">[],
+    newsSearchOptions: AtLeast<News, "category" | "title">[]
   ) => void;
   setPage: (page: number) => void;
   setTotalPage: (totalPage: number) => void;
