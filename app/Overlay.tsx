@@ -159,7 +159,7 @@ const Overlay = ({
     //   prompt = streamPromoPrompt();
     //   setLastSegmentType('promo');
     // }
-    else if (currentSegmentIndex % 4 === 0) {
+    else if (currentSegmentIndex % 5 === 0) {
       // Handle Joke Breaks
       setSelectedNews(null);
       setCurrentSegmentIndex(currentSegmentIndex + 1);
