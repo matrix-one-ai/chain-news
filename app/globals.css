@@ -57,10 +57,15 @@ a {
   background-color: #98f040; /* Secondary color on hover */
 }
 
+#w3a-modal {
+  padding: 0.5rem !important;
+}
+
 .w3a-modal__inner,
 .w3a-modal__inner--active {
   font-family: var(--font-ibm-plex-mono);
   background-color: #2a223c !important;
+  max-width: 440px !important;
 }
 
 .w3a-parent-container #w3a-modal .w3a-header__logo img {
