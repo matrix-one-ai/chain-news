@@ -176,3 +176,13 @@ export const useNewsStore = create<NewsState>((set) => ({
   setFetchingSearchOptions: (fetchingSearchOptions) =>
     set(() => ({ fetchingSearchOptions })),
 }));
+
+interface SceneState {
+  isPlaying: boolean;
+  setIsPlaying: (isPlaying: boolean) => void;
+}
+
+export const useSceneStore = create<SceneState>((set) => ({
+  isPlaying: false,
+  setIsPlaying: (isPlaying: boolean) => set({ isPlaying: isPlaying }),
+}));

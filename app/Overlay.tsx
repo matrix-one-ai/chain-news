@@ -26,6 +26,7 @@ import {
   useNewsStore,
   useOverlayStore,
   usePromptStore,
+  useSceneStore,
   useSettingsStore,
 } from "./zustand/store";
 import UserPage from "./components/UserPage/UserPage";
@@ -36,7 +37,6 @@ interface OverlayProps {
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
   isAudioLoading: boolean;
-  isPlaying: boolean;
   currentLineState: {
     lineIndex: number;
     speaker: string;
@@ -48,7 +48,6 @@ interface OverlayProps {
   onPromptError: (error: any) => void;
   setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
-  setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   setScriptLines: React.Dispatch<
     React.SetStateAction<{ speaker: string; text: string }[]>
   >;
@@ -69,12 +68,10 @@ const Overlay = ({
   progress,
   isAudioLoading,
   currentLineState,
-  isPlaying,
   onPromptFinish,
   onPromptError,
   setSelectedNews,
   setAudioBlob,
-  setIsPlaying,
   setScriptLines,
   setCurrentLineState,
 }: OverlayProps) => {
@@ -102,6 +99,7 @@ const Overlay = ({
   } = useSettingsStore();
 
   const { setIsPaywallModalOpen } = useOverlayStore();
+  const { isPlaying, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
     try {

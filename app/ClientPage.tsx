@@ -5,7 +5,7 @@ import { News } from "@prisma/client";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
 import { Message } from "ai";
-import { useAppMountedStore } from "./zustand/store";
+import { useAppMountedStore, useSceneStore } from "./zustand/store";
 
 const speakerVoiceMap = {
   Sam: "en-US-AvaMultilingualNeural",
@@ -24,7 +24,6 @@ const ClientHome: React.FC = () => {
       text: string;
     }[]
   >([]);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [audioCache, setAudioCache] = useState<{
     [index: number]: { blob: Blob; blendShapes: any[] };
   }>({});
@@ -42,6 +41,8 @@ const ClientHome: React.FC = () => {
     audioBlob: null,
     blendShapes: [],
   });
+
+  const { isPlaying, setIsPlaying } = useSceneStore();
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
@@ -168,7 +169,7 @@ const ClientHome: React.FC = () => {
         blendShapes: [],
       });
     }
-  }, [currentLineState, playCurrentLine, scriptLines.length]);
+  }, [currentLineState, playCurrentLine, scriptLines.length, setIsPlaying]);
 
   // Set up event listener for when audio ends
   useEffect(() => {
@@ -248,7 +249,7 @@ const ClientHome: React.FC = () => {
       setIsPlaying(true);
       setIsAudioLoading(false);
     },
-    [fetchAudio]
+    [fetchAudio, setIsPlaying]
   );
 
   const onPromptError = useCallback((error: any) => {
@@ -277,7 +278,6 @@ const ClientHome: React.FC = () => {
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
-        isPlaying={isPlaying}
         currentLineState={currentLineState}
         onPromptFinish={onPromptFinish}
         onPromptError={onPromptError}
@@ -287,7 +287,6 @@ const ClientHome: React.FC = () => {
         }
         setScriptLines={setScriptLines}
         setCurrentLineState={setCurrentLineState}
-        setIsPlaying={setIsPlaying}
       />
 
       <audio ref={audioRef} />

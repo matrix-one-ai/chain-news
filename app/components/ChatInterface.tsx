@@ -9,8 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
-import { useAuthStore } from "../zustand/store";
-import { CoreMessage } from "ai";
+import { useAuthStore, useSceneStore } from "../zustand/store";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -34,6 +33,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
   }) => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
+    const { isPlaying } = useSceneStore();
     const { isLoggedIn } = useAuthStore();
 
     const {
@@ -77,7 +77,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         chatContainerRef.current.scrollTop =
           chatContainerRef.current.scrollHeight;
       }
-    }, [chatContainerRef, messages]);
+    }, [chatContainerRef, messages, isPlaying]);
 
     const splitScriptLines = useCallback((content: string) => {
       const splitMessage = content
