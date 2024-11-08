@@ -44,6 +44,10 @@ export function useNewsFetch(title: string, category: string | null): void {
     try {
       setFetching(true);
 
+      if (page < 1) {
+        setNews([]);
+      }
+
       abortableNewsFetch.current = new AbortableFetch(
         `/api/news?page=${page}&pagesize=${pageSize}&where=${encodeURIComponent(
           JSON.stringify({
@@ -68,7 +72,7 @@ export function useNewsFetch(title: string, category: string | null): void {
     } finally {
       setFetching(false);
     }
-  }, [setFetching, page, pageSize, title, category, addNews]);
+  }, [setFetching, page, pageSize, title, category, addNews, setNews]);
 
   const fetchAllNews = useCallback(async () => {
     try {
@@ -84,6 +88,8 @@ export function useNewsFetch(title: string, category: string | null): void {
       const data = await response.json();
 
       setNews(data);
+      setPage(data.length / pageSize);
+      setTotalPage(data.length / pageSize);
     } catch (err: any) {
       if (err.name !== "AbortError") {
         console.error(err);
@@ -91,11 +97,10 @@ export function useNewsFetch(title: string, category: string | null): void {
     } finally {
       setFetching(false);
     }
-  }, [setFetching, setNews]);
+  }, [pageSize, setFetching, setNews, setPage, setTotalPage]);
 
   useEffect(() => {
     if (!mounted) return;
-    setNews([]);
 
     if (isStreaming) {
       fetchAllNews();
