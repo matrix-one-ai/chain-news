@@ -129,6 +129,33 @@ const mapDecryptNews = (feed: any, provider: string, rssUrl: string) => {
   };
 };
 
+const mapCryptoSlateNews = (feed: any, provider: string, rssUrl: string) => {
+  return {
+    provider,
+    providerTitle: feed.title.trim(),
+    providerDescription: feed.description.trim(),
+    providerUrl: feed.link,
+    isRSS: true,
+    rssUrl: rssUrl,
+    items: feed.items.map((item: any) => ({
+      category: "",
+      title: item.title.trim(),
+      description: htmlToText(item.description || "", {
+        wordwrap: false,
+        selectors: [{ selector: "img", format: "skip" }],
+      }).trim(),
+      source: item["dc:creator"],
+      url: item.link,
+      imageUrl: JSON.parse(JSON.stringify(item["media:content"]))?.["$"]?.url,
+      content: htmlToText(item.description || "", {
+        wordwrap: false,
+        selectors: [{ selector: "img", format: "skip" }],
+      }).trim(),
+      datePublished: item.pubDate ? new Date(item.pubDate) : new Date(),
+    })),
+  };
+};
+
 const providers = [
   {
     rssUrl: "https://cointelegraph.com/rss",
@@ -149,6 +176,11 @@ const providers = [
     rssUrl: "http://decrypt.co/feed",
     provider: "Decrypt",
     mapFunction: mapDecryptNews,
+  },
+  {
+    rssUrl: "https://cryptoslate.com/feed/",
+    provider: "CryptoSlate",
+    mapFunction: mapCryptoSlateNews,
   },
 ];
 
