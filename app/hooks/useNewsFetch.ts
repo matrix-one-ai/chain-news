@@ -1,5 +1,9 @@
 import { useEffect, useCallback, useRef } from "react";
-import { useAppMountedStore, useNewsStore } from "../zustand/store";
+import {
+  useAppMountedStore,
+  useLiveStreamStore,
+  useNewsStore,
+} from "../zustand/store";
 import { AbortableFetch } from "../utils/abortablePromise";
 
 /**
@@ -19,6 +23,7 @@ export function useNewsFetch(title: string, category: string | null): void {
     setFetching,
     addNews,
   } = useNewsStore();
+  const { isStreaming } = useLiveStreamStore();
   const abortableNewsFetch = useRef<AbortableFetch | null>(null);
   const abortableNewsTotalPageFetch = useRef<AbortableFetch | null>(null);
 
@@ -44,8 +49,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          }),
-        )}`,
+          })
+        )}`
       );
       const response = await abortableNewsFetch.current.fetch;
 
@@ -65,11 +70,38 @@ export function useNewsFetch(title: string, category: string | null): void {
     }
   }, [setFetching, page, pageSize, title, category, addNews]);
 
+  const fetchAllNews = useCallback(async () => {
+    try {
+      setFetching(true);
+
+      abortableNewsFetch.current = new AbortableFetch(`/api/news/all`);
+      const response = await abortableNewsFetch.current.fetch;
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch news data");
+      }
+
+      const data = await response.json();
+
+      addNews(data);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+      }
+    } finally {
+      setFetching(false);
+    }
+  }, [setFetching, addNews]);
+
   useEffect(() => {
     if (!mounted) return;
 
-    fetchNews();
-  }, [fetchNews, mounted]);
+    if (isStreaming) {
+      fetchAllNews();
+    } else {
+      fetchNews();
+    }
+  }, [isStreaming, fetchAllNews, fetchNews, mounted]);
 
   // Fetch news total page with filter options
   const fetchNewsTotalPage = useCallback(async () => {
@@ -79,8 +111,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          }),
-        )}`,
+          })
+        )}`
       );
       const response = await abortableNewsTotalPageFetch.current.fetch;
 
@@ -136,8 +168,8 @@ export function useNewsSearchOptionsFetch(category: string | null): void {
         })}&where=${encodeURIComponent(
           JSON.stringify({
             ...(category && { category }),
-          }),
-        )}`,
+          })
+        )}`
       );
       const response = await abortableNewsSearchOptionsFetch.current.fetch;
 

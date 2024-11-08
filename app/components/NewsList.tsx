@@ -52,7 +52,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
     () => Array(pageSize).fill(null),
-    [pageSize],
+    [pageSize]
   );
 
   const handleFilterClick = useCallback((category: string | null) => {
@@ -67,7 +67,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value);
     },
-    [],
+    []
   );
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
       <Box>
         <Autocomplete
           options={newsSearchOptions.sort(
-            (a, b) => -b.category.localeCompare(a.category),
+            (a, b) => -b.category.localeCompare(a.category)
           )}
           groupBy={(option) => option.category}
           getOptionLabel={(option) => option.title}
