@@ -9,7 +9,7 @@ import { useAppMountedStore, useSceneStore } from "./zustand/store";
 
 const speakerVoiceMap = {
   Sam: "en-US-AvaMultilingualNeural",
-  Haiku: "en-US-EmmaMultilingualNeural4",
+  Haiku: "en-US-JaneNeural",
   DogWifHat: "en-US-AndrewMultilingualNeural",
 };
 

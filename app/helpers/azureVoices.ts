@@ -8,7 +8,7 @@ export const azureVoices = [
     label: "Andrew Multilingual Neural (Male)",
   },
   {
-    value: "en-US-EmmaMultilingualNeural4",
+    value: "en-US-EmmaMultilingualNeural",
     label: "Emma Multilingual Neural (Female)",
   },
   {
