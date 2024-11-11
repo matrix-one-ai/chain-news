@@ -234,7 +234,7 @@ function Web3AuthLogin() {
     () => [
       {
         name: "User Settings",
-        route: "/settings",
+        route: "/user-settings",
       },
       {
         name: "Subscription",
