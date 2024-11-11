@@ -42,6 +42,7 @@ import {
   goodbyeUserLogoutPrompt,
   greetUserLoginPrompt,
 } from "../helpers/prompts";
+import { ROUTE } from "@/app/constants/route";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -234,19 +235,19 @@ function Web3AuthLogin() {
     () => [
       {
         name: "User Settings",
-        route: "/user-settings",
+        route: ROUTE.USER_SETTINGS,
       },
       {
         name: "Subscription",
-        route: "/subscription",
+        route: ROUTE.SUBSCRIPTION,
       },
       {
         name: "Terms of Use",
-        route: "/terms",
+        route: ROUTE.TERMS,
       },
       {
         name: "Privacy Policy",
-        route: "/privacy",
+        route: ROUTE.PRIVACY,
       },
       {
         name: "Logout",
