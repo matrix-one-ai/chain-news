@@ -20,6 +20,11 @@ const avatarConfigs: AvatarConfig[] = [
     vrmKey: "haiku",
     rotation: [0, Math.PI, 0],
   },
+  {
+    name: "Eliza",
+    vrmKey: "eliza",
+    rotation: [0, Math.PI, 0],
+  }
 ];
 
 interface AppMountedState {
