@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600"],
@@ -71,6 +72,7 @@ export default function RootLayout({
         </AppRouterCacheProvider>
         <Analytics />
         <CssBaseline />
+        <GoogleAnalytics gaId="GTM-553DSNX9" />
       </body>
     </html>
   );
