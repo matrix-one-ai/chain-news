@@ -3,6 +3,9 @@ import { createAzure } from "@ai-sdk/azure";
 import { NextResponse } from "next/server";
 import { isWithinTokenLimit } from "gpt-tokenizer";
 
+export const maxDuration = 300;
+export const revalidate = 0;
+
 const azure = createAzure({
   resourceName: process.env.AZURE_OPENAI_RESOURCE!,
   apiKey: process.env.AZURE_OPENAI_KEY!,
