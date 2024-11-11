@@ -56,8 +56,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  user: userPageOverlay,
 }: Readonly<{
   children: React.ReactNode;
+  user: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -68,6 +70,7 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <Navbar />
             {children}
+            {userPageOverlay}
           </ThemeProvider>
         </AppRouterCacheProvider>
         <Analytics />
