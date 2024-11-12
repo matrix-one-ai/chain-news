@@ -1,3 +1,5 @@
+import UserTOS from "@/app/components/UserPage/UserTOS";
+
 export default function TermsPage() {
-  return <h1 style={{ color: "white" }}>TERMS OF USE</h1>;
+  return <UserTOS />;
 }

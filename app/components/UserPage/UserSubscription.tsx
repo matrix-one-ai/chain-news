@@ -1,3 +1,5 @@
+"use client";
+
 import { HelioCheckout } from "@heliofi/checkout-react";
 import { Box } from "@mui/material";
 

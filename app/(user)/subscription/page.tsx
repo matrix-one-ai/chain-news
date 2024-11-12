@@ -1,3 +1,5 @@
+import UserSubscription from "@/app/components/UserPage/UserSubscription";
+
 export default function SubscriptionPage() {
-  return <h1 style={{ color: "white" }}>SUBSCRIPTION</h1>;
+  return <UserSubscription />;
 }

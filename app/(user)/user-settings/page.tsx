@@ -1,3 +1,5 @@
+import UserSettings from "@/app/components/UserPage/UserSettings";
+
 export default function UserSettingsPage() {
-  return <h1 style={{ color: "white" }}>USER SETTINGS</h1>;
+  return <UserSettings />;
 }

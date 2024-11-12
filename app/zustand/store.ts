@@ -59,16 +59,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 interface OverlayState {
-  isUserPageOpen: boolean;
   isPaywallModalOpen: boolean;
-  setIsUserPageOpen: (isOpen: boolean) => void;
   setIsPaywallModalOpen: (isOpen: boolean) => void;
 }
 
 export const useOverlayStore = create<OverlayState>((set) => ({
-  isUserPageOpen: false,
   isPaywallModalOpen: false,
-  setIsUserPageOpen: (isOpen: boolean) => set({ isUserPageOpen: isOpen }),
   setIsPaywallModalOpen: (isOpen: boolean) =>
     set({ isPaywallModalOpen: isOpen }),
 }));
@@ -131,16 +127,6 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ showTraderViewWidget: show }),
 }));
 
-interface UserPageState {
-  selectedUserTab: number;
-  setSelectedUserTab: (index: number) => void;
-}
-
-export const useUserPageStore = create<UserPageState>((set) => ({
-  selectedUserTab: 0,
-  setSelectedUserTab: (index: number) => set({ selectedUserTab: index }),
-}));
-
 interface PromptState {
   prompt: string;
   setPrompt: (prompt: string) => void;
@@ -162,7 +148,7 @@ interface NewsState {
   setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
-    newsSearchOptions: AtLeast<News, "category" | "title">[]
+    newsSearchOptions: AtLeast<News, "category" | "title">[],
   ) => void;
   setPage: (page: number) => void;
   setTotalPage: (totalPage: number) => void;

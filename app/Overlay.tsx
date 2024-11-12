@@ -29,7 +29,6 @@ import {
   useSceneStore,
   useSettingsStore,
 } from "./zustand/store";
-import UserPage from "./components/UserPage/UserPage";
 import PaywallModal from "./components/PaywallModal";
 
 interface OverlayProps {
@@ -208,7 +207,7 @@ const Overlay = ({
           const prompt = startNewsPrompt(
             newsItem,
             segmentDuration,
-            mainHostAvatar
+            mainHostAvatar,
           );
           setPrompt(prompt);
         }
@@ -224,7 +223,7 @@ const Overlay = ({
       customPrompt,
       segmentDuration,
       mainHostAvatar,
-    ]
+    ],
   );
 
   const handleStreamStart = useCallback(() => {
@@ -434,8 +433,6 @@ const Overlay = ({
       )}
 
       <NewsTickerBanner newsItems={news} />
-
-      <UserPage />
 
       <PaywallModal />
     </Box>

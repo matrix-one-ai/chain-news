@@ -33,7 +33,6 @@ import {
   useOverlayStore,
   usePromptStore,
   useSceneStore,
-  useUserPageStore,
 } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
@@ -227,9 +226,6 @@ function Web3AuthLogin() {
     setAnchorElUser(null);
     setIsMenuOpen(false);
   }, [isLoggedIn]);
-
-  const { setIsUserPageOpen } = useOverlayStore();
-  const { setSelectedUserTab } = useUserPageStore();
 
   const menuItems = useMemo(
     () => [
