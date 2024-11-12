@@ -2,11 +2,10 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Plane } from "@react-three/drei";
 import VrmAvatar from "./components/VrmAvatar";
 import React, { Suspense, useEffect, useMemo } from "react";
-import { News } from "@prisma/client";
 import { Model as Desk } from "./components/gltf/Desk";
 import BentScreen from "./components/BentScreen";
 import MatrixTunnel from "./components/MatrixTunnel";
-import { useSceneStore, useSettingsStore } from "./zustand/store";
+import { useNewsStore, useSceneStore, useSettingsStore } from "./zustand/store";
 
 const CameraSetup: React.FC = () => {
   const { camera } = useThree();
@@ -20,7 +19,6 @@ const CameraSetup: React.FC = () => {
 };
 
 interface SceneProps {
-  selectedNews: News | null;
   audioRef: React.RefObject<HTMLAudioElement>;
   audioBlob: Blob | null;
   blendShapes: any[];
@@ -29,13 +27,13 @@ interface SceneProps {
 }
 
 const Scene = ({
-  selectedNews,
   audioRef,
   audioBlob,
   blendShapes,
   speaker,
   setProgress,
 }: SceneProps) => {
+  const { selectedNews } = useNewsStore();
   const { showTraderViewWidget } = useSettingsStore();
   const { mainHostAvatar } = useSceneStore();
 
@@ -43,10 +41,10 @@ const Scene = ({
     () =>
       selectedNews
         ? `/api/image?url=${encodeURIComponent(
-            selectedNews.imageUrl as string
+            selectedNews.imageUrl as string,
           )}`
         : "/videos/cnews-video-v1.mp4",
-    [selectedNews]
+    [selectedNews],
   );
 
   return (

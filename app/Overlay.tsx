@@ -34,7 +34,6 @@ import PaywallModal from "./components/PaywallModal";
 import { useNewsFetchBySlugOnMount } from "./hooks/useNewsFetch";
 
 interface OverlayProps {
-  selectedNews: News | null;
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
   isAudioLoading: boolean;
@@ -47,7 +46,6 @@ interface OverlayProps {
   };
   onPromptFinish: (message: Message, options: any) => void;
   onPromptError: (error: any) => void;
-  setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
   setScriptLines: React.Dispatch<
     React.SetStateAction<{ speaker: string; text: string }[]>
@@ -64,14 +62,12 @@ interface OverlayProps {
 }
 
 const Overlay = ({
-  selectedNews,
   audioRef,
   progress,
   isAudioLoading,
   currentLineState,
   onPromptFinish,
   onPromptError,
-  setSelectedNews,
   setAudioBlob,
   setScriptLines,
   setCurrentLineState,
@@ -80,7 +76,7 @@ const Overlay = ({
   const pathname = usePathname();
   const { prompt, setPrompt } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
-  const { news } = useNewsStore();
+  const { news, selectedNews, setSelectedNews } = useNewsStore();
   const initialNews = useNewsFetchBySlugOnMount();
 
   const {
