@@ -53,8 +53,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsFetch.current.fetch;
 
@@ -117,8 +117,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsTotalPageFetch.current.fetch;
 
@@ -174,8 +174,8 @@ export function useNewsSearchOptionsFetch(category: string | null): void {
         })}&where=${encodeURIComponent(
           JSON.stringify({
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsSearchOptionsFetch.current.fetch;
 
