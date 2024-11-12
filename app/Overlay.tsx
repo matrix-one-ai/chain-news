@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import { Message } from "ai/react";
@@ -74,6 +75,8 @@ const Overlay = ({
   setScriptLines,
   setCurrentLineState,
 }: OverlayProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { prompt, setPrompt } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
   const { news } = useNewsStore();
@@ -200,6 +203,13 @@ const Overlay = ({
       if (newsItem === null) return;
 
       if (isLoggedIn) {
+        // Add/remove query param based on selected news' slug
+        if (newsItem?.slug) {
+          router.replace(`${pathname}?article=${newsItem.slug}`);
+        } else {
+          router.replace(pathname);
+        }
+
         setSelectedNews(newsItem);
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
@@ -223,6 +233,8 @@ const Overlay = ({
       customPrompt,
       segmentDuration,
       mainHostAvatar,
+      pathname,
+      router,
     ],
   );
 
