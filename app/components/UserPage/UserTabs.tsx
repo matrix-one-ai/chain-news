@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   List,
   ListItemButton,
@@ -14,38 +15,44 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ROUTE } from "@/app/constants";
-
-// Tabs for user page
-const TABS = [
-  {
-    name: "User Settings",
-    icon: <PersonIcon />,
-    route: ROUTE.USER_SETTINGS,
-  },
-  {
-    name: "Subscription",
-    icon: <CreditCardIcon />,
-    route: ROUTE.SUBSCRIPTION,
-  },
-  {
-    name: "Terms of Use",
-    icon: <ReceiptLongIcon />,
-    route: ROUTE.TERMS,
-  },
-  {
-    name: "Privacy Policy",
-    icon: <LockIcon />,
-    route: ROUTE.PRIVACY,
-  },
-  {
-    name: "Back to ChainNews",
-    icon: <ArrowBackIcon />,
-    route: ROUTE.HOME,
-  },
-];
+import { useNewsStore } from "@/app/zustand/store";
 
 const UserTabs = () => {
   const pathname = usePathname();
+  const { selectedNews } = useNewsStore();
+
+  const tabs = useMemo(
+    () => [
+      {
+        name: "User Settings",
+        icon: <PersonIcon />,
+        route: ROUTE.USER_SETTINGS,
+      },
+      {
+        name: "Subscription",
+        icon: <CreditCardIcon />,
+        route: ROUTE.SUBSCRIPTION,
+      },
+      {
+        name: "Terms of Use",
+        icon: <ReceiptLongIcon />,
+        route: ROUTE.TERMS,
+      },
+      {
+        name: "Privacy Policy",
+        icon: <LockIcon />,
+        route: ROUTE.PRIVACY,
+      },
+      {
+        name: "Back to ChainNews",
+        icon: <ArrowBackIcon />,
+        route: selectedNews?.slug
+          ? `${ROUTE.HOME}?article=${selectedNews?.slug}`
+          : ROUTE.HOME,
+      },
+    ],
+    [selectedNews],
+  );
 
   return (
     <List
@@ -56,7 +63,7 @@ const UserTabs = () => {
         padding: "2rem 2rem",
       }}
     >
-      {TABS.map(({ name, icon, route }, index) => (
+      {tabs.map(({ name, icon, route }, index) => (
         <ListItemButton
           key={`user-page-tab-${name}`}
           component={Link}
@@ -75,7 +82,7 @@ const UserTabs = () => {
             mb: 1,
             width: "18rem",
             borderRadius: "0.5rem",
-            ...(index === TABS.length - 1 && {
+            ...(index === tabs.length - 1 && {
               position: "absolute",
               bottom: "0",
               transform: "translateY(-50%)",
