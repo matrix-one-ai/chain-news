@@ -8,11 +8,11 @@ export async function POST(request: Request) {
     const { text, voice } = await request.json();
 
     if (!text) {
-      return NextResponse.json({ error: "No text provided" }, { status: 400 });
+      return NextResponse.json({ error: "No text provided" }, { status: 500 });
     }
 
     if (!voice) {
-      return NextResponse.json({ error: "No voice provided" }, { status: 400 });
+      return NextResponse.json({ error: "No voice provided" }, { status: 500 });
     }
 
     const subscriptionKey = process.env.AZURE_SUBSCRIPTION_KEY;
