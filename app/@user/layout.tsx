@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import UserPageContainer from "@/app/components/UserPage/UserPageContainer";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 export default function UserLayout({
   children,

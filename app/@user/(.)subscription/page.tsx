@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import UserSubscription from "@/app/components/UserPage/UserSubscription";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 export default function SubscriptionPage() {
   const pathname = usePathname();

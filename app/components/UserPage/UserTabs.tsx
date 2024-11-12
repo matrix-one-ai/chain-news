@@ -13,7 +13,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 // Tabs for user page
 const TABS = [

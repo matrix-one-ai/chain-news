@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import UserPrivacy from "@/app/components/UserPage/UserPrivacy";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 export default function PrivacyPage() {
   const pathname = usePathname();

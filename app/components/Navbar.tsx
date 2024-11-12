@@ -36,7 +36,7 @@ import {
   goodbyeUserLogoutPrompt,
   greetUserLoginPrompt,
 } from "../helpers/prompts";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 

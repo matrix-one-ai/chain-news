@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { Box, Fade, Stack, Typography } from "@mui/material";
 import UserTabs from "./UserTabs";
-import { ROUTE } from "@/app/constants/route";
+import { ROUTE } from "@/app/constants";
 
 interface UserPageContainerProps {
   children: React.ReactNode;
