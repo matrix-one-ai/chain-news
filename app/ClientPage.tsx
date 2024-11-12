@@ -71,7 +71,7 @@ const ClientHome: React.FC = () => {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0)
+          c.charCodeAt(0),
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -215,7 +215,7 @@ const ClientHome: React.FC = () => {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -250,7 +250,7 @@ const ClientHome: React.FC = () => {
       setIsPlaying(true);
       setIsAudioLoading(false);
     },
-    [fetchAudio, setIsPlaying]
+    [fetchAudio, setIsPlaying],
   );
 
   const onPromptError = useCallback((error: any) => {
