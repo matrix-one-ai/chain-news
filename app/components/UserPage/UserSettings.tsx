@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useRef, useState } from "react";
 
 import { truncateAddress } from "../../helpers/crypto";
@@ -147,7 +149,7 @@ const UserSettings = () => {
         setIsUploadingImage(false);
       }
     },
-    [setImageUrl, walletAddress]
+    [setImageUrl, walletAddress],
   );
 
   return (

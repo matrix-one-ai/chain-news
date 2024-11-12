@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import WaterMark from "./WaterMark";
 import {
   AppBar,
@@ -27,13 +28,7 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import {
-  useAuthStore,
-  useOverlayStore,
-  usePromptStore,
-  useSceneStore,
-  useUserPageStore,
-} from "../zustand/store";
+import { useAuthStore, usePromptStore, useSceneStore } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
@@ -41,6 +36,7 @@ import {
   goodbyeUserLogoutPrompt,
   greetUserLoginPrompt,
 } from "../helpers/prompts";
+import { ROUTE } from "@/app/constants";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -213,7 +209,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -226,49 +222,30 @@ function Web3AuthLogin() {
     setIsMenuOpen(false);
   }, [isLoggedIn]);
 
-  const { setIsUserPageOpen } = useOverlayStore();
-  const { setSelectedUserTab } = useUserPageStore();
-
   const menuItems = useMemo(
     () => [
       {
         name: "User Settings",
-        onClick: () => {
-          setSelectedUserTab(0);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: ROUTE.USER_SETTINGS,
       },
       {
         name: "Subscription",
-        onClick: () => {
-          setSelectedUserTab(1);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: ROUTE.SUBSCRIPTION,
       },
       {
         name: "Terms of Use",
-        onClick: () => {
-          setSelectedUserTab(2);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: ROUTE.TERMS,
       },
       {
         name: "Privacy Policy",
-        onClick: () => {
-          setSelectedUserTab(3);
-          setIsUserPageOpen(true);
-          setIsMenuOpen(false);
-        },
+        route: ROUTE.PRIVACY,
       },
       {
         name: "Logout",
         onClick: logout,
       },
     ],
-    [logout, setIsUserPageOpen, setSelectedUserTab]
+    [logout],
   );
 
   const loggedInView = (
@@ -363,16 +340,23 @@ function Web3AuthLogin() {
         open={isMenuOpen}
         onClose={handleCloseUserMenu}
       >
-        {menuItems.map((item) => (
+        {menuItems.map(({ name, route, onClick }) => (
           <MenuItem
-            key={item.name}
-            onClick={item.onClick}
+            key={name}
+            component={route ? Link : "button"}
+            href={route}
+            onClick={() => {
+              handleCloseUserMenu();
+              onClick?.();
+            }}
             sx={{
               backgroundColor: "#171325",
               padding: "0.5rem 1rem",
+              textAlign: "left",
+              width: "100%",
             }}
           >
-            <ListItemText sx={{ textAlign: "left" }}>{item.name}</ListItemText>
+            <ListItemText>{name}</ListItemText>
           </MenuItem>
         ))}
       </Menu>
