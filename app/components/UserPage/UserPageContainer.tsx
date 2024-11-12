@@ -31,7 +31,7 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
           height: "calc(100vh - 64px)",
           width: "100%",
           backgroundColor: "#0B071A",
-          zIndex: 2000,
+          zIndex: 1200,
         }}
       >
         <Stack
