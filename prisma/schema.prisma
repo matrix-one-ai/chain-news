@@ -77,3 +77,25 @@ model IPInfo {
   createdAt DateTime @default(now())
   users     User[]
 }
+
+model HelioTransaction {
+  id                   Int      @id @default(autoincrement())
+  transactionId        String   @unique
+  paylinkId            String
+  email                String
+  senderAddress        String
+  receiverAddress      String
+  transactionSignature String
+  transactionSuccess   String
+  geolocation          String
+  fee                  String
+  amount               String
+  quantity             Int
+  paymentType          String
+  transactionCreatedAt DateTime
+  tokenFrom            String
+  tokenTo              String
+  tokenFromPrice       String
+  tokenToPrice         String
+  createdAt            DateTime @default(now())
+}

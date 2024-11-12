@@ -1,0 +1,32 @@
+{
+  "id": "6733816d587832db924bc865",
+  "paylinkId": "67337e9f8ebef9b6eae47ea2",
+  "fee": "100",
+  "quantity": 1,
+  "createdAt": "2024-11-12T16:25:17.776Z",
+  "paymentType": "PAYLINK",
+  "meta": {
+    "id": "6733816d587832db924bc863",
+    "amount": "9900",
+    "senderPK": "Dpc1AVb7bmFHPUpYhcysceKvMVfRqgG3WTjW4qY75Psk",
+    "recipientPK": "DKYGiFqqtQTwxPnP8CZDMgWd5tQTfSe9caWjNTSBwet3",
+    "transactionType": "PAYLINK",
+    "customerDetails": { "email": "cjft@trimboli.io", "discordUser": null },
+    "productDetails": null,
+    "transactionSignature": "6PYMWnbXA19sSAbexvvRCSPTqZDWrEiL5jUgy9DcbDxzsmTQ4wWR3soiagEsiuBmqe6iE3xyt639MeRroL8fy4t",
+    "transactionStatus": "SUCCESS",
+    "splitRevenue": false,
+    "remainingAccounts": [],
+    "totalAmount": "9900",
+    "affiliateAmount": "0",
+    "tokenQuote": {
+      "from": "USDC",
+      "fromAmountDecimal": "0.01",
+      "to": "USDC",
+      "toAmountMinimal": "10000"
+    },
+    "shopifyPaymentDetails": null,
+    "submitGeolocation": "CA",
+    "currency": { "id": "6340313846e4f91b8abc519b", "blockchain": null }
+  }
+}
