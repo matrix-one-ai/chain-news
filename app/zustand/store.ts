@@ -38,11 +38,13 @@ interface AuthState {
   nickname: string | null;
   isAdmin: boolean;
   imageUrl: string | null;
+  isSubscribed: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
   setNickname: (nickname: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
   setImageUrl: (url: string) => void;
+  setIsSubscribed: (isSubscribed: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -51,11 +53,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   nickname: null,
   isAdmin: false,
   imageUrl: null,
+  isSubscribed: false,
   setLoggedIn: (loggedIn: boolean) => set({ isLoggedIn: loggedIn }),
   setWalletAddress: (address: string) => set({ walletAddress: address }),
   setNickname: (nickname: string) => set({ nickname: nickname }),
   setIsAdmin: (isAdmin: boolean) => set({ isAdmin: isAdmin }),
   setImageUrl: (url: string) => set({ imageUrl: url }),
+  setIsSubscribed: (isSubscribed: boolean) =>
+    set({ isSubscribed: isSubscribed }),
 }));
 
 interface OverlayState {
@@ -148,7 +153,7 @@ interface NewsState {
   setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
-    newsSearchOptions: AtLeast<News, "category" | "title">[],
+    newsSearchOptions: AtLeast<News, "category" | "title">[]
   ) => void;
   setPage: (page: number) => void;
   setTotalPage: (totalPage: number) => void;

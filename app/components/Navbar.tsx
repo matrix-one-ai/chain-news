@@ -6,6 +6,7 @@ import WaterMark from "./WaterMark";
 import {
   AppBar,
   Avatar,
+  Badge,
   Box,
   Button,
   Fade,
@@ -61,11 +62,13 @@ function Web3AuthLogin() {
     walletAddress,
     isLoggedIn,
     imageUrl,
+    isSubscribed,
     setWalletAddress,
     setLoggedIn,
     setIsAdmin,
     setImageUrl,
     setNickname,
+    setIsSubscribed,
   } = useAuthStore();
 
   const { mainHostAvatar } = useSceneStore();
@@ -101,6 +104,7 @@ function Web3AuthLogin() {
           setIsAdmin(Boolean(data.isAdmin));
           setImageUrl(data.imageUrl);
           setNickname(data.nickname);
+          setIsSubscribed(data.isSubscribed);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
@@ -114,6 +118,7 @@ function Web3AuthLogin() {
     setIsAdmin,
     setImageUrl,
     setNickname,
+    setIsSubscribed,
   ]);
 
   useEffect(() => {
@@ -209,7 +214,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    [],
+    []
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -245,7 +250,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout],
+    [logout]
   );
 
   const loggedInView = (
@@ -310,11 +315,40 @@ function Web3AuthLogin() {
               },
             }}
           >
-            <Avatar
-              alt="Profile"
-              src={imageUrl || "/images/user-profile-placeholder.png"}
-              sx={{}}
-            />
+            <Badge
+              showZero
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              badgeContent={
+                <>
+                  {isSubscribed ? (
+                    <Box>
+                      <Typography
+                        sx={{
+                          color: "black",
+                          fontSize: 10,
+                          fontWeight: 700,
+                          backgroundColor: "#FFD66E",
+                          borderRadius: "50%",
+                          padding: "0.1rem",
+                          textAlign: "center",
+                        }}
+                      >
+                        Pro
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              }
+            >
+              <Avatar
+                alt="Profile"
+                src={imageUrl || "/images/user-profile-placeholder.png"}
+                sx={{}}
+              />
+            </Badge>
           </IconButton>
         </Stack>
       </Fade>
