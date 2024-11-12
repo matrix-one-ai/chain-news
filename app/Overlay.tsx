@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import ChatInterface from "./components/ChatInterface";
 import LoadingBar from "./components/LoadingBar";
 import { Message } from "ai/react";
@@ -30,9 +31,9 @@ import {
   useSettingsStore,
 } from "./zustand/store";
 import PaywallModal from "./components/PaywallModal";
+import { useNewsFetchBySlugOnMount } from "./hooks/useNewsFetch";
 
 interface OverlayProps {
-  selectedNews: News | null;
   audioRef: React.RefObject<HTMLAudioElement>;
   progress: number;
   isAudioLoading: boolean;
@@ -45,7 +46,6 @@ interface OverlayProps {
   };
   onPromptFinish: (message: Message, options: any) => void;
   onPromptError: (error: any) => void;
-  setSelectedNews: React.Dispatch<React.SetStateAction<News | null>>;
   setAudioBlob: (blob: Blob | null) => void;
   setScriptLines: React.Dispatch<
     React.SetStateAction<{ speaker: string; text: string }[]>
@@ -62,21 +62,22 @@ interface OverlayProps {
 }
 
 const Overlay = ({
-  selectedNews,
   audioRef,
   progress,
   isAudioLoading,
   currentLineState,
   onPromptFinish,
   onPromptError,
-  setSelectedNews,
   setAudioBlob,
   setScriptLines,
   setCurrentLineState,
 }: OverlayProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { prompt, setPrompt } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
-  const { news } = useNewsStore();
+  const { news, selectedNews, setSelectedNews } = useNewsStore();
+  const initialNews = useNewsFetchBySlugOnMount();
 
   const {
     isStreaming,
@@ -97,7 +98,7 @@ const Overlay = ({
     setIsSettingsOpen,
   } = useSettingsStore();
 
-  const { setIsPaywallModalOpen } = useOverlayStore();
+  const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
   const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
@@ -200,6 +201,13 @@ const Overlay = ({
       if (newsItem === null) return;
 
       if (isLoggedIn) {
+        // Add/remove query param based on selected news' slug
+        if (newsItem?.slug) {
+          router.replace(`${pathname}?article=${newsItem.slug}`);
+        } else {
+          router.replace(pathname);
+        }
+
         setSelectedNews(newsItem);
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
@@ -219,12 +227,24 @@ const Overlay = ({
       isLoggedIn,
       setSelectedNews,
       isPromptUnlocked,
+      router,
+      pathname,
       setPrompt,
       customPrompt,
       segmentDuration,
       mainHostAvatar,
     ],
   );
+
+  // If search param has slug info initially, then the news corresponding to the slug should be played
+  useEffect(() => {
+    // ! Closing paywall modal is necessary to confirm that user interacted with the page
+    // Should be logged in, and also paywall modal should be closed (because closing paywall modal needs user interaction, and audio can be played after user interaction)
+    if (!isLoggedIn || isPaywallModalOpen) return;
+
+    handleNewsClick(initialNews);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialNews, isLoggedIn, isPaywallModalOpen]);
 
   const handleStreamStart = useCallback(() => {
     setCurrentSegmentIndex(0); // sets -1 to 0

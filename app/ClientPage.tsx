@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { News } from "@prisma/client";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
 import { Message } from "ai";
@@ -16,7 +15,6 @@ const speakerVoiceMap = {
 const ClientHome: React.FC = () => {
   const { setMounted } = useAppMountedStore();
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [selectedNews, setSelectedNews] = useState<News | null>(null);
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
   const [scriptLines, setScriptLines] = useState<
@@ -71,7 +69,7 @@ const ClientHome: React.FC = () => {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0)
+          c.charCodeAt(0),
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -215,7 +213,7 @@ const ClientHome: React.FC = () => {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -250,7 +248,7 @@ const ClientHome: React.FC = () => {
       setIsPlaying(true);
       setIsAudioLoading(false);
     },
-    [fetchAudio, setIsPlaying]
+    [fetchAudio, setIsPlaying],
   );
 
   const onPromptError = useCallback((error: any) => {
@@ -266,7 +264,6 @@ const ClientHome: React.FC = () => {
   return (
     <>
       <Scene
-        selectedNews={selectedNews}
         audioRef={audioRef}
         audioBlob={currentLineState.audioBlob}
         blendShapes={currentLineState.blendShapes}
@@ -275,14 +272,12 @@ const ClientHome: React.FC = () => {
       />
 
       <Overlay
-        selectedNews={selectedNews}
         audioRef={audioRef}
         progress={progress}
         isAudioLoading={isAudioLoading}
         currentLineState={currentLineState}
         onPromptFinish={onPromptFinish}
         onPromptError={onPromptError}
-        setSelectedNews={setSelectedNews}
         setAudioBlob={(blob: Blob | null) =>
           setCurrentLineState((prev) => ({ ...prev, audioBlob: blob }))
         }

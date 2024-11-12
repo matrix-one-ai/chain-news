@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
               title: true,
               description: true,
               source: true,
+              slug: true,
               url: true,
               imageUrl: true,
               datePublished: true,

@@ -1,10 +1,12 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   useAppMountedStore,
   useLiveStreamStore,
   useNewsStore,
 } from "../zustand/store";
 import { AbortableFetch } from "../utils/abortablePromise";
+import { News } from "@prisma/client";
 
 /**
  * Hooks for fetching news data
@@ -53,8 +55,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsFetch.current.fetch;
 
@@ -117,8 +119,8 @@ export function useNewsFetch(title: string, category: string | null): void {
           JSON.stringify({
             ...(title && { title: { contains: title } }),
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsTotalPageFetch.current.fetch;
 
@@ -174,8 +176,8 @@ export function useNewsSearchOptionsFetch(category: string | null): void {
         })}&where=${encodeURIComponent(
           JSON.stringify({
             ...(category && { category }),
-          })
-        )}`
+          }),
+        )}`,
       );
       const response = await abortableNewsSearchOptionsFetch.current.fetch;
 
@@ -200,4 +202,52 @@ export function useNewsSearchOptionsFetch(category: string | null): void {
 
     fetchNewsSearchOptions();
   }, [fetchNewsSearchOptions, mounted]);
+}
+
+/**
+ * Hooks for fetching news by slug only when page is mounted
+ * @returns News | null
+ */
+export function useNewsFetchBySlugOnMount(): News | null {
+  const searchParams = useSearchParams();
+  const { mounted } = useAppMountedStore();
+  const [news, setNews] = useState<News | null>(null);
+  const abortableNewsBySlugFetch = useRef<AbortableFetch | null>(null);
+
+  // Fetch news by given slug in url only when component is mounted
+  const fetchNewsBySlug = useCallback(async () => {
+    const slug = searchParams.get("article");
+
+    // Slug is necessary
+    if (slug === null) return;
+
+    try {
+      abortableNewsBySlugFetch.current = new AbortableFetch(
+        `/api/news/slug?slug=${slug}`,
+      );
+      // TODO: Impelment loading notification/spinner while fetching initial news from slug
+      const response = await abortableNewsBySlugFetch.current.fetch;
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch news by slug");
+      }
+
+      const data = await response.json();
+
+      setNews(data);
+    } catch (err: any) {
+      if (err.name !== "AbortError") {
+        console.error(err);
+      }
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    fetchNewsBySlug();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
+
+  return news;
 }

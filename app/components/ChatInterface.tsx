@@ -69,7 +69,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         append({ role: "user", content: prompt });
         setInput("");
       },
-      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput]
+      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput],
     );
 
     useEffect(() => {
@@ -112,7 +112,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           >
             {messages.map((message, index) => (
               <Box key={index}>
-                <Typography variant="body1" fontWeight="bold">
+                <Typography component="div" variant="body1" fontWeight="bold">
                   {message.role === "user" ? (
                     <>
                       {"User"}
@@ -121,11 +121,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   ) : (
                     <>
                       {"AI"}
-                      <Typography variant="body2">
+                      <Typography component="div" variant="body2">
                         {splitScriptLines(message.content).map(
-                          ({ speaker, text }) => (
+                          ({ speaker, text }, index) => (
                             <Typography
-                              key={text}
+                              component="div"
+                              key={`${text}-${index}`}
                               variant="body2"
                               sx={{
                                 mb: 1,
@@ -136,7 +137,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                               </Typography>{" "}
                               {text}
                             </Typography>
-                          )
+                          ),
                         )}
                       </Typography>
                     </>
@@ -193,7 +194,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         </form>
       </Box>
     ) : null;
-  }
+  },
 );
 
 ChatInterface.displayName = "ChatInterface";

@@ -150,6 +150,7 @@ interface NewsState {
   totalPage: number;
   fetching: boolean;
   fetchingSearchOptions: boolean;
+  selectedNews: News | null;
   setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
@@ -160,6 +161,7 @@ interface NewsState {
   incrementPage: () => void;
   setFetching: (fetching: boolean) => void;
   setFetchingSearchOptions: (fetchingSearchOptions: boolean) => void;
+  setSelectedNews: (selectedNews: News | null) => void;
 }
 
 export const useNewsStore = create<NewsState>((set) => ({
@@ -170,6 +172,7 @@ export const useNewsStore = create<NewsState>((set) => ({
   totalPage: 1,
   fetching: false,
   fetchingSearchOptions: false,
+  selectedNews: null,
   setNews: (news) => set(() => ({ news })),
   addNews: (newNews) => set((state) => ({ news: [...state.news, ...newNews] })),
   setNewsSearchOptions: (newsSearchOptions) =>
@@ -185,6 +188,7 @@ export const useNewsStore = create<NewsState>((set) => ({
   setFetching: (fetching) => set(() => ({ fetching })),
   setFetchingSearchOptions: (fetchingSearchOptions) =>
     set(() => ({ fetchingSearchOptions })),
+  setSelectedNews: (selectedNews) => set(() => ({ selectedNews })),
 }));
 
 interface SceneState {
