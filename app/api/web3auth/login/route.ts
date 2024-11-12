@@ -63,11 +63,23 @@ export async function POST(req: NextRequest) {
       }),
     ]);
 
+    const helioSubcription = await prisma.helioTransaction.findFirst({
+      where: {
+        senderAddress: walletAddress,
+        transactionSuccess: "SUCCESS",
+        paymentType: "PAYLINK",
+        createdAt: {
+          gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+        },
+      },
+    });
+
     return NextResponse.json({
-      message: "web3auth user saved successfully",
+      walletAddress,
       nickname: dbTX[0].nickname,
       isAdmin: dbTX[0].isAdmin,
       imageUrl: dbTX[0].imageUrl,
+      isSubscribed: !!helioSubcription,
     });
   } catch (error) {
     console.log("web3auth login error:", error);
