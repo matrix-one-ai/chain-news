@@ -102,7 +102,7 @@ const Overlay = ({
     setIsSettingsOpen,
   } = useSettingsStore();
 
-  const { setIsPaywallModalOpen } = useOverlayStore();
+  const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
   const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
@@ -242,11 +242,13 @@ const Overlay = ({
 
   // If search param has slug info initially, then the news corresponding to the slug should be played
   useEffect(() => {
-    if (!isLoggedIn) return;
+    // ! Closing paywall modal is necessary to confirm that user interacted with the page
+    // Should be logged in, and also paywall modal should be closed (because closing paywall modal needs user interaction, and audio can be played after user interaction)
+    if (!isLoggedIn || isPaywallModalOpen) return;
 
     handleNewsClick(initialNews);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialNews, isLoggedIn]);
+  }, [initialNews, isLoggedIn, isPaywallModalOpen]);
 
   const handleStreamStart = useCallback(() => {
     setCurrentSegmentIndex(0); // sets -1 to 0
