@@ -69,7 +69,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         append({ role: "user", content: prompt });
         setInput("");
       },
-      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput]
+      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput],
     );
 
     useEffect(() => {
@@ -136,7 +136,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                               </Typography>{" "}
                               {text}
                             </Typography>
-                          )
+                          ),
                         )}
                       </Typography>
                     </>
@@ -193,7 +193,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         </form>
       </Box>
     ) : null;
-  }
+  },
 );
 
 ChatInterface.displayName = "ChatInterface";
