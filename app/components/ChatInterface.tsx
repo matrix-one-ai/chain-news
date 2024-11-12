@@ -112,7 +112,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           >
             {messages.map((message, index) => (
               <Box key={index}>
-                <Typography variant="body1" fontWeight="bold">
+                <Typography component="div" variant="body1" fontWeight="bold">
                   {message.role === "user" ? (
                     <>
                       {"User"}
@@ -121,10 +121,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   ) : (
                     <>
                       {"AI"}
-                      <Typography variant="body2">
+                      <Typography component="div" variant="body2">
                         {splitScriptLines(message.content).map(
                           ({ speaker, text }) => (
                             <Typography
+                              component="div"
                               key={text}
                               variant="body2"
                               sx={{
