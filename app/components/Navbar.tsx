@@ -28,12 +28,7 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import {
-  useAuthStore,
-  useOverlayStore,
-  usePromptStore,
-  useSceneStore,
-} from "../zustand/store";
+import { useAuthStore, usePromptStore, useSceneStore } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
@@ -348,18 +343,20 @@ function Web3AuthLogin() {
         {menuItems.map(({ name, route, onClick }) => (
           <MenuItem
             key={name}
-            onClick={onClick}
+            component={route ? Link : "button"}
+            href={route}
+            onClick={() => {
+              handleCloseUserMenu();
+              onClick?.();
+            }}
             sx={{
               backgroundColor: "#171325",
               padding: "0.5rem 1rem",
               textAlign: "left",
+              width: "100%",
             }}
           >
-            {route ? (
-              <Link href={route}>{name}</Link>
-            ) : (
-              <ListItemText>{name}</ListItemText>
-            )}
+            <ListItemText>{name}</ListItemText>
           </MenuItem>
         ))}
       </Menu>
