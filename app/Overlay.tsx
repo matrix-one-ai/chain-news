@@ -31,6 +31,7 @@ import {
   useSettingsStore,
 } from "./zustand/store";
 import PaywallModal from "./components/PaywallModal";
+import { useNewsFetchBySlugOnMount } from "./hooks/useNewsFetch";
 
 interface OverlayProps {
   selectedNews: News | null;
@@ -80,6 +81,7 @@ const Overlay = ({
   const { prompt, setPrompt } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
   const { news } = useNewsStore();
+  const initialNews = useNewsFetchBySlugOnMount();
 
   const {
     isStreaming,
@@ -229,14 +231,22 @@ const Overlay = ({
       isLoggedIn,
       setSelectedNews,
       isPromptUnlocked,
+      router,
+      pathname,
       setPrompt,
       customPrompt,
       segmentDuration,
       mainHostAvatar,
-      pathname,
-      router,
     ],
   );
+
+  // If search param has slug info initially, then the news corresponding to the slug should be played
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    handleNewsClick(initialNews);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialNews, isLoggedIn]);
 
   const handleStreamStart = useCallback(() => {
     setCurrentSegmentIndex(0); // sets -1 to 0
