@@ -123,10 +123,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                       {"AI"}
                       <Typography component="div" variant="body2">
                         {splitScriptLines(message.content).map(
-                          ({ speaker, text }) => (
+                          ({ speaker, text }, index) => (
                             <Typography
                               component="div"
-                              key={text}
+                              key={`${text}-${index}`}
                               variant="body2"
                               sx={{
                                 mb: 1,
