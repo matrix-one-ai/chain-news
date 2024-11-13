@@ -36,6 +36,7 @@ interface AuthState {
   isLoggedIn: boolean;
   walletAddress: string | null;
   nickname: string | null;
+  email: string | null;
   isAdmin: boolean;
   imageUrl: string | null;
   isSubscribed: boolean;
@@ -43,6 +44,7 @@ interface AuthState {
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
   setNickname: (nickname: string) => void;
+  setEmail: (email: string) => void
   setIsAdmin: (isAdmin: boolean) => void;
   setImageUrl: (url: string) => void;
   setIsSubscribed: (isSubscribed: boolean) => void;
@@ -53,6 +55,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
   walletAddress: null,
   nickname: null,
+  email: null,
   isAdmin: false,
   imageUrl: null,
   isSubscribed: false,
@@ -60,6 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setLoggedIn: (loggedIn: boolean) => set({ isLoggedIn: loggedIn }),
   setWalletAddress: (address: string) => set({ walletAddress: address }),
   setNickname: (nickname: string) => set({ nickname: nickname }),
+  setEmail: (email: string) => set({ email: email }),
   setIsAdmin: (isAdmin: boolean) => set({ isAdmin: isAdmin }),
   setImageUrl: (url: string) => set({ imageUrl: url }),
   setIsSubscribed: (isSubscribed: boolean) =>

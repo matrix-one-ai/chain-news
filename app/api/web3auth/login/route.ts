@@ -5,8 +5,16 @@ const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddress, chainId, chainNamespace, adapter } =
-      await req.json();
+    const {
+      walletAddress,
+      chainId,
+      chainNamespace,
+      adapter,
+      email,
+      nickname,
+      typeOfLogin,
+      profileImage,
+    } = await req.json();
 
     const ip =
       req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for");
@@ -25,6 +33,8 @@ export async function POST(req: NextRequest) {
         where: { walletAddress },
         update: {
           adapter,
+          typeOfLogin,
+          email,
           lastLogin: new Date(),
         },
         create: {
@@ -32,6 +42,9 @@ export async function POST(req: NextRequest) {
           chainId,
           chainNamespace,
           adapter,
+          email,
+          nickname,
+          imageUrl: profileImage,
           lastLogin: new Date(),
           createdAt: new Date(),
           ipAddress: ipInfo.ip,
@@ -79,6 +92,7 @@ export async function POST(req: NextRequest) {
       nickname: dbTX[0].nickname,
       isAdmin: dbTX[0].isAdmin,
       imageUrl: dbTX[0].imageUrl,
+      email: dbTX[0].email,
       isSubscribed: !!helioSubcription,
     });
   } catch (error) {

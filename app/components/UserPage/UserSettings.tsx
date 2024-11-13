@@ -98,7 +98,7 @@ const UserSettings = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const { walletAddress, nickname, imageUrl, setImageUrl, setNickname } =
+  const { walletAddress, nickname, imageUrl, email, setImageUrl, setNickname } =
     useAuthStore();
 
   const [isEditingNickname, setIsEditingNickname] = useState<boolean>(false);
@@ -149,7 +149,7 @@ const UserSettings = () => {
         setIsUploadingImage(false);
       }
     },
-    [setImageUrl, walletAddress],
+    [setImageUrl, walletAddress]
   );
 
   return (
@@ -286,7 +286,7 @@ const UserSettings = () => {
         isEditing={isEditingNickname}
       />
 
-      <UserInfoBox title="EMAIL ADDRESS" value={"123@xyz.one"} />
+      <UserInfoBox title="EMAIL ADDRESS" value={email || "-"} />
 
       <UserInfoBox title="HELIO WALLET ADDRESS" value={"-"} />
     </Stack>

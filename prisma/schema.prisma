@@ -60,6 +60,8 @@ model User {
   ipAddress      String   @default("")
   imageUrl       String?
   nickname       String?
+  typeOfLogin    String?
+  email          String?
   ipInfo         IPInfo?  @relation(fields: [ipInfoId], references: [id])
 }
 

@@ -37,6 +37,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "fnfscfgwilvky5z8.public.blob.vercel-storage.com",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
 };

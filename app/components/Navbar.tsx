@@ -63,6 +63,7 @@ function Web3AuthLogin() {
     setIsAdmin,
     setImageUrl,
     setNickname,
+    setEmail,
     setIsSubscribed,
     setTriggerWeb3AuthModal,
   } = useAuthStore();
@@ -75,6 +76,12 @@ function Web3AuthLogin() {
         const walletAddress = accounts[0];
         setWalletAddress(walletAddress);
 
+        let userData = null;
+
+        if (web3auth.connectedAdapterName === "auth") {
+          userData = await web3auth.getUserInfo();
+        }
+
         try {
           const response = await fetch("/api/web3auth/login", {
             method: "POST",
@@ -86,6 +93,10 @@ function Web3AuthLogin() {
               chainId: chainConfig.chainId,
               chainNamespace: chainConfig.chainNamespace,
               adapter: web3auth.connectedAdapterName,
+              email: userData?.email,
+              nickname: userData?.name,
+              typeOfLogin: userData?.typeOfLogin,
+              profileImage: userData?.profileImage,
             }),
           });
 
@@ -99,6 +110,7 @@ function Web3AuthLogin() {
           setImageUrl(data.imageUrl);
           setNickname(data.nickname);
           setIsSubscribed(data.isSubscribed);
+          setEmail(data.email);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
@@ -113,6 +125,8 @@ function Web3AuthLogin() {
     setImageUrl,
     setNickname,
     setIsSubscribed,
+    web3auth,
+    setEmail,
   ]);
 
   useEffect(() => {
