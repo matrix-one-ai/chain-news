@@ -34,6 +34,7 @@ import { useAuthStore } from "../zustand/store";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
 import { ROUTE } from "@/app/constants";
+import { useRouter } from "next/navigation";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -51,6 +52,8 @@ const chainConfig = {
 function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
+
+  const router = useRouter();
 
   const {
     walletAddress,
@@ -217,7 +220,8 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-  }, [web3auth, setLoggedIn, uiConsole]);
+    router.replace("/");
+  }, [web3auth, setLoggedIn, router, uiConsole]);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
