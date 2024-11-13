@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
-import { useAuthStore, useSceneStore } from "../zustand/store";
+import { useAuthStore, usePromptStore, useSceneStore } from "../zustand/store";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -35,13 +35,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
 
     const { mainHostAvatar, isPlaying } = useSceneStore();
     const { isLoggedIn } = useAuthStore();
+    const { systemMessages, addSystemMessage } = usePromptStore();
 
     const {
       messages,
       input,
+      isLoading,
+      setMessages,
       handleInputChange,
       setInput,
-      isLoading,
       append,
       stop,
     } = useChat({
@@ -68,8 +70,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           : sendChatMessage(message, mainHostAvatar);
         append({ role: "user", content: prompt });
         setInput("");
+        addSystemMessage(`TERMINAL:${message}`);
       },
-      [append, customPrompt, isPromptUnlocked, mainHostAvatar, setInput],
+      [
+        addSystemMessage,
+        append,
+        customPrompt,
+        isPromptUnlocked,
+        mainHostAvatar,
+        setInput,
+      ]
     );
 
     useEffect(() => {
@@ -89,6 +99,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
       });
       return scriptLines;
     }, []);
+
+    const mergedMessages = [...messages, ...systemMessages]
+      .sort(
+        (a, b) =>
+          (a.createdAt as Date).getTime() - (b.createdAt as Date).getTime()
+      )
+      .filter(
+        (message) =>
+          (message.role === "user" &&
+            message.content.slice(0, 9) === "TERMINAL:") ||
+          message.role === "assistant"
+      );
 
     return !isStreaming ? (
       <Box
@@ -110,17 +132,26 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
               padding: "10px",
             }}
           >
-            {messages.map((message, index) => (
+            {mergedMessages.map((message, index) => (
               <Box key={index}>
                 <Typography component="div" variant="body1" fontWeight="bold">
                   {message.role === "user" ? (
                     <>
-                      {"User"}
-                      <Typography variant="body2">{message.content}</Typography>
+                      {"Terminal:"}
+                      <Typography variant="body2" sx={{ mb: 2 }}>
+                        {message.content
+                          ?.slice(9)
+                          .split("\n")
+                          ?.map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              <br />
+                            </span>
+                          ))}
+                      </Typography>
                     </>
                   ) : (
                     <>
-                      {"AI"}
                       <Typography component="div" variant="body2">
                         {splitScriptLines(message.content).map(
                           ({ speaker, text }, index) => (
@@ -137,7 +168,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                               </Typography>{" "}
                               {text}
                             </Typography>
-                          ),
+                          )
                         )}
                       </Typography>
                     </>
@@ -194,7 +225,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         </form>
       </Box>
     ) : null;
-  },
+  }
 );
 
 ChatInterface.displayName = "ChatInterface";

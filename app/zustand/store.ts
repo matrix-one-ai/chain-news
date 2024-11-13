@@ -44,7 +44,7 @@ interface AuthState {
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
   setNickname: (nickname: string) => void;
-  setEmail: (email: string) => void
+  setEmail: (email: string) => void;
   setIsAdmin: (isAdmin: boolean) => void;
   setImageUrl: (url: string) => void;
   setIsSubscribed: (isSubscribed: boolean) => void;
@@ -141,14 +141,39 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ showTraderViewWidget: show }),
 }));
 
+interface SystemMessage {
+  content: string;
+  role: "user";
+  createdAt: Date;
+}
+
 interface PromptState {
   prompt: string;
+  systemMessages: SystemMessage[];
   setPrompt: (prompt: string) => void;
+  setSystemMessages: (messages: string[]) => void;
+  addSystemMessage: (message: string) => void;
 }
 
 export const usePromptStore = create<PromptState>((set) => ({
   prompt: "",
+  systemMessages: [],
   setPrompt: (prompt: string) => set({ prompt: prompt }),
+  setSystemMessages: (messages: string[]) =>
+    set(() => ({
+      systemMessages: messages.map((content) => ({
+        content,
+        role: "user",
+        createdAt: new Date(),
+      })),
+    })),
+  addSystemMessage: (message: string) =>
+    set((state) => ({
+      systemMessages: [
+        ...state.systemMessages,
+        { content: message, role: "user", createdAt: new Date() },
+      ],
+    })),
 }));
 
 interface NewsState {

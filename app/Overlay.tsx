@@ -74,7 +74,7 @@ const Overlay = ({
 }: OverlayProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { prompt, setPrompt } = usePromptStore();
+  const { prompt, setPrompt, addSystemMessage } = usePromptStore();
   const { isLoggedIn, isAdmin } = useAuthStore();
   const { news, selectedNews, setSelectedNews } = useNewsStore();
   const initialNews = useNewsFetchBySlugOnMount();
@@ -136,39 +136,49 @@ const Overlay = ({
       prompt = chatsResponsePrompt(chats);
       setLastSegmentType("chat");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
+      addSystemMessage(`TERMINAL: Playing Youtube chat segment with ${
+        chats.length
+      } messages.\nChats:\n
+        ${chats
+          .map((chat: any) => `${chat.displayName}: ${chat.displayMessage}`)
+          .join("\n")}
+        `);
     } else if (!newsItem) {
       // Handle Conclusion
       setSelectedNews(null);
       prompt = concludeNewsPrompt();
       setLastSegmentType("chat");
       setCurrentSegmentIndex(0); // infinite loop replay stream
+      addSystemMessage(
+        `TERMINAL: Stream concluded. Starting from the beginning...`
+      );
     } else if (currentSegmentIndex === 0) {
       // Handle Start of News
       setSelectedNews(newsItem);
       prompt = isPromptUnlocked
         ? customPrompt
         : startNewsPrompt(newsItem, segmentDuration, mainHostAvatar);
+
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
-    }
-    // else if (currentSegmentIndex % 5 === 0) {
-    //   setSelectedNews(null);
-    //   setCurrentSegmentIndex(currentSegmentIndex + 1);
-    //   prompt = streamPromoPrompt();
-    //   setLastSegmentType('promo');
-    // }
-    else if (currentSegmentIndex % 5 === 0) {
+      addSystemMessage(
+        `TERMINAL: Welcome! Starting the news...\n${newsItem.title}`
+      );
+    } else if (currentSegmentIndex % 5 === 0) {
       // Handle Joke Breaks
       setSelectedNews(null);
       setCurrentSegmentIndex(currentSegmentIndex + 1);
       prompt = jokeBreakPrompt();
       setLastSegmentType("joke");
+      addSystemMessage(`TERMINAL: Joke break time! Entertaining the audience...`);
     } else {
       // Handle Next News Segment
       setSelectedNews(newsItem);
       prompt = nextSegmentPrompt(newsItem);
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
+
+      addSystemMessage(`TERMINAL: Moving to next article...\n${newsItem.title}`);
     }
 
     setIsPlaying(true);
@@ -181,6 +191,7 @@ const Overlay = ({
     setIsPlaying,
     setPrompt,
     setSelectedNews,
+    addSystemMessage,
     setLastSegmentType,
     setCurrentSegmentIndex,
     isPromptUnlocked,
@@ -215,10 +226,11 @@ const Overlay = ({
           const prompt = startNewsPrompt(
             newsItem,
             segmentDuration,
-            mainHostAvatar,
+            mainHostAvatar
           );
           setPrompt(prompt);
         }
+        addSystemMessage(`TERMINAL: Starting news segment...\n${newsItem.title}`);
       } else {
         console.log("User not logged in");
       }
@@ -233,7 +245,8 @@ const Overlay = ({
       customPrompt,
       segmentDuration,
       mainHostAvatar,
-    ],
+      addSystemMessage,
+    ]
   );
 
   // If search param has slug info initially, then the news corresponding to the slug should be played
@@ -266,6 +279,7 @@ const Overlay = ({
     const prompt = concludeNewsPrompt();
 
     setPrompt(prompt);
+    addSystemMessage(`TERMINAL: Stream concluded. Thank you for watching!`);
   }, [
     setStreamStarted,
     setSelectedNews,
@@ -273,6 +287,7 @@ const Overlay = ({
     setAudioBlob,
     audioRef,
     setPrompt,
+    addSystemMessage,
   ]);
 
   const handleNext = useCallback(() => {
@@ -297,7 +312,10 @@ const Overlay = ({
     const prompt = nextSegmentPrompt(nextNews);
     setSelectedNews(nextNews);
     setPrompt(prompt);
+
+    addSystemMessage(`TERMINAL: Moving to next article...\n${nextNews.title}`);
   }, [
+    addSystemMessage,
     audioRef,
     currentSegmentIndex,
     news,
