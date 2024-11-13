@@ -11,7 +11,7 @@ export async function generateMetadata({
   const metaData: Metadata = {};
 
   try {
-    if (!slug) throw new Error("Not found slug.");
+    if (!slug) console.log("No slug provided");
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/news/slug?slug=${slug}`,
@@ -49,7 +49,7 @@ export async function generateMetadata({
       };
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
   } finally {
     return metaData;
   }

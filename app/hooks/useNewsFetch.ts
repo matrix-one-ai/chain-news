@@ -219,7 +219,7 @@ export function useNewsFetchBySlugOnMount(): News | null {
     const slug = searchParams.get("article");
 
     // Slug is necessary
-    if (slug === null) return;
+    if (!slug) return;
 
     try {
       abortableNewsBySlugFetch.current = new AbortableFetch(
