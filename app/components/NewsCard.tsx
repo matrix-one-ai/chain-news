@@ -102,7 +102,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
           direction="column"
           borderRadius={1.5}
           border={
-            newsItem !== null && selectedNews?.id === newsItem?.id
+            newsItem !== null && selectedNews?.url === newsItem?.url
               ? "solid 1px"
               : "none"
           }
