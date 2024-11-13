@@ -29,7 +29,7 @@ export async function generateMetadata({
     if (imageUrl) {
       metaData.openGraph = {
         type: "website",
-        url: `https://chain-news-one.vercel.app?article=${slug}`,
+        url: `https://app.chainnews.one?article=${slug}`,
         title,
         description,
         images: [
