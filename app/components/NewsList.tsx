@@ -7,6 +7,7 @@ import {
   Chip,
   Fade,
   IconButton,
+  Stack,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -130,8 +131,21 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
         pointerEvents: isVisible ? "all" : "none",
       }}
     >
-      <Box>
-        <Autocomplete
+      <Stack
+        sx={{
+          position: "fixed",
+          top: 64,
+          right: 0,
+          width: "50%",
+          padding: "16px 24px 16px 12px",
+          maxWidth: "365px",
+          maxHeight: "calc(100% - 112px)",
+          overflowY: "auto",
+          backgroundColor: "rgba(32, 24, 51, 0.6)",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        {/* <Autocomplete
           options={newsSearchOptions.sort(
             (a, b) => -b.category.localeCompare(a.category),
           )}
@@ -207,19 +221,11 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
               }}
             />
           ))}
-        </Marquee>
-        <div
-          style={{
-            position: "fixed",
-            top: 145,
-            right: 0,
-            width: "50%",
-            paddingLeft: "5rem",
-            maxWidth: "400px",
-            maxHeight: "calc(100% - 195px)",
-            overflowY: "auto",
-          }}
-        >
+        </Marquee> */}
+        <Stack direction="row" gap={1}>
+          {/* TODO: Add filter components here */}
+        </Stack>
+        <Stack gap={1}>
           {(fetching
             ? [...interpolatedNews, ...dummyNews] // When fetching news data of next page, let show skeleton loader for dummy data
             : interpolatedNews
@@ -232,8 +238,8 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           ))}
           {/* Target element for infinite scroll */}
           <Box ref={targetRef} style={{ height: 1 }} />
-        </div>
-      </Box>
+        </Stack>
+      </Stack>
     </Fade>
   );
 });
