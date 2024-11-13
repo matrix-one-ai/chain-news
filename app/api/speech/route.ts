@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export async function POST(request: Request) {
   try {
     const { text, voice } = await request.json();
+
+    console.log(text);
 
     if (!text) {
       return NextResponse.json({ error: "No text provided" }, { status: 500 });
