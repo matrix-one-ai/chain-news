@@ -5,14 +5,15 @@ import {
   CardActionArea,
   CardContent,
   Chip,
-  Grid2,
+  Fade,
   Modal,
   Stack,
   Typography,
 } from "@mui/material";
-import { useOverlayStore } from "../zustand/store";
+import { useAuthStore, useOverlayStore } from "../zustand/store";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import HelioWidget from "./HelioWidget";
 
 const PaywallFeature = ({ image, text }: { image: string; text: string }) => {
   return (
@@ -149,9 +150,26 @@ const PriceCard = ({
   );
 };
 
+enum PaywallSteps {
+  INTRO,
+  LOGIN,
+  HELIO,
+  CONCLUSION,
+}
+
 const PaywallModal = () => {
+  const { isLoggedIn, isSubscribed, setTriggerWeb3AuthModal } = useAuthStore();
   const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
-  const [isAnnual, setIsAnnual] = useState(true);
+  const [isAnnual, setIsAnnual] = useState<boolean>(true);
+  const [paywallStep, setPaywallStep] = useState<PaywallSteps>(
+    PaywallSteps.INTRO
+  );
+
+  useEffect(() => {
+    if (isLoggedIn && !isSubscribed && paywallStep === PaywallSteps.LOGIN) {
+      setPaywallStep(PaywallSteps.HELIO);
+    }
+  }, [isLoggedIn, isSubscribed, paywallStep]);
 
   return (
     <Modal
@@ -175,9 +193,6 @@ const PaywallModal = () => {
           borderRadius: "1rem",
         }}
       >
-        <Grid2 container>
-          <Grid2></Grid2>
-        </Grid2>
         <Stack direction="row" spacing={2}>
           <Box
             sx={{
@@ -201,117 +216,208 @@ const PaywallModal = () => {
               ))}
             </Stack>
           </Box>
-          <Box
-            sx={{
-              width: "100%",
-            }}
-          >
-            <Stack
-              sx={{
-                justifyContent: "space-between",
-                flexDirection: "row",
-                gap: 2,
-              }}
-            >
-              <PriceCard
-                duration="Annual"
-                matrixPrice={20}
-                fiatPrice={69}
-                onClick={() => setIsAnnual(true)}
-                isSelected={isAnnual}
-              />
-              <PriceCard
-                duration="Monthly"
-                matrixPrice={5}
-                fiatPrice={9.99}
-                onClick={() => setIsAnnual(false)}
-                isSelected={!isAnnual}
-              />
-            </Stack>
 
-            <Box
-              sx={{
-                mt: 2,
-                backgroundColor: "info.main",
-                color: "black",
-                p: 2,
-                borderRadius: "0.5rem",
-              }}
-            >
-              <Stack
-                sx={{
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  gap: 2,
-                }}
-              >
-                <Box>
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Pay with $MATRIX
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: "#313131",
-                    }}
-                  >
-                    Pay with $MATRIX and get 20% discount.
-                  </Typography>
-                </Box>
-                <Button
-                  variant="outlined"
+          {paywallStep === PaywallSteps.INTRO && (
+            <>
+              {!isSubscribed && (
+                <Box
                   sx={{
-                    color: "black",
-                    borderColor: "black",
-                    borderRadius: "0.5rem",
-                    height: "2.5rem",
-                    textTransform: "capitalize",
-                    fontWeight: "bold",
-                    ":hover": {
-                      backgroundColor: "black",
-                      color: "white",
-                    },
+                    width: "100%",
                   }}
                 >
-                  Upgrade to Pro
+                  <Stack
+                    sx={{
+                      justifyContent: "space-between",
+                      flexDirection: "row",
+                      gap: 2,
+                    }}
+                  >
+                    <PriceCard
+                      duration="Annual"
+                      matrixPrice={20}
+                      fiatPrice={69}
+                      onClick={() => setIsAnnual(true)}
+                      isSelected={isAnnual}
+                    />
+                    <PriceCard
+                      duration="Monthly"
+                      matrixPrice={5}
+                      fiatPrice={9.99}
+                      onClick={() => setIsAnnual(false)}
+                      isSelected={!isAnnual}
+                    />
+                  </Stack>
+
+                  <Box
+                    sx={{
+                      mt: 2,
+                      backgroundColor: "info.main",
+                      color: "black",
+                      p: 2,
+                      borderRadius: "0.5rem",
+                    }}
+                  >
+                    <Stack
+                      sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexDirection: "row",
+                        gap: 2,
+                      }}
+                    >
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                          Pay with $MATRIX
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            color: "#313131",
+                          }}
+                        >
+                          Pay with $MATRIX and get 20% discount.
+                        </Typography>
+                      </Box>
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "black",
+                          borderColor: "black",
+                          borderRadius: "0.5rem",
+                          height: "2.5rem",
+                          textTransform: "capitalize",
+                          fontWeight: "bold",
+                          ":hover": {
+                            backgroundColor: "black",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        Upgrade to Pro
+                      </Button>
+                    </Stack>
+                  </Box>
+
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    size="large"
+                    sx={{
+                      mt: 2,
+                      backgroundColor: "white",
+                      color: "#631EDC",
+                      fontSize: "1.1rem",
+                      textTransform: "capitalize",
+                      fontWeight: "bold",
+                    }}
+                    fullWidth
+                    onClick={() =>
+                      setPaywallStep(
+                        isLoggedIn ? PaywallSteps.HELIO : PaywallSteps.LOGIN
+                      )
+                    }
+                  >
+                    Continue
+                  </Button>
+
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 2,
+                      color: "text.secondary",
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      textAlign: "center",
+                      ":hover": {
+                        color: "white",
+                      },
+                    }}
+                  >
+                    View subscription terms
+                  </Typography>
+                </Box>
+              )}
+              {isSubscribed && (
+                <Fade in>
+                  <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                      You have PRO access! Have fun! :D
+                    </Typography>
+                  </Stack>
+                </Fade>
+              )}
+            </>
+          )}
+
+          {paywallStep === PaywallSteps.LOGIN && (
+            <Fade in>
+              <Stack
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  width: "100%",
+                }}
+              >
+                <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                  Log in to continue PRO Upgrade
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  size="large"
+                  sx={{
+                    mt: 2,
+                    backgroundColor: "white",
+                    color: "#631EDC",
+                    fontSize: "1.1rem",
+                    textTransform: "capitalize",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => setTriggerWeb3AuthModal(true)}
+                >
+                  <Typography>Log In</Typography>
                 </Button>
               </Stack>
-            </Box>
+            </Fade>
+          )}
 
-            <Button
-              variant="contained"
-              color="warning"
-              size="large"
-              sx={{
-                mt: 2,
-                backgroundColor: "white",
-                color: "#631EDC",
-                fontSize: "1.1rem",
-                textTransform: "capitalize",
-                fontWeight: "bold",
-              }}
-              fullWidth
-            >
-              Continue
-            </Button>
+          {paywallStep === PaywallSteps.HELIO && (
+            <Fade in>
+              <Stack
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  width: "100%",
+                }}
+              >
+                <HelioWidget
+                  onSuccess={() => setPaywallStep(PaywallSteps.CONCLUSION)}
+                />
+              </Stack>
+            </Fade>
+          )}
 
-            <Typography
-              variant="body2"
-              sx={{
-                mt: 2,
-                color: "text.secondary",
-                cursor: "pointer",
-                textDecoration: "underline",
-                textAlign: "center",
-                ":hover": {
-                  color: "white",
-                },
-              }}
-            >
-              View subscription terms
-            </Typography>
-          </Box>
+          {paywallStep === PaywallSteps.CONCLUSION && (
+            <Fade in>
+              <Stack
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  width: "100%",
+                }}
+              >
+                <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                  Thank you for upgrading to PRO!
+                </Typography>
+              </Stack>
+            </Fade>
+          )}
         </Stack>
       </Box>
     </Modal>

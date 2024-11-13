@@ -29,14 +29,10 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import { useAuthStore, usePromptStore, useSceneStore } from "../zustand/store";
+import { useAuthStore } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
-import {
-  goodbyeUserLogoutPrompt,
-  greetUserLoginPrompt,
-} from "../helpers/prompts";
 import { ROUTE } from "@/app/constants";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
@@ -56,22 +52,20 @@ function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
-  const { setPrompt } = usePromptStore();
-
   const {
     walletAddress,
     isLoggedIn,
     imageUrl,
     isSubscribed,
+    triggerWeb3AuthModal,
     setWalletAddress,
     setLoggedIn,
     setIsAdmin,
     setImageUrl,
     setNickname,
     setIsSubscribed,
+    setTriggerWeb3AuthModal,
   } = useAuthStore();
-
-  const { mainHostAvatar } = useSceneStore();
 
   useEffect(() => {
     if (provider && web3auth?.connected) {
@@ -191,9 +185,15 @@ function Web3AuthLogin() {
       setLoggedIn(true);
     }
 
-    setPrompt(greetUserLoginPrompt(mainHostAvatar));
     setProvider(web3authProvider);
-  }, [web3auth, setPrompt, mainHostAvatar, uiConsole, setLoggedIn]);
+  }, [web3auth, uiConsole, setLoggedIn]);
+
+  useEffect(() => {
+    if (triggerWeb3AuthModal) {
+      login();
+      setTriggerWeb3AuthModal(false);
+    }
+  }, [triggerWeb3AuthModal, login, setTriggerWeb3AuthModal]);
 
   const logout = useCallback(async () => {
     if (!web3auth) {
@@ -203,8 +203,7 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    setPrompt(goodbyeUserLogoutPrompt(mainHostAvatar));
-  }, [web3auth, setLoggedIn, setPrompt, mainHostAvatar, uiConsole]);
+  }, [web3auth, setLoggedIn, uiConsole]);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
