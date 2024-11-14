@@ -10,9 +10,10 @@ export async function generateMetadata({
   const slug = searchParams.article;
   const metaData: Metadata = {};
 
-  try {
-    if (!slug) console.log("No slug provided");
+  // If no slug is provided, return the default metadata
+  if (!slug) return metaData;
 
+  try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/news/slug?slug=${slug}`,
     );

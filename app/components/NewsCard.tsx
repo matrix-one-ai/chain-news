@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import {
   Box,
   Chip,
   Fade,
+  IconButton,
   Skeleton,
   Stack,
   Tooltip,
@@ -20,10 +22,13 @@ import {
   TokenOutlined,
   GamesOutlined,
 } from "@mui/icons-material";
-import Image from "next/image";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import Image from "next/legacy/image";
 import { load } from "cheerio";
-import { useAuthStore } from "../zustand/store";
-import { useEffect, useState } from "react";
+import { useAuthStore, useNewsStore, useSceneStore } from "@/app/zustand/store";
+import { useToggle } from "@/app/hooks/useToggle";
+import { formatToLocalDateTime } from "../helpers/time";
 
 export interface NewsItem extends News {
   tokenSymbol?: string;
@@ -71,14 +76,24 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   const percentChangeColor = percentChange < 0 ? "#ff2e2e" : "secondary.main";
   const plusOrMinus = percentChange < 0 ? "" : "+";
 
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, isSubscribed } = useAuthStore();
+  const { selectedNews } = useNewsStore();
+  const { isPlaying } = useSceneStore();
+  const [
+    imageLoading,
+    { toggleOn: toggleOnImageLoading, toggleOff: toggleOffImageLoading },
+  ] = useToggle(true);
 
-  const [loading, setLoading] = useState(true);
+  // Determine selected status
+  const isSelected = useMemo(
+    () => newsItem !== null && selectedNews?.url === newsItem?.url,
+    [newsItem, selectedNews?.url],
+  );
 
-  // Reset loading status whenever news image is changed
+  // Reset imageLoading status whenever news image is changed
   useEffect(() => {
-    setLoading(true);
-  }, [newsItem?.imageUrl]);
+    toggleOnImageLoading();
+  }, [newsItem?.imageUrl, toggleOnImageLoading]);
 
   return (
     <Tooltip
@@ -89,132 +104,232 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
       disableInteractive={isLoggedIn}
       placement="left"
     >
-      <Box
-        onClick={() => onClick(newsItem)}
-        className="news-card"
-        sx={{
-          backgroundColor: "#0c0a1285",
-          border: "1px solid",
-          borderColor: "primary.main",
-          borderRadius: "8px",
-          marginBottom: "10px",
-          cursor: "pointer",
-          transition:
-            "transform 0.3s, box-shadow 0.3s, background-color 0.3s, backdrop-filter 0.3s",
-          backdropFilter: "blur(10px)",
-          zIndex: 1001,
-
-          "&:hover": {
-            transform: "translateX(-10px)",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-            backgroundColor: "#0c0a12b6",
-            backdropFilter: "blur(15px)",
-            borderColor: "success.main",
-          },
-        }}
-      >
-        <Fade in={true} timeout={500}>
-          <Box>
-            {loading && (
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                width={305}
-                height={380}
-              />
-            )}
-            {newsItem !== null && (
-              <>
-                <Box
-                  sx={{
-                    position: loading ? "absolute" : "relative",
-                    visibility: loading ? "hidden" : "visible",
-                  }}
-                >
+      <Fade in={true} timeout={500}>
+        <Stack
+          direction="column"
+          borderRadius={1.5}
+          border={isSelected ? "solid 1px" : "none"}
+          borderColor="#FFD66E"
+          onClick={() => onClick(newsItem)}
+        >
+          <Stack
+            direction="column"
+            padding={2}
+            gap={2}
+            bgcolor="#0C071C"
+            borderRadius="6px 6px 0 0"
+          >
+            {/* Image */}
+            <Box
+              position="relative"
+              width="100%"
+              borderRadius={1}
+              overflow="hidden"
+              sx={{ aspectRatio: "297/92" }}
+            >
+              {(newsItem === null || imageLoading) && (
+                <Skeleton
+                  variant="rectangular"
+                  animation="wave"
+                  width="100%"
+                  height="100%"
+                  sx={{ position: "absolute", top: 0, left: 0 }}
+                />
+              )}
+              {newsItem !== null && (
+                <>
                   <Image
                     src={newsItem.imageUrl as string}
                     alt={newsItem.title}
-                    width={350}
-                    height={250}
-                    style={{
-                      margin: 0,
-                    }}
-                    onLoad={() => setLoading(false)}
+                    layout="fill"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    objectFit="cover"
+                    onLoad={toggleOffImageLoading}
                   />
 
                   {newsItem.category && (
                     <Chip
                       label={newsItem.category}
-                      icon={
-                        newsCategoryIcons[newsItem.category as NewsCategory]
-                      }
+                      color="primary"
                       sx={{
-                        padding: "2px 10px",
+                        padding: "4px 8px",
                         position: "absolute",
-                        top: -1,
-                        left: -1,
+                        top: 8,
+                        left: 8,
                         backgroundColor: "error.main",
-                        borderRadius: "5px 0 5px 0",
+                        borderRadius: 2,
+                        fontWeight: "bold",
                       }}
                       size="small"
                     />
                   )}
-                </Box>
-
-                <Box
-                  sx={{
-                    padding: "0.75rem",
-                    paddingTop: "0",
-                    position: loading ? "absolute" : "relative",
-                    visibility: loading ? "hidden" : "visible",
-                  }}
-                >
+                </>
+              )}
+            </Box>
+            {/* Title and info */}
+            <Stack direction="column" width="100%" gap={1}>
+              {newsItem === null ? (
+                <>
+                  <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                    width="100%"
+                    height={36}
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                    width="100%"
+                    height={14}
+                  />
+                </>
+              ) : (
+                <>
                   <Typography
                     variant="h6"
                     color="white"
-                    fontSize={18}
+                    fontSize={14}
+                    lineHeight="normal"
                     className="glitch"
                   >
                     {parseHTML(newsItem.title)}
                   </Typography>
 
-                  <Typography variant="body2" color="info">
-                    {newsItem.providerTitle}
+                  <Typography variant="body2" fontSize={11} color="#666176">
+                    {/* TODO: newsItem.datePublished is string, but TS recognizes it as Date */}
+                    {`${newsItem.providerTitle} | ${formatToLocalDateTime(
+                      newsItem.datePublished as unknown as string,
+                    )}`}
                   </Typography>
+                </>
+              )}
+            </Stack>
+            {/* Play/pause icon */}
+            <Box width="100%">
+              {newsItem === null ? (
+                <Skeleton
+                  variant="rectangular"
+                  animation="wave"
+                  width="100%"
+                  height={24}
+                />
+              ) : (
+                <IconButton
+                  aria-label={isPlaying ? "pause" : "play"}
+                  sx={{
+                    color: "#201833d9",
+                    backgroundColor: "error.main",
+                    width: "24px",
+                    height: "24px",
 
+                    ":hover": {
+                      color: "info.main",
+                      backgroundColor: "error.dark",
+                    },
+                  }}
+                >
+                  {isSelected && isPlaying ? (
+                    <PauseIcon sx={{ width: "20px", height: "20px" }} />
+                  ) : (
+                    <PlayArrowIcon sx={{ width: "20px", height: "20px" }} />
+                  )}
+                </IconButton>
+              )}
+            </Box>
+          </Stack>
+          {/* Coint type, price, and trading insight */}
+          {(newsItem === null ||
+            (newsItem.tokenTicker && newsItem.usdPrice)) && (
+            <Stack
+              direction="column"
+              width="100%"
+              paddingX={2}
+              paddingY={1}
+              gap={1}
+              bgcolor="#2A223C"
+              borderRadius="0 0 6px 6px"
+            >
+              {newsItem === null ? (
+                <>
+                  <Skeleton
+                    variant="rectangular"
+                    animation="wave"
+                    width="100%"
+                    height={24}
+                  />
+                  {!isSubscribed && (
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      width="100%"
+                      height={18}
+                    />
+                  )}
+                </>
+              ) : (
+                <>
                   <Stack
-                    sx={{
-                      marginTop: "10px",
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
                   >
-                    {newsItem.tokenTicker &&
-                      newsItem.usdPrice &&
-                      newsItem.percentChange24h && (
-                        <>
-                          <Chip
-                            label={`${newsItem.tokenTicker}`}
-                            size="small"
-                          />
-                          <Chip
-                            label={`$${newsItem.usdPrice.toFixed(
-                              2,
-                            )} (${plusOrMinus}${parseFloat(
-                              newsItem.percentChange24h,
-                            ).toFixed(2)}%)`}
-                            size="small"
-                            sx={{ color: percentChangeColor }}
-                          />
-                        </>
+                    <Typography
+                      variant="body2"
+                      fontSize={18}
+                      fontWeight="bold"
+                      color="white"
+                    >
+                      {`$ ${newsItem.tokenTicker}`}
+                    </Typography>
+                    <Stack direction="row" gap={1}>
+                      <Typography variant="body2" fontSize={18} color="white">
+                        {`$${(newsItem.usdPrice ?? 0).toFixed(2)}`}
+                      </Typography>
+                      {isSubscribed && (
+                        <Typography
+                          variant="body2"
+                          fontSize={18}
+                          color={percentChangeColor}
+                        >
+                          {`${plusOrMinus}${parseFloat(
+                            newsItem.percentChange24h ?? "0",
+                          ).toFixed(2)}%`}
+                        </Typography>
                       )}
+                    </Stack>
                   </Stack>
-                </Box>
-              </>
-            )}
-          </Box>
-        </Fade>
-      </Box>
+                  {!isSubscribed && (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="body2"
+                        fontSize={12}
+                        color="white"
+                        sx={{ opacity: 0.5 }}
+                      >
+                        GET TRADING INSIGHTS
+                      </Typography>
+                      <Chip
+                        label="PRO"
+                        sx={{
+                          height: 18,
+                          backgroundColor: "#FFB526",
+                          borderRadius: 0.8,
+                          fontWeight: "bold",
+                        }}
+                        size="small"
+                      />
+                    </Stack>
+                  )}
+                </>
+              )}
+            </Stack>
+          )}
+        </Stack>
+      </Fade>
     </Tooltip>
   );
 };

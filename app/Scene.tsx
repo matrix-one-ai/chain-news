@@ -51,7 +51,6 @@ const Scene = ({
     <Canvas
       style={{
         background: "linear-gradient(180deg, #171717 0%, #000000 100%)",
-        height: "calc(100vh - 110px)",
       }}
     >
       <ambientLight intensity={1.25} />

@@ -10,11 +10,14 @@ import { News } from "@prisma/client";
 
 /**
  * Hooks for fetching news data
- * @param title
  * @param category
+ * @param title
  * @returns void
  */
-export function useNewsFetch(title: string, category: string | null): void {
+export function useNewsFetch(
+  category: string | null,
+  title: string | null = null,
+): void {
   const { mounted } = useAppMountedStore();
   const {
     page,
@@ -146,6 +149,7 @@ export function useNewsFetch(title: string, category: string | null): void {
 }
 
 /**
+ * TODO: This hooks is not being used anywhere, consider removing or using later
  * Hooks for fetching search options for news
  * @param category
  * @returns void
