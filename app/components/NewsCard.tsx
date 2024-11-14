@@ -238,68 +238,36 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
             </Box>
           </Stack>
           {/* Coint type, price, and trading insight */}
-          <Stack
-            direction="column"
-            width="100%"
-            paddingX={2}
-            paddingY={1}
-            gap={1}
-            bgcolor="#2A223C"
-            borderRadius="0 0 6px 6px"
-          >
-            {newsItem === null ? (
-              <>
-                <Skeleton
-                  variant="rectangular"
-                  animation="wave"
-                  width="100%"
-                  height={24}
-                />
-                {!isSubscribed && (
+          {(newsItem === null ||
+            (newsItem.tokenTicker && newsItem.usdPrice)) && (
+            <Stack
+              direction="column"
+              width="100%"
+              paddingX={2}
+              paddingY={1}
+              gap={1}
+              bgcolor="#2A223C"
+              borderRadius="0 0 6px 6px"
+            >
+              {newsItem === null ? (
+                <>
                   <Skeleton
                     variant="rectangular"
                     animation="wave"
                     width="100%"
-                    height={18}
+                    height={24}
                   />
-                )}
-              </>
-            ) : (
-              <>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Typography
-                    variant="body2"
-                    fontSize={18}
-                    fontWeight="bold"
-                    color="white"
-                  >
-                    {/* TODO: tokenTicker can be empty */}
-                    {`$ ${newsItem.tokenTicker}`}
-                  </Typography>
-                  <Stack direction="row" gap={1}>
-                    <Typography variant="body2" fontSize={18} color="white">
-                      {/* TODO: usdPrice can be undefined */}
-                      {`$${(newsItem.usdPrice ?? 0).toFixed(2)}`}
-                    </Typography>
-                    {isSubscribed && (
-                      <Typography
-                        variant="body2"
-                        fontSize={18}
-                        color={percentChangeColor}
-                      >
-                        {/* TODO: percentChange24h can be undefined */}
-                        {`${plusOrMinus}${parseFloat(
-                          newsItem.percentChange24h ?? "0",
-                        ).toFixed(2)}%`}
-                      </Typography>
-                    )}
-                  </Stack>
-                </Stack>
-                {!isSubscribed && (
+                  {!isSubscribed && (
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      width="100%"
+                      height={18}
+                    />
+                  )}
+                </>
+              ) : (
+                <>
                   <Stack
                     direction="row"
                     justifyContent="space-between"
@@ -307,27 +275,59 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                   >
                     <Typography
                       variant="body2"
-                      fontSize={12}
+                      fontSize={18}
+                      fontWeight="bold"
                       color="white"
-                      sx={{ opacity: 0.5 }}
                     >
-                      GET TRADING INSIGHTS
+                      {`$ ${newsItem.tokenTicker}`}
                     </Typography>
-                    <Chip
-                      label="PRO"
-                      sx={{
-                        height: 18,
-                        backgroundColor: "#FFB526",
-                        borderRadius: 0.8,
-                        fontWeight: "bold",
-                      }}
-                      size="small"
-                    />
+                    <Stack direction="row" gap={1}>
+                      <Typography variant="body2" fontSize={18} color="white">
+                        {`$${(newsItem.usdPrice ?? 0).toFixed(2)}`}
+                      </Typography>
+                      {isSubscribed && (
+                        <Typography
+                          variant="body2"
+                          fontSize={18}
+                          color={percentChangeColor}
+                        >
+                          {`${plusOrMinus}${parseFloat(
+                            newsItem.percentChange24h ?? "0",
+                          ).toFixed(2)}%`}
+                        </Typography>
+                      )}
+                    </Stack>
                   </Stack>
-                )}
-              </>
-            )}
-          </Stack>
+                  {!isSubscribed && (
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="body2"
+                        fontSize={12}
+                        color="white"
+                        sx={{ opacity: 0.5 }}
+                      >
+                        GET TRADING INSIGHTS
+                      </Typography>
+                      <Chip
+                        label="PRO"
+                        sx={{
+                          height: 18,
+                          backgroundColor: "#FFB526",
+                          borderRadius: 0.8,
+                          fontWeight: "bold",
+                        }}
+                        size="small"
+                      />
+                    </Stack>
+                  )}
+                </>
+              )}
+            </Stack>
+          )}
         </Stack>
       </Fade>
     </Tooltip>
