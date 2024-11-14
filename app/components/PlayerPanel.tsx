@@ -27,10 +27,10 @@ const PlayerPanel = ({
         backgroundColor: "#201833d9",
         backdropFilter: "blur(10px)",
         padding: "0.75rem 1.25rem",
-        position: "fixed",
+        position: "absolute",
         borderRadius: "1rem",
         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.25)",
-        top: 80,
+        top: 15,
         right: 20,
         gap: 2,
       }}

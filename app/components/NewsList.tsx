@@ -133,13 +133,13 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     >
       <Stack
         sx={{
-          position: "fixed",
-          top: 64,
+          position: "absolute",
+          top: 0,
           right: 0,
           width: "50%",
-          padding: "16px 24px 16px 12px",
+          padding: "16px 12px",
           maxWidth: "365px",
-          maxHeight: "calc(100% - 112px)",
+          height: "100%",
           overflowY: "auto",
           backgroundColor: "rgba(32, 24, 51, 0.6)",
           backdropFilter: "blur(12px)",

@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Pixelify_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { Box } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 import "./globals.css";
 import Navbar from "./components/Navbar";
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const ibmPlexSans = IBM_Plex_Sans({
   weight: ["400", "500", "600"],
@@ -69,8 +70,10 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <Navbar />
-            {children}
-            {userPageOverlay}
+            <Box component="main" flexGrow={1} position="relative">
+              {children}
+              {userPageOverlay}
+            </Box>
           </ThemeProvider>
         </AppRouterCacheProvider>
         <Analytics />

@@ -251,7 +251,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -287,7 +287,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout]
+    [logout],
   );
 
   const loggedInView = (
@@ -447,22 +447,20 @@ function Web3AuthLogin() {
 
 export default function Navbar() {
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar
-        position="static"
-        sx={{
-          backgroundColor: "#0C071C",
-          touchAction: "all",
-          userSelect: "all",
-          pointerEvents: "all",
-        }}
-      >
-        <Toolbar>
-          <WaterMark />
-          <Box sx={{ flexGrow: 1 }} />
-          <Web3AuthLogin />
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#0C071C",
+        touchAction: "all",
+        userSelect: "all",
+        pointerEvents: "all",
+      }}
+    >
+      <Toolbar>
+        <WaterMark />
+        <Box sx={{ flexGrow: 1 }} />
+        <Web3AuthLogin />
+      </Toolbar>
+    </AppBar>
   );
 }

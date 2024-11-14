@@ -25,10 +25,10 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
     <Fade in>
       <Box
         sx={{
-          position: "fixed",
+          position: "absolute",
           bottom: 0,
           left: 0,
-          height: "calc(100vh - 64px)",
+          height: "100%",
           width: "100%",
           backgroundColor: "#0B071A",
           zIndex: 1200,
@@ -47,9 +47,9 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
           <UserTabs />
           <Box
             sx={{
-              height: "calc(100vh - 64px)",
               overflowY: "auto",
               width: "100%",
+              height: "100%",
             }}
           >
             <Box
