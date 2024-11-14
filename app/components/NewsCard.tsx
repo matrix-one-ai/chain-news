@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Box,
   Chip,
@@ -26,7 +26,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import Image from "next/image";
 import { load } from "cheerio";
-import { useAuthStore, useNewsStore } from "@/app/zustand/store";
+import { useAuthStore, useNewsStore, useSceneStore } from "@/app/zustand/store";
 import { useToggle } from "@/app/hooks/useToggle";
 import { formatToLocalDateTime } from "../helpers/time";
 
@@ -78,10 +78,17 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
 
   const { isLoggedIn, isSubscribed } = useAuthStore();
   const { selectedNews } = useNewsStore();
+  const { isPlaying } = useSceneStore();
   const [
     imageLoading,
     { toggleOn: toggleOnImageLoading, toggleOff: toggleOffImageLoading },
   ] = useToggle(true);
+
+  // Determine selected status
+  const isSelected = useMemo(
+    () => newsItem !== null && selectedNews?.url === newsItem?.url,
+    [newsItem, selectedNews?.url],
+  );
 
   // Reset imageLoading status whenever news image is changed
   useEffect(() => {
@@ -101,11 +108,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
         <Stack
           direction="column"
           borderRadius={1.5}
-          border={
-            newsItem !== null && selectedNews?.url === newsItem?.url
-              ? "solid 1px"
-              : "none"
-          }
+          border={isSelected ? "solid 1px" : "none"}
           borderColor="#FFD66E"
           onClick={() => onClick(newsItem)}
         >
@@ -201,8 +204,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                 </>
               )}
             </Stack>
-            {/* Play/pause button */}
-            {/* TODO: Implement functionality */}
+            {/* Play/pause icon */}
             <Box width="100%">
               {newsItem === null ? (
                 <Skeleton
@@ -213,7 +215,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                 />
               ) : (
                 <IconButton
-                  // aria-label={isPlaying ? "pause" : "play"}
+                  aria-label={isPlaying ? "pause" : "play"}
                   sx={{
                     color: "#201833d9",
                     backgroundColor: "error.main",
@@ -226,9 +228,11 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                     },
                   }}
                 >
-                  {/* {isPlaying ? <PauseIcon /> : <PlayArrowIcon />} */}
-                  {/* <PauseIcon sx={{ width: "20px", height: "20px" }} /> */}
-                  <PlayArrowIcon sx={{ width: "20px", height: "20px" }} />
+                  {isSelected && isPlaying ? (
+                    <PauseIcon sx={{ width: "20px", height: "20px" }} />
+                  ) : (
+                    <PlayArrowIcon sx={{ width: "20px", height: "20px" }} />
+                  )}
                 </IconButton>
               )}
             </Box>
