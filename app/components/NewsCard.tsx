@@ -87,7 +87,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   // Determine selected status
   const isSelected = useMemo(
     () => newsItem !== null && selectedNews?.url === newsItem?.url,
-    [newsItem, selectedNews?.url],
+    [newsItem, selectedNews?.url]
   );
 
   // Reset imageLoading status whenever news image is changed
@@ -116,8 +116,15 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
             direction="column"
             padding={2}
             gap={2}
-            bgcolor="#0C071C"
+            bgcolor={isSelected ? "#130b2b" : "#0C071C"}
             borderRadius="6px 6px 0 0"
+            sx={{
+              cursor: "pointer",
+              ":hover": {
+                transition: "background-color 0.3s",
+                backgroundColor: "#130b2b",
+              },
+            }}
           >
             {/* Image */}
             <Box
@@ -198,7 +205,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                   <Typography variant="body2" fontSize={11} color="#666176">
                     {/* TODO: newsItem.datePublished is string, but TS recognizes it as Date */}
                     {`${newsItem.providerTitle} | ${formatToLocalDateTime(
-                      newsItem.datePublished as unknown as string,
+                      newsItem.datePublished as unknown as string
                     )}`}
                   </Typography>
                 </>
@@ -292,7 +299,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                           color={percentChangeColor}
                         >
                           {`${plusOrMinus}${parseFloat(
-                            newsItem.percentChange24h ?? "0",
+                            newsItem.percentChange24h ?? "0"
                           ).toFixed(2)}%`}
                         </Typography>
                       )}
