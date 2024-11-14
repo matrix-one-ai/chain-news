@@ -132,6 +132,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
       }}
     >
       <Stack
+        gap={1}
         sx={{
           position: "absolute",
           top: 0,
@@ -140,12 +141,33 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           padding: "16px 12px",
           maxWidth: "365px",
           height: "100%",
-          overflowY: "auto",
           backgroundColor: "rgba(32, 24, 51, 0.6)",
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* <Autocomplete
+        {/* TODO: Update all below filters with new figma */}
+        <Marquee
+          speed={30}
+          gradientColor="rgba(0, 0, 0, 0.5)"
+          style={{
+            padding: "16px 0",
+          }}
+        >
+          {newsFilters.map(({ label, icon }) => (
+            <Chip
+              key={label}
+              label={label}
+              icon={icon}
+              onClick={() => handleFilterClick(label)}
+              color={selectedFilter === label ? "primary" : "default"}
+              sx={{
+                margin: "0 0.25rem",
+                backdropFilter: "blur(10px)",
+              }}
+            />
+          ))}
+        </Marquee>
+        <Autocomplete
           options={newsSearchOptions.sort(
             (a, b) => -b.category.localeCompare(a.category),
           )}
@@ -153,9 +175,6 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           getOptionLabel={(option) => option.title}
           size="small"
           sx={{
-            position: "fixed",
-            top: 102,
-            right: 5,
             zIndex: 1000,
             width: 315,
             backdropFilter: "blur(10px)",
@@ -184,9 +203,9 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
               aria-label="delete"
               size="small"
               sx={{
-                position: "fixed",
-                top: 65,
-                right: 325,
+                position: "absolute",
+                top: -10,
+                left: 0,
                 zIndex: 1000,
               }}
               onClick={handleFilterDelete}
@@ -197,35 +216,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           </Tooltip>
         )}
 
-        <Marquee
-          speed={30}
-          gradientColor="rgba(0, 0, 0, 0.5)"
-          style={{
-            padding: "0.25rem 0",
-            position: "fixed",
-            top: 62,
-            right: 0,
-            maxWidth: "320px",
-          }}
-        >
-          {newsFilters.map(({ label, icon }) => (
-            <Chip
-              key={label}
-              label={label}
-              icon={icon}
-              onClick={() => handleFilterClick(label)}
-              color={selectedFilter === label ? "primary" : "default"}
-              sx={{
-                margin: "0 0.25rem",
-                backdropFilter: "blur(10px)",
-              }}
-            />
-          ))}
-        </Marquee> */}
-        <Stack direction="row" gap={1}>
-          {/* TODO: Add filter components here */}
-        </Stack>
-        <Stack gap={1}>
+        <Stack gap={1} overflow="auto">
           {(fetching
             ? [...interpolatedNews, ...dummyNews] // When fetching news data of next page, let show skeleton loader for dummy data
             : interpolatedNews

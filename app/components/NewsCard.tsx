@@ -107,6 +107,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
               : "none"
           }
           borderColor="#FFD66E"
+          onClick={() => onClick(newsItem)}
         >
           <Stack
             direction="column"
