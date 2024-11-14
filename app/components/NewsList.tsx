@@ -11,7 +11,7 @@ import {
 import { Autocomplete, Box, Chip, Fade, Stack, TextField } from "@mui/material";
 import { newsCategoryIcons } from "./NewsCard";
 import { useAuthStore, useNewsStore } from "../zustand/store";
-import { useNewsFetch, useNewsSearchOptionsFetch } from "../hooks/useNewsFetch";
+import { useNewsFetch } from "../hooks/useNewsFetch";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
 type newsFilter = {
@@ -41,7 +41,6 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   const [tokenPrices, setTokenPrices] = useState<any>(null);
 
   useNewsFetch(selectedFilter);
-  useNewsSearchOptionsFetch(selectedFilter);
 
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(

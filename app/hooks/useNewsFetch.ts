@@ -149,6 +149,7 @@ export function useNewsFetch(
 }
 
 /**
+ * TODO: This hooks is not being used anywhere, consider removing or using later
  * Hooks for fetching search options for news
  * @param category
  * @returns void
