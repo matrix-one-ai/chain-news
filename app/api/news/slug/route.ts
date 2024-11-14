@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     if (!news) {
       return NextResponse.json(
         { error: `News not found by ${slug}` },
-        { status: 404 },
+        { status: 404 }
       );
     }
 

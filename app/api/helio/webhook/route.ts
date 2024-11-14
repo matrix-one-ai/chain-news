@@ -6,15 +6,25 @@ const prisma = new PrismaClient();
 export async function POST(res: Request) {
   try {
     const event = await res.json();
-    const tx = JSON.parse(event.transaction);
 
+    const tx = JSON.parse(event.transaction);
     console.log("HELIO WEBHOOK EVENT", tx);
+
+    let additionalJSON: any = {};
+    try {
+      const innerJSON = JSON.parse(tx.meta.customerDetails.additionalJSON);
+      additionalJSON = JSON.parse(innerJSON);
+    } catch (error) {
+      console.log("Error parsing additionalJSON:", error);
+      return NextResponse.json({ success: false }, { status: 500 });
+    }
 
     await prisma.helioTransaction.create({
       data: {
         transactionId: tx.id,
         paylinkId: tx.paylinkId,
         email: tx.meta.customerDetails.email,
+        web3AuthAddress: additionalJSON.web3AuthAddress,
         senderAddress: tx.meta.senderPK,
         receiverAddress: tx.meta.recipientPK,
         transactionSignature: tx.meta.transactionSignature,

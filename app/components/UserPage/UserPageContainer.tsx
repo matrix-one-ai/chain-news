@@ -63,6 +63,8 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
                 variant="h4"
                 sx={{
                   mb: 3,
+                  fontWeight: "bold",
+                  letterSpacing: "0.1rem",
                 }}
               >
                 {TITLES[pathname]}

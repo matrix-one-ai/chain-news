@@ -46,6 +46,12 @@ const theme = createTheme({
     h6: {
       fontFamily: "var(--font-ibm-plex-mono)",
     },
+    subtitle1: {
+      fontFamily: "var(--font-ibm-plex-mono)",
+    },
+    subtitle2: {
+      fontFamily: "var(--font-ibm-plex-mono)",
+    },
   },
 });
 

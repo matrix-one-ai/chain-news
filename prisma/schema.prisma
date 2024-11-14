@@ -85,6 +85,7 @@ model HelioTransaction {
   transactionId        String   @unique
   paylinkId            String
   email                String
+  web3AuthAddress      String   @default("")
   senderAddress        String
   receiverAddress      String
   transactionSignature String

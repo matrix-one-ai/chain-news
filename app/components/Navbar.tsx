@@ -69,6 +69,7 @@ function Web3AuthLogin() {
     setEmail,
     setIsSubscribed,
     setTriggerWeb3AuthModal,
+    setSubscriptionEndTime,
   } = useAuthStore();
 
   useEffect(() => {
@@ -114,6 +115,7 @@ function Web3AuthLogin() {
           setNickname(data.nickname);
           setIsSubscribed(data.isSubscribed);
           setEmail(data.email);
+          setSubscriptionEndTime(data.subscriptionEndTime);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
@@ -130,6 +132,7 @@ function Web3AuthLogin() {
     setIsSubscribed,
     web3auth,
     setEmail,
+    setSubscriptionEndTime,
   ]);
 
   useEffect(() => {
@@ -220,8 +223,25 @@ function Web3AuthLogin() {
     await web3auth.logout();
     setProvider(null);
     setLoggedIn(false);
-    router.replace("/");
-  }, [web3auth, setLoggedIn, router, uiConsole]);
+    setEmail("");
+    setNickname("");
+    setIsAdmin(false);
+    setImageUrl("");
+    setIsSubscribed(false);
+    setSubscriptionEndTime(0);
+    router.push("/");
+  }, [
+    web3auth,
+    setLoggedIn,
+    setEmail,
+    setNickname,
+    setIsAdmin,
+    setImageUrl,
+    setIsSubscribed,
+    setSubscriptionEndTime,
+    router,
+    uiConsole,
+  ]);
 
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

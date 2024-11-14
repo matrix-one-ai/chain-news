@@ -41,6 +41,7 @@ interface AuthState {
   imageUrl: string | null;
   isSubscribed: boolean;
   triggerWeb3AuthModal: boolean;
+  subscriptionEndTime: number;
   setLoggedIn: (loggedIn: boolean) => void;
   setWalletAddress: (address: string) => void;
   setNickname: (nickname: string) => void;
@@ -49,6 +50,7 @@ interface AuthState {
   setImageUrl: (url: string) => void;
   setIsSubscribed: (isSubscribed: boolean) => void;
   setTriggerWeb3AuthModal: (triggerWeb3AuthModal: boolean) => void;
+  setSubscriptionEndTime: (time: number) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -60,6 +62,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   imageUrl: null,
   isSubscribed: false,
   triggerWeb3AuthModal: false,
+  subscriptionEndTime: 0,
   setLoggedIn: (loggedIn: boolean) => set({ isLoggedIn: loggedIn }),
   setWalletAddress: (address: string) => set({ walletAddress: address }),
   setNickname: (nickname: string) => set({ nickname: nickname }),
@@ -70,6 +73,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isSubscribed: isSubscribed }),
   setTriggerWeb3AuthModal: (triggerWeb3AuthModal: boolean) =>
     set({ triggerWeb3AuthModal }),
+  setSubscriptionEndTime: (time: number) => set({ subscriptionEndTime: time }),
 }));
 
 interface OverlayState {
