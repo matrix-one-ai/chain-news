@@ -170,7 +170,9 @@ const Overlay = ({
       setCurrentSegmentIndex(currentSegmentIndex + 1);
       prompt = jokeBreakPrompt();
       setLastSegmentType("joke");
-      addSystemMessage(`TERMINAL: Joke break time! Entertaining the audience...`);
+      addSystemMessage(
+        `TERMINAL: Joke break time! Entertaining the audience...`
+      );
     } else {
       // Handle Next News Segment
       setSelectedNews(newsItem);
@@ -178,7 +180,9 @@ const Overlay = ({
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
 
-      addSystemMessage(`TERMINAL: Moving to next article...\n${newsItem.title}`);
+      addSystemMessage(
+        `TERMINAL: Moving to next article...\n${newsItem.title}`
+      );
     }
 
     setIsPlaying(true);
@@ -230,7 +234,9 @@ const Overlay = ({
           );
           setPrompt(prompt);
         }
-        addSystemMessage(`TERMINAL: Starting news segment...\n${newsItem.title}`);
+        addSystemMessage(
+          `TERMINAL: Starting news segment...\n${newsItem.title}`
+        );
       } else {
         console.log("User not logged in");
       }
@@ -397,20 +403,7 @@ const Overlay = ({
         </div>
       )}
 
-      <Tooltip
-        title={
-          !isLoggedIn
-            ? "You need to login to use settings"
-            : isAdmin
-            ? ""
-            : "You need to be an admin to use settings"
-        }
-        disableFocusListener={isLoggedIn && isAdmin}
-        disableHoverListener={isLoggedIn && isAdmin}
-        disableTouchListener={isLoggedIn && isAdmin}
-        disableInteractive={isLoggedIn && isAdmin}
-        placement="right"
-      >
+      {isLoggedIn && isAdmin && (
         <span>
           <IconButton
             aria-label="settings"
@@ -429,7 +422,7 @@ const Overlay = ({
             <SettingsIcon />
           </IconButton>
         </span>
-      </Tooltip>
+      )}
 
       <SettingsModal
         isPlaying={isPlaying}
