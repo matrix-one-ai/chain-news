@@ -1,24 +1,25 @@
 import { News } from "@prisma/client";
 import NewsCard, { NewsItem } from "./NewsCard";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Autocomplete,
-  Box,
-  Chip,
-  Fade,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-} from "@mui/material";
+  memo,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Autocomplete, Box, Chip, Fade, Stack, TextField } from "@mui/material";
 import { newsCategoryIcons } from "./NewsCard";
-import Marquee from "react-fast-marquee";
-import { CancelOutlined } from "@mui/icons-material";
-import { useNewsStore } from "../zustand/store";
+import { useAuthStore, useNewsStore } from "../zustand/store";
 import { useNewsFetch, useNewsSearchOptionsFetch } from "../hooks/useNewsFetch";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 
-const newsFilters = Object.keys(newsCategoryIcons).map((key) => ({
+type newsFilter = {
+  label: string;
+  icon: JSX.Element;
+};
+
+const newsFilters: newsFilter[] = Object.keys(newsCategoryIcons).map((key) => ({
   label: key,
   icon: newsCategoryIcons[key as keyof typeof newsCategoryIcons],
 }));
@@ -33,21 +34,13 @@ interface NewsListProps {
 }
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
-  const {
-    news,
-    newsSearchOptions,
-    pageSize,
-    fetching,
-    fetchingSearchOptions,
-    incrementPage,
-  } = useNewsStore();
+  const { isSubscribed } = useAuthStore();
+  const { news, pageSize, fetching, incrementPage } = useNewsStore();
   const targetRef = useInfiniteScroll(incrementPage);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [tokenPrices, setTokenPrices] = useState<any>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>("");
 
-  useNewsFetch(debouncedSearchQuery, selectedFilter);
+  useNewsFetch(selectedFilter);
   useNewsSearchOptionsFetch(selectedFilter);
 
   // Dummy news while fetching news data of next page
@@ -55,31 +48,6 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     () => Array(pageSize).fill(null),
     [pageSize],
   );
-
-  const handleFilterClick = useCallback((category: string | null) => {
-    setSelectedFilter(category);
-  }, []);
-
-  const handleFilterDelete = useCallback(() => {
-    setSelectedFilter(null);
-  }, []);
-
-  const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value);
-    },
-    [],
-  );
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
 
   // Interpolate news data with token price data
   const interpolatedNews: NewsItem[] = useMemo(() => {
@@ -121,6 +89,14 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     fetchPrices();
   }, []);
 
+  // Handler for filter change
+  const handleFilterChange = useCallback(
+    (_: SyntheticEvent<Element, Event>, value: newsFilter | null) => {
+      setSelectedFilter(value?.label ?? null);
+    },
+    [],
+  );
+
   return (
     <Fade
       in={isVisible}
@@ -145,77 +121,53 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* TODO: Update all below filters with new figma */}
-        <Marquee
-          speed={30}
-          gradientColor="rgba(0, 0, 0, 0.5)"
-          style={{
-            padding: "16px 0",
-          }}
-        >
-          {newsFilters.map(({ label, icon }) => (
-            <Chip
-              key={label}
-              label={label}
-              icon={icon}
-              onClick={() => handleFilterClick(label)}
-              color={selectedFilter === label ? "primary" : "default"}
-              sx={{
-                margin: "0 0.25rem",
-                backdropFilter: "blur(10px)",
-              }}
-            />
-          ))}
-        </Marquee>
-        <Autocomplete
-          options={newsSearchOptions.sort(
-            (a, b) => -b.category.localeCompare(a.category),
-          )}
-          groupBy={(option) => option.category}
-          getOptionLabel={(option) => option.title}
-          size="small"
-          sx={{
-            zIndex: 1000,
-            width: 315,
-            backdropFilter: "blur(10px)",
-          }}
-          clearOnBlur={false}
-          onChange={(_, value) => {
-            if (value) {
-              setSearchQuery(value.title);
-            } else {
-              setSearchQuery("");
-            }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              onChange={handleSearchChange}
-              label="Search"
-            />
-          )}
-          loading={fetchingSearchOptions}
-        />
+        {/* Filter dropdown */}
+        <Stack direction="row">
+          <Autocomplete
+            options={newsFilters}
+            getOptionLabel={(option) => option.label}
+            size="small"
+            sx={{
+              zIndex: 1000,
+              flexGrow: 1,
+              backgroundColor: "#2A223C",
+              "& .MuiOutlinedInput-notchedOutline": {
+                border: "none",
+              },
+              "& .MuiAutocomplete-endAdornment": {
+                display: isSubscribed ? "block" : "none",
+              },
+            }}
+            clearOnBlur={false}
+            onChange={handleFilterChange}
+            renderInput={(params) => (
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                paddingX={1}
+              >
+                <TextField {...params} label="Topic" />
+                {!isSubscribed && (
+                  <Chip
+                    label="PRO"
+                    sx={{
+                      height: 18,
+                      backgroundColor: "#FFB526",
+                      borderRadius: 0.8,
+                      fontWeight: "bold",
+                      color: "black",
+                    }}
+                    size="small"
+                  />
+                )}
+              </Stack>
+            )}
+            disabled={!isSubscribed}
+          />
+        </Stack>
 
-        {selectedFilter && (
-          <Tooltip title="Clear filter">
-            <IconButton
-              aria-label="delete"
-              size="small"
-              sx={{
-                position: "absolute",
-                top: -10,
-                left: 0,
-                zIndex: 1000,
-              }}
-              onClick={handleFilterDelete}
-              style={{ margin: "0.25rem" }}
-            >
-              <CancelOutlined fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
-        )}
-
+        {/* News list */}
         <Stack gap={1} overflow="auto">
           {(fetching
             ? [...interpolatedNews, ...dummyNews] // When fetching news data of next page, let show skeleton loader for dummy data
