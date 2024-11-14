@@ -24,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { load } from "cheerio";
 import { useAuthStore, useNewsStore, useSceneStore } from "@/app/zustand/store";
 import { useToggle } from "@/app/hooks/useToggle";
