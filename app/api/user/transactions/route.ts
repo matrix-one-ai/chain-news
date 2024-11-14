@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
       select: {
         id: true,
         senderAddress: true,
+        tokenFrom: true,
         email: true,
         amount: true,
         fee: true,
