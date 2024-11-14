@@ -128,6 +128,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
             size="small"
             sx={{
               zIndex: 1000,
+              width: 0,
               flexGrow: 1,
               backgroundColor: "#2A223C",
               "& .MuiOutlinedInput-notchedOutline": {

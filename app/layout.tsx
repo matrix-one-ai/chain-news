@@ -70,7 +70,7 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
             <Navbar />
-            <Box component="main" flexGrow={1} position="relative">
+            <Box component="main" height={0} flexGrow={1} position="relative">
               {children}
               {userPageOverlay}
             </Box>
