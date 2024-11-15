@@ -98,11 +98,11 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     []
   );
 
-  const selectedNewsRef = useRef<HTMLDivElement | null>(null);
+  const newsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   useEffect(() => {
-    if (selectedNewsRef.current) {
-      selectedNewsRef.current.scrollIntoView({
+    if (selectedNews && selectedNews.id) {
+      newsRefs.current?.[selectedNews.id]?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -188,7 +188,9 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           ).map((newsItem, index) => (
             <div
               key={`news-item-${index}`}
-              ref={newsItem === selectedNews ? selectedNewsRef : null}
+              ref={(el) => {
+                newsRefs.current[(newsItem as NewsItem)?.id] = el;
+              }}
             >
               <NewsCard
                 key={`news-item-${index}`}

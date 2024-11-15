@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const pageSize = parseInt(searchParams.get("pagesize") || "null", 10);
   const select = JSON.parse(searchParams.get("select") || "null"); // columns to select
   const where = JSON.parse(
-    decodeURIComponent(searchParams.get("where") || "null"),
+    decodeURIComponent(searchParams.get("where") || "null")
   );
 
   try {
@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       select:
         select === null
           ? {
+              id: true,
               providerTitle: true,
               category: true,
               title: true,
