@@ -45,11 +45,13 @@ const SettingsModal = ({
     isPromptUnlocked,
     customPrompt,
     showTraderViewWidget,
+    isOverlayHidden,
     setIsSettingsOpen,
     setIsSubtitlesVisible,
     setIsPromptUnlocked,
     setCustomPrompt,
     setShowTraderViewWidget,
+    setIsOverlayHidden,
   } = useSettingsStore();
 
   const { mainHostAvatar, avatarConfigs, setMainHostAvatar } = useSceneStore();
@@ -172,6 +174,18 @@ const SettingsModal = ({
             ))}
           </Select>
         </FormControl>
+
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isOverlayHidden}
+                onChange={() => setIsOverlayHidden(!isOverlayHidden)}
+              />
+            }
+            label="Hide Overlay"
+          />
+        </FormGroup>
 
         <FormGroup>
           <FormControlLabel

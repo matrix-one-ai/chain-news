@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST() {
   console.log("HELIO_PUBLIC_KEY", process.env.HELIO_PUBLIC_KEY);
   console.log("HELIO_SECRET_KEY", process.env.HELIO_SECRET_KEY);
-  console.log("HELIO_MONTHLY_PAYLINK_ID", process.env.HELIO_MONTHLY_PAYLINK_ID);
+  console.log("HELIO_MONTHLY_PAYLINK_ID", process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID);
   console.log("HELIO_WEBHOOK_URL", process.env.HELIO_WEBHOOK_URL);
 
   try {

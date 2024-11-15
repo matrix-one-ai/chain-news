@@ -95,6 +95,7 @@ const Overlay = ({
     isSubtitlesVisible,
     isPromptUnlocked,
     customPrompt,
+    isOverlayHidden,
     setIsSettingsOpen,
   } = useSettingsStore();
 
@@ -249,6 +250,7 @@ const Overlay = ({
     [
       isLoggedIn,
       credits,
+      isAdmin,
       setSelectedNews,
       isPromptUnlocked,
       addSystemMessage,
@@ -446,7 +448,7 @@ const Overlay = ({
         )}
 
         <ChatInterface
-          isStreaming={isStreaming || isPlaying}
+          isVisible={(!isStreaming || !isPlaying) && !isOverlayHidden}
           prompt={prompt}
           isAudioLoading={isAudioLoading}
           customPrompt={customPrompt}
@@ -455,7 +457,7 @@ const Overlay = ({
           handleOnError={handleNext}
         />
 
-        <NewsList onNewsClick={handleNewsClick} isVisible />
+        <NewsList onNewsClick={handleNewsClick} isVisible={!isOverlayHidden} />
       </Stack>
 
       <NewsTickerBanner newsItems={news} />

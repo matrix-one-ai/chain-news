@@ -17,7 +17,7 @@ import {
 } from "../zustand/store";
 
 interface ChatInterfaceProps {
-  isStreaming: boolean;
+  isVisible: boolean;
   prompt: string;
   isAudioLoading: boolean;
   isPromptUnlocked: boolean;
@@ -28,7 +28,7 @@ interface ChatInterfaceProps {
 
 const ChatInterface: React.FC<ChatInterfaceProps> = memo(
   ({
-    isStreaming,
+    isVisible,
     prompt,
     isAudioLoading,
     isPromptUnlocked,
@@ -121,7 +121,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           message.role === "assistant"
       );
 
-    return !isStreaming ? (
+    return isVisible ? (
       <Box
         sx={{
           touchAction: "all",

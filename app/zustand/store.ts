@@ -126,11 +126,13 @@ interface SettingsState {
   isPromptUnlocked: boolean;
   customPrompt: string;
   showTraderViewWidget: boolean;
+  isOverlayHidden: boolean;
   setIsSettingsOpen: (isOpen: boolean) => void;
   setIsSubtitlesVisible: (isVisible: boolean) => void;
   setIsPromptUnlocked: (isUnlocked: boolean) => void;
   setCustomPrompt: (prompt: string) => void;
   setShowTraderViewWidget: (show: boolean) => void;
+  setIsOverlayHidden: (hide: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
@@ -139,6 +141,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   isPromptUnlocked: false,
   customPrompt: customPromptDefault(avatarConfigs[0]),
   showTraderViewWidget: false,
+  isOverlayHidden: false,
   setIsSettingsOpen: (isOpen: boolean) => set({ isSettingsOpen: isOpen }),
   setIsSubtitlesVisible: (isVisible: boolean) =>
     set({ isSubtitlesVisible: isVisible }),
@@ -147,6 +150,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setCustomPrompt: (prompt: string) => set({ customPrompt: prompt }),
   setShowTraderViewWidget: (show: boolean) =>
     set({ showTraderViewWidget: show }),
+  setIsOverlayHidden: (hide: boolean) => set({ isOverlayHidden: hide }),
 }));
 
 interface SystemMessage {
