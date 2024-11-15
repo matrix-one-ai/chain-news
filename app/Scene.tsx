@@ -11,7 +11,7 @@ const CameraSetup: React.FC = () => {
   const { camera } = useThree();
 
   useEffect(() => {
-    camera.position.set(0, 1.5, 1);
+    camera.position.set(0, 1, 0.5);
     camera.lookAt(0, 0.5, 0);
   }, [camera]);
 
@@ -41,10 +41,10 @@ const Scene = ({
     () =>
       selectedNews
         ? `/api/image?url=${encodeURIComponent(
-            selectedNews.imageUrl as string,
+            selectedNews.imageUrl as string
           )}`
         : "/videos/cnews-video-v1.mp4",
-    [selectedNews],
+    [selectedNews]
   );
 
   return (

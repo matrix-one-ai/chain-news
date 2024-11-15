@@ -8,14 +8,13 @@ import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box, IconButton, Stack, Tooltip } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
   jokeBreakPrompt,
   nextSegmentPrompt,
   startNewsPrompt,
-  // streamPromoPrompt,
 } from "./helpers/prompts";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
@@ -98,7 +97,7 @@ const Overlay = ({
     setIsSettingsOpen,
   } = useSettingsStore();
 
-  const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
+  const { isPaywallModalOpen } = useOverlayStore();
   const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
@@ -150,7 +149,7 @@ const Overlay = ({
       setLastSegmentType("chat");
       setCurrentSegmentIndex(0); // infinite loop replay stream
       addSystemMessage(
-        `TERMINAL: Stream concluded. Starting from the beginning...`,
+        `TERMINAL: Stream concluded. Starting from the beginning...`
       );
     } else if (currentSegmentIndex === 0) {
       // Handle Start of News
@@ -162,7 +161,7 @@ const Overlay = ({
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
       addSystemMessage(
-        `TERMINAL: Welcome! Starting the news...\n${newsItem.title}`,
+        `TERMINAL: Welcome! Starting the news...\n${newsItem.title}`
       );
     } else if (currentSegmentIndex % 5 === 0) {
       // Handle Joke Breaks
@@ -171,7 +170,7 @@ const Overlay = ({
       prompt = jokeBreakPrompt();
       setLastSegmentType("joke");
       addSystemMessage(
-        `TERMINAL: Joke break time! Entertaining the audience...`,
+        `TERMINAL: Joke break time! Entertaining the audience...`
       );
     } else {
       // Handle Next News Segment
@@ -181,7 +180,7 @@ const Overlay = ({
       setCurrentSegmentIndex(currentSegmentIndex + 1);
 
       addSystemMessage(
-        `TERMINAL: Moving to next article...\n${newsItem.title}`,
+        `TERMINAL: Moving to next article...\n${newsItem.title}`
       );
     }
 
@@ -230,12 +229,12 @@ const Overlay = ({
           const prompt = startNewsPrompt(
             newsItem,
             segmentDuration,
-            mainHostAvatar,
+            mainHostAvatar
           );
           setPrompt(prompt);
         }
         addSystemMessage(
-          `TERMINAL: Starting news segment...\n${newsItem.title}`,
+          `TERMINAL: Starting news segment...\n${newsItem.title}`
         );
       } else {
         console.log("User not logged in");
@@ -252,7 +251,7 @@ const Overlay = ({
       segmentDuration,
       mainHostAvatar,
       addSystemMessage,
-    ],
+    ]
   );
 
   // If search param has slug info initially, then the news corresponding to the slug should be played
@@ -367,10 +366,6 @@ const Overlay = ({
       setIsSettingsOpen(true);
     }
   }, [isAdmin, isLoggedIn, setIsSettingsOpen]);
-
-  useEffect(() => {
-    setIsPaywallModalOpen(true);
-  }, [setIsPaywallModalOpen]);
 
   return (
     <Box

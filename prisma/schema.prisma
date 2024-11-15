@@ -62,6 +62,7 @@ model User {
   nickname       String?
   typeOfLogin    String?
   email          String?
+  credits        Int      @default(1)
   ipInfo         IPInfo?  @relation(fields: [ipInfoId], references: [id])
 }
 

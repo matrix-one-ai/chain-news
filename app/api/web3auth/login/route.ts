@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
       subscriptionEndTime: new Date(
         new Date().setDate(new Date().getDate() + 30)
       ).getTime(),
+      credits: dbTX[0].credits,
     });
   } catch (error) {
     console.log("web3auth login error:", error);
