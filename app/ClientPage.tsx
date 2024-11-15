@@ -4,7 +4,11 @@ import React, { useRef, useState, useCallback, useEffect } from "react";
 import Overlay from "./Overlay";
 import Scene from "./Scene";
 import { Message } from "ai";
-import { useAppMountedStore, useSceneStore } from "./zustand/store";
+import {
+  useAppMountedStore,
+  useAuthStore,
+  useSceneStore,
+} from "./zustand/store";
 
 const speakerVoiceMap = {
   Sam: "en-US-AvaMultilingualNeural",
@@ -42,6 +46,7 @@ const ClientHome: React.FC = () => {
   });
 
   const { setIsPlaying } = useSceneStore();
+  const { credits, isAdmin, setCredits } = useAuthStore();
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
@@ -69,7 +74,7 @@ const ClientHome: React.FC = () => {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0),
+          c.charCodeAt(0)
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -204,6 +209,7 @@ const ClientHome: React.FC = () => {
     async (message: Message, options: any) => {
       console.log(message, options);
       console.log(message.content.split("\n"));
+
       const parsedLines = message.content
         .split("\n")
         .filter((message) => message.length > 0)
@@ -213,7 +219,7 @@ const ClientHome: React.FC = () => {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -247,8 +253,12 @@ const ClientHome: React.FC = () => {
 
       setIsPlaying(true);
       setIsAudioLoading(false);
+
+      if (!isAdmin) {
+        setCredits(credits - 1);
+      }
     },
-    [fetchAudio, setIsPlaying],
+    [credits, fetchAudio, isAdmin, setCredits, setIsPlaying]
   );
 
   const onPromptError = useCallback((error: any) => {

@@ -45,7 +45,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
     () => Array(pageSize).fill(null),
-    [pageSize],
+    [pageSize]
   );
 
   // Interpolate news data with token price data
@@ -93,7 +93,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     (_: SyntheticEvent<Element, Event>, value: newsFilter | null) => {
       setSelectedFilter(value?.label ?? null);
     },
-    [],
+    []
   );
 
   return (

@@ -61,6 +61,7 @@ function Web3AuthLogin() {
     imageUrl,
     isSubscribed,
     triggerWeb3AuthModal,
+    credits,
     setWalletAddress,
     setLoggedIn,
     setIsAdmin,
@@ -70,6 +71,7 @@ function Web3AuthLogin() {
     setIsSubscribed,
     setTriggerWeb3AuthModal,
     setSubscriptionEndTime,
+    setCredits,
   } = useAuthStore();
 
   useEffect(() => {
@@ -116,6 +118,7 @@ function Web3AuthLogin() {
           setIsSubscribed(data.isSubscribed);
           setEmail(data.email);
           setSubscriptionEndTime(data.subscriptionEndTime);
+          setCredits(data.credits);
         } catch (error) {
           console.error("Error posting user info:", error);
         }
@@ -133,6 +136,7 @@ function Web3AuthLogin() {
     web3auth,
     setEmail,
     setSubscriptionEndTime,
+    setCredits,
   ]);
 
   useEffect(() => {
@@ -229,6 +233,7 @@ function Web3AuthLogin() {
     setImageUrl("");
     setIsSubscribed(false);
     setSubscriptionEndTime(0);
+    setCredits(0);
     router.push("/");
   }, [
     web3auth,
@@ -239,6 +244,7 @@ function Web3AuthLogin() {
     setImageUrl,
     setIsSubscribed,
     setSubscriptionEndTime,
+    setCredits,
     router,
     uiConsole,
   ]);
@@ -251,7 +257,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    [],
+    []
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -287,7 +293,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout],
+    [logout]
   );
 
   const loggedInView = (

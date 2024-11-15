@@ -8,7 +8,7 @@ import { Message } from "ai/react";
 import { News } from "@prisma/client";
 import LiveBanner from "./components/LiveBanner";
 import NewsTickerBanner from "./components/NewsTickerBanner";
-import { Box, IconButton, Stack } from "@mui/material";
+import { Box, Chip, IconButton, Stack } from "@mui/material";
 import {
   chatsResponsePrompt,
   concludeNewsPrompt,
@@ -31,6 +31,7 @@ import {
 } from "./zustand/store";
 import PaywallModal from "./components/PaywallModal";
 import { useNewsFetchBySlugOnMount } from "./hooks/useNewsFetch";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 
 interface OverlayProps {
   audioRef: React.RefObject<HTMLAudioElement>;
@@ -74,7 +75,8 @@ const Overlay = ({
   const router = useRouter();
   const pathname = usePathname();
   const { prompt, setPrompt, addSystemMessage } = usePromptStore();
-  const { isLoggedIn, isAdmin } = useAuthStore();
+  const { isLoggedIn, isAdmin, credits, setTriggerWeb3AuthModal } =
+    useAuthStore();
   const { news, selectedNews, setSelectedNews } = useNewsStore();
   const initialNews = useNewsFetchBySlugOnMount();
 
@@ -97,7 +99,7 @@ const Overlay = ({
     setIsSettingsOpen,
   } = useSettingsStore();
 
-  const { isPaywallModalOpen } = useOverlayStore();
+  const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
   const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
 
   const fetchChats = useCallback(async () => {
@@ -215,6 +217,10 @@ const Overlay = ({
       if (newsItem === null) return;
 
       if (isLoggedIn) {
+        if (credits <= 0) {
+          setIsPaywallModalOpen(true);
+          return;
+        }
         // Add/remove query param based on selected news' slug
         if (newsItem?.slug) {
           router.replace(`${pathname}?article=${newsItem.slug}`);
@@ -238,19 +244,23 @@ const Overlay = ({
         );
       } else {
         console.log("User not logged in");
+        setTriggerWeb3AuthModal(true);
       }
     },
     [
       isLoggedIn,
+      credits,
       setSelectedNews,
       isPromptUnlocked,
+      addSystemMessage,
+      setIsPaywallModalOpen,
       router,
       pathname,
       setPrompt,
       customPrompt,
       segmentDuration,
       mainHostAvatar,
-      addSystemMessage,
+      setTriggerWeb3AuthModal,
     ]
   );
 
@@ -424,6 +434,16 @@ const Overlay = ({
           >
             <SettingsIcon />
           </IconButton>
+        )}
+
+        {isLoggedIn && !isAdmin && (
+          <Chip
+            icon={<MonetizationOnIcon />}
+            label={`Credits: ${credits}`}
+            sx={{
+              backgroundColor: "#2A223C",
+            }}
+          />
         )}
 
         <ChatInterface

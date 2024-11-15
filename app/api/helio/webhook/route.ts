@@ -42,6 +42,15 @@ export async function POST(res: Request) {
       },
     });
 
+    await prisma.user.update({
+      where: { walletAddress: additionalJSON.web3AuthAddress },
+      data: {
+        credits: {
+          increment: 100,
+        },
+      },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);

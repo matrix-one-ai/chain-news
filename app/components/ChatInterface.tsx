@@ -9,7 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
-import { useAuthStore, usePromptStore, useSceneStore } from "../zustand/store";
+import {
+  useAuthStore,
+  useOverlayStore,
+  usePromptStore,
+  useSceneStore,
+} from "../zustand/store";
 
 interface ChatInterfaceProps {
   isStreaming: boolean;
@@ -34,14 +39,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const { mainHostAvatar, isPlaying } = useSceneStore();
-    const { isLoggedIn } = useAuthStore();
+    const { walletAddress, isLoggedIn, credits, setTriggerWeb3AuthModal } =
+      useAuthStore();
     const { systemMessages, addSystemMessage } = usePromptStore();
+    const { setIsPaywallModalOpen } = useOverlayStore();
 
     const {
       messages,
       input,
       isLoading,
-      setMessages,
       handleInputChange,
       setInput,
       append,
@@ -49,6 +55,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     } = useChat({
       onFinish: handleOnFinish,
       onError: handleOnError,
+      body: {
+        walletAddress,
+      },
     });
 
     useEffect(() => {
@@ -181,6 +190,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
 
         <form
           onSubmit={handleSubmit}
+          onClick={() => {
+            if (!isLoggedIn) {
+              setTriggerWeb3AuthModal(true);
+            }
+            if (credits <= 0) {
+              addSystemMessage("TERMINAL: You have no credits left.");
+              setIsPaywallModalOpen(true);
+            }
+          }}
           style={{
             minWidth: "350px",
           }}
@@ -212,7 +230,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   color="secondary"
                   type="submit"
                   disabled={
-                    isLoading || isAudioLoading || !input || !isLoggedIn
+                    isLoading ||
+                    isAudioLoading ||
+                    !input ||
+                    !isLoggedIn ||
+                    credits <= 0
                   }
                   fullWidth
                   style={{ marginTop: "10px" }}

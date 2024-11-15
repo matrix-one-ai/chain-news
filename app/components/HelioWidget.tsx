@@ -9,7 +9,7 @@ interface HelioWidgetProps {
 }
 
 const HelioWidget = ({ onSuccess }: HelioWidgetProps) => {
-  const { walletAddress, setIsSubscribed } = useAuthStore();
+  const { walletAddress, setIsSubscribed, setCredits } = useAuthStore();
 
   const helioConfig = useMemo(
     () => ({
@@ -24,10 +24,11 @@ const HelioWidget = ({ onSuccess }: HelioWidgetProps) => {
       onSuccess: () => {
         console.log("success");
         setIsSubscribed(true);
+        setCredits(100);
         onSuccess?.();
       },
     }),
-    [onSuccess, setIsSubscribed, walletAddress]
+    [onSuccess, setCredits, setIsSubscribed, walletAddress]
   );
   return <HelioCheckout config={helioConfig as any} />;
 };
