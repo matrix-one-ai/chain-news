@@ -43,7 +43,7 @@
     "idb": "^8.0.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.41.0",
     "moralis": "^2.27.2",
-    "next": "14.2.18",
+    "next": "14.2.16",
     "pino-pretty": "^11.3.0",
     "react": "^18",
     "react-dom": "^18",
