@@ -148,8 +148,8 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                   <Image
                     src={newsItem.imageUrl as string}
                     alt={newsItem.title}
-                    layout="fill"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    height={92}
+                    width={297}
                     objectFit="cover"
                     onLoad={toggleOffImageLoading}
                   />
