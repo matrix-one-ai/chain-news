@@ -52,7 +52,7 @@ const LiveBanner = ({
         position: "absolute",
         bottom: 0,
         left: 0,
-        right: 0,
+        right: 330,
         height: "100%",
         zIndex: 1100,
         display: "flex",

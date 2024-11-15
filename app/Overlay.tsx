@@ -19,7 +19,6 @@ import {
 import SettingsIcon from "@mui/icons-material/Settings";
 import SettingsModal from "./components/SettingsModal";
 import NewsList from "./components/NewsList";
-import PlayerPanel from "./components/PlayerPanel";
 import {
   useAuthStore,
   useLiveStreamStore,
@@ -217,7 +216,7 @@ const Overlay = ({
       if (newsItem === null) return;
 
       if (isLoggedIn) {
-        if (credits <= 0) {
+        if (credits <= 0 && !isAdmin) {
           setIsPaywallModalOpen(true);
           return;
         }
@@ -456,30 +455,17 @@ const Overlay = ({
           handleOnError={handleNext}
         />
 
-        <NewsList
-          onNewsClick={handleNewsClick}
-          isVisible={!isStreaming && !isPlaying}
-        />
+        <NewsList onNewsClick={handleNewsClick} isVisible />
       </Stack>
 
       <NewsTickerBanner newsItems={news} />
 
       {(isStreaming || isPlaying) && (
-        <>
-          <LiveBanner
-            currentSpeaker={currentLineState.speaker}
-            subtitleText={currentLineState.text}
-            isSubtitlesVisible={isSubtitlesVisible}
-          />
-          <PlayerPanel
-            title={selectedNews?.title || "..."}
-            isPlaying={isPlaying}
-            onPlay={() => console.log("play")}
-            onPause={() => console.log("pause")}
-            onNext={handleNext}
-            onStop={handleStop}
-          />
-        </>
+        <LiveBanner
+          currentSpeaker={currentLineState.speaker}
+          subtitleText={currentLineState.text}
+          isSubtitlesVisible={isSubtitlesVisible}
+        />
       )}
 
       <SettingsModal
