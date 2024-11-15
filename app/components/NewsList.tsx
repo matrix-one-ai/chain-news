@@ -6,6 +6,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { Autocomplete, Box, Chip, Fade, Stack, TextField } from "@mui/material";
@@ -35,7 +36,8 @@ interface NewsListProps {
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   const { isSubscribed } = useAuthStore();
-  const { news, pageSize, fetching, incrementPage } = useNewsStore();
+  const { news, pageSize, fetching, selectedNews, incrementPage } =
+    useNewsStore();
   const targetRef = useInfiniteScroll(incrementPage);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [tokenPrices, setTokenPrices] = useState<any>(null);
@@ -95,6 +97,17 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     },
     []
   );
+
+  const selectedNewsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (selectedNewsRef.current) {
+      selectedNewsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [selectedNews]);
 
   return (
     <Fade
@@ -173,11 +186,16 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
             ? [...interpolatedNews, ...dummyNews] // When fetching news data of next page, let show skeleton loader for dummy data
             : interpolatedNews
           ).map((newsItem, index) => (
-            <NewsCard
+            <div
               key={`news-item-${index}`}
-              newsItem={newsItem}
-              onClick={onNewsClick}
-            />
+              ref={newsItem === selectedNews ? selectedNewsRef : null}
+            >
+              <NewsCard
+                key={`news-item-${index}`}
+                newsItem={newsItem}
+                onClick={onNewsClick}
+              />
+            </div>
           ))}
           {/* Target element for infinite scroll */}
           <Box ref={targetRef} style={{ height: 1, paddingBottom: 1 }} />
