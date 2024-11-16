@@ -54,6 +54,7 @@ SCRIPT FORMAT:
 - Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
+- Do not use: —.
 - "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
@@ -128,6 +129,7 @@ SCRIPT FORMAT:
 - Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
+- Do not use: —.
 - "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:

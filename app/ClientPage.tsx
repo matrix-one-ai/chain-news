@@ -216,7 +216,7 @@ const ClientHome: React.FC = () => {
         .filter((message) => message.length > 0)
         .map((line) => {
           const [speaker, text] = line.split("~");
-          return { speaker, text };
+          return { speaker, text: text.replace("—", " ") };
         })
         .filter(
           (parsedLine) =>
