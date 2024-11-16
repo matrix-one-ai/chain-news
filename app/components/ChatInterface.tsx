@@ -240,7 +240,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                     isAudioLoading ||
                     !input ||
                     !isLoggedIn ||
-                    credits <= 0 && !isAdmin
+                    (credits <= 0 && !isAdmin)
                   }
                   fullWidth
                   style={{ marginTop: "10px" }}

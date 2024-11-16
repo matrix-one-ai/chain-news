@@ -448,7 +448,7 @@ const Overlay = ({
         )}
 
         <ChatInterface
-          isVisible={(!isStreaming || !isPlaying) && !isOverlayHidden}
+          isVisible={!isStreaming && !isPlaying && !isOverlayHidden}
           prompt={prompt}
           isAudioLoading={isAudioLoading}
           customPrompt={customPrompt}
