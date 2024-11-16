@@ -91,6 +91,7 @@ SCRIPT DIRECTION:
 
 - Welcome your audience, as this is the first news item.
 - Deliver the news creatively and uniquely.
+- Get the hosts to give their opinion on the story too. Maybe they debate.
 - Incorporate different intros, jokes, and emotional appeals.
 - Briefly promote the news provider at the end.
 
@@ -121,12 +122,32 @@ Title: ${newsItem.title}
 Description: ${newsItem.description}
 Source: ${newsItem.source}
 
-Deliver the new news to your audience.
-Transition smoothly from the previous news item.
-Do not use similar lines as before though, make sure you switch it up style wise and keep it fresh.
+SCRIPT DIRECTION:
+
+- Use different and unique transition phrases to introduce the next news item.
+- Incorporate varied storytelling techniques (anecdotes, questions, surprising facts).
+- Vary the interaction between hosts; change who introduces the news or comments on it.
+- Include playful banter or differing viewpoints to enrich the dialogue.
+- Maintain a dynamic and engaging interaction between hosts.
+- Keep the dialogue fresh and original, avoiding repetition.
+
+EXAMPLES OF UNIQUE TRANSITION PHRASES:
+
+- "Speaking of crypto surprises, let's..."
+- "Shifting our focus now to..."
+- "Let's uncover what's buzzing in..."
+- "Time to delve into another exciting update..."
+- "Here's something that'll pique your interest..."
 
 The content of the news source is:
 ${newsItem.content}
+
+FINAL OUTPUT:
+
+- Provide a script in the specified format.
+- Ensure the dialogue is engaging and informative.
+- Maintain a natural flow between hosts.
+- Adhere to all the instructions and guidelines.
 `;
 }
 
