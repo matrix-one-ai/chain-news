@@ -39,8 +39,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const { mainHostAvatar, isPlaying } = useSceneStore();
-    const { walletAddress, isLoggedIn, credits, setTriggerWeb3AuthModal } =
-      useAuthStore();
+    const {
+      walletAddress,
+      isLoggedIn,
+      credits,
+      isAdmin,
+      setTriggerWeb3AuthModal,
+    } = useAuthStore();
     const { systemMessages, addSystemMessage } = usePromptStore();
     const { setIsPaywallModalOpen } = useOverlayStore();
 
@@ -193,8 +198,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
           onClick={() => {
             if (!isLoggedIn) {
               setTriggerWeb3AuthModal(true);
+              return;
             }
-            if (credits <= 0) {
+            if (credits <= 0 && !isAdmin) {
               addSystemMessage("TERMINAL: You have no credits left.");
               setIsPaywallModalOpen(true);
             }
@@ -234,7 +240,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                     isAudioLoading ||
                     !input ||
                     !isLoggedIn ||
-                    credits <= 0
+                    credits <= 0 && !isAdmin
                   }
                   fullWidth
                   style={{ marginTop: "10px" }}
