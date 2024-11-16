@@ -60,6 +60,7 @@ export async function POST(req: Request) {
 
     return stream.toDataStreamResponse();
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
