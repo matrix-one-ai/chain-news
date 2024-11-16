@@ -84,6 +84,7 @@ const ClientHome: React.FC = () => {
         attempt += 1;
         if (attempt >= maxRetries) {
           console.error("Max retries reached. Giving up.");
+          nextLine();
           return null;
         }
       }
