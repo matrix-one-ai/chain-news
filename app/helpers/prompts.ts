@@ -56,6 +56,7 @@ SCRIPT FORMAT:
 - Use "<" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting.
+- "<" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
 SPEAKER<TEXT\n
@@ -131,6 +132,7 @@ SCRIPT FORMAT:
 - Use "<" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting.
+- "<" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
 SPEAKER<TEXT\n
