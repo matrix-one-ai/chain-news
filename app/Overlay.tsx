@@ -177,7 +177,7 @@ const Overlay = ({
     } else {
       // Handle Next News Segment
       setSelectedNews(newsItem);
-      prompt = nextSegmentPrompt(newsItem);
+      prompt = nextSegmentPrompt(newsItem, mainHostAvatar, segmentDuration);
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
 
@@ -325,7 +325,7 @@ const Overlay = ({
 
     const nextNews = news[currentSegmentIndex + 1];
 
-    const prompt = nextSegmentPrompt(nextNews);
+    const prompt = nextSegmentPrompt(nextNews, mainHostAvatar, segmentDuration);
     setSelectedNews(nextNews);
     setPrompt(prompt);
 
