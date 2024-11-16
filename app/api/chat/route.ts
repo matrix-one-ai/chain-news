@@ -43,11 +43,10 @@ export async function POST(req: Request) {
 
     const stream = await streamText({
       model: azure("gpt-4o"),
-      system: "You are a helpful assistant.",
       messages: localMessages,
-      frequencyPenalty: 0.5,
-      presencePenalty: 0.5,
-      temperature: 0.25,
+      frequencyPenalty: 0.75,
+      presencePenalty: 0.75,
+      temperature: 0.4,
     });
 
     await prisma.user.update({
