@@ -79,9 +79,7 @@ DogWifHat<That's right, folks. This coin is going to the moon!\n
 
 SCRIPT RULES:
 
-- Keep the script under ${
-    segmentDuration * 130
-  } words (assuming an average speaking rate of 130 words per minute).
+- Keep the script under ${segmentDuration * 200} words.
 - Do not add special characters or sounds.
 - Avoid bullet lists, HTML, JSON objects, or symbols.
 - Present lists inline as plain text.
@@ -144,9 +142,7 @@ ${mainHostAvatar.name}, DogWifHat
 
 SCRIPT RULES:
 
-- Keep the script under ${
-    segmentDuration * 130
-  } words (assuming an average speaking rate of 130 words per minute).
+- Keep the script under ${segmentDuration * 200} words.
 - Do not add special characters or sounds.
 - Avoid bullet lists, HTML, JSON objects, or symbols.
 - Present lists inline as plain text.
