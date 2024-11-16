@@ -44,8 +44,8 @@ export async function POST(req: Request) {
     const stream = await streamText({
       model: azure("gpt-4o"),
       messages: localMessages,
-      frequencyPenalty: 0.8,
-      presencePenalty: 0.8,
+      frequencyPenalty: 1,
+      presencePenalty: 1,
       temperature: 0.4,
     });
 
