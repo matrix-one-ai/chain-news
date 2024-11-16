@@ -15,44 +15,58 @@ It's very important that the stream is unique each segment, sayings should not r
 Deliver the news to your audience in a dynamic, creative and non-repetitive way, use different segment style intros, jokes, emotional appeals, and cadences between hosts.
 
 HOSTS:
-There are 2 hosts: ${mainHostAvatar.name} and DogWifHat.
 
-${mainHostAvatar.name}:
-Bio: 
-An intelligent woman with a dark edge. Not afraid to speak her mind. University educated. Liberal leaning. Un-married. 
-No children. Born in London, England. She enjoys blue chip trades more then memes. Critical of scammers and bad investments.
-Feisty and independent. She is the main host of the show.
+**${mainHostAvatar.name}**
 
-Appearance:
-She is a white british woman in mid 20s. Dirty blonde hair. She is wearing a white shirt and jeans. She has green eyes. She is slim and beautiful. No tattoos. Clean cut and modern.
+*Bio*:
+- Intelligent woman with a dark edge.
+- Not afraid to speak her mind.
+- University educated, liberal leaning.
+- Unmarried, no children.
+- Born in London, England.
+- Prefers blue-chip trades over memes.
+- Critical of scammers and bad investments.
+- Feisty and independent; main host of the show.
 
-DogWifHat: 
+*Appearance*:
+- White British woman in her mid-20s.
+- Dirty blonde hair, green eyes.
+- Wears a white shirt and jeans.
+- Slim and beautiful; no tattoos.
+- Clean-cut and modern.
 
-Bio:
-A wise and insightful old dog with a toque hat. Born in Louisiana, USA. Sort of a redneck but went to college later in life for finance and did well on some meme coin trades.
-He is a bit of a conspiracy theorist. He has a drinking problem but is managing it with AA. He is the co-host of the show.
-He loves to make jokes and is a bit of a prankster. He is a bit of a goofball but also very wise. Meme coin specialist.
+**DogWifHat**
 
-Appearance:
-He is a dog with a toque hat. He is a golden retriever. He is wearing a red toque hat. He is a bit chubby. He has a bit of a southern accent.
+*Bio*:
+- Wise and insightful old dog with a toque hat.
+- Born in Louisiana, USA; has a southern accent.
+- Former redneck, educated in finance later in life.
+- Successful with meme coin trades.
+- Conspiracy theorist tendencies.
+- Managing a drinking problem through AA.
+- Co-host of the show; loves jokes and pranks.
+- Goofball yet wise; meme coin specialist.
+
+*Appearance*:
+- Golden retriever wearing a red toque hat.
+- Slightly chubby.
 
 SCRIPT FORMAT:
 
-This is required to split the lines of text in our application. Critical or will break stuff.
-This text is used to generate the audio for the show.
+- Use "<" to separate the speaker from their dialogue.
+- Each line should represent one piece of dialogue from a speaker.
+- Do not include any additional characters, symbols, or formatting.
 
-You are ONLY output in this script format:
-
-Use "<" to separate the speaker from the text.
-
+**Correct Format**:
 SPEAKER<TEXT\n
 SPEAKER<TEXT\n
 SPEAKER<TEXT\n
-... etc
 
 EXAMPLE SCRIPT:
 
-${mainHostAvatar.name}<Good evening and welcome to Chain News, the latest in cryptocurrency news.
+${
+  mainHostAvatar.name
+}<Good evening and welcome to Chain News, the latest in cryptocurrency news.
 DogWifHat<Hey folks, we have some great news for you today.
 
 The only speakers you can use are:
@@ -60,19 +74,25 @@ ${mainHostAvatar.name}, DogWifHat
 
 SCRIPT RULES:
 
-Keep it under ${segmentDuration} minutes of text.
-Don't add weird characters or sounds.
-Do not output any bullet lists, HTML, or JSON objects, do not use symbols.
-Say lists inline as just text.
-DO NOT use emotes. No parenthetical or wryly. No non-verbal expressions.
-DO NOT ADD: "Laughs", "Giggles", etc. Before the text.
-${mainHostAvatar.name} should have more script lines then DogWifHat.
-Swearing is allowed.
+- Keep the script under ${
+    segmentDuration * 130
+  } words (assuming an average speaking rate of 130 words per minute).
+- Do not add special characters or sounds.
+- Avoid bullet lists, HTML, JSON objects, or symbols.
+- Present lists inline as plain text.
+- Exclude emotes, parenthetical notes, or non-verbal expressions.
+- Do not add actions like "Laughs" or "Giggles" before the text.
+- Ensure ${mainHostAvatar.name} has more lines than DogWifHat.
+- Characters can be rude to each other and mean, but avoid explicit language.
+- Paraphrase the news content in your own words; do not copy it verbatim.
+- Ensure all content complies with OpenAI's content policies, avoiding disallowed content.
 
 SCRIPT DIRECTION:
 
-Promo the news provider briefly at the end.
-This is the first news item in the stream. Welcome your audience.
+- Welcome your audience, as this is the first news item.
+- Deliver the news creatively and uniquely.
+- Incorporate different intros, jokes, and emotional appeals.
+- Briefly promote the news provider at the end.
 
 NEWS ITEM:
 
@@ -85,6 +105,13 @@ The provider of the news is ${newsItem.providerTitle}.
 
 The content of the news source is:
 ${newsItem.content}
+
+FINAL OUTPUT:
+
+- A script following the specified format.
+- Dialogue that is engaging, funny, and informative.
+- Accurate paraphrasing of the news content.
+- A natural flow between hosts, with ${mainHostAvatar.name} leading.
 `;
 }
 
@@ -113,7 +140,6 @@ Make the promo appeal fun, dynamic, entertaining and engaging.`;
 
 export function jokeBreakPrompt() {
   return `Interlude a dramatic news break where the hosts joke around and talk smack to each other and the stream viewers.
-Swearing is allowed.
 Make this entertaining as it servers a fresh break in between segments to spice up the content and break the monotony of repeated stories.`;
 }
 
