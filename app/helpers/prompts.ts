@@ -62,6 +62,7 @@ Say lists inline as just text.
 DO NOT use emotes. No parenthetical or wryly. No non-verbal expressions.
 DO NOT ADD: "Laughs", "Giggles", etc. Before the text.
 ${mainHostAvatar.name} should have more script lines then DogWifHat.
+Swearing is allowed.
 
 SCRIPT DIRECTION:
 
@@ -107,6 +108,7 @@ Make the promo appeal fun, dynamic, entertaining and engaging.`;
 
 export function jokeBreakPrompt() {
   return `Interlude a dramatic news break where the hosts joke around and talk smack to each other and the stream viewers.
+Swearing is allowed.
 Make this entertaining as it servers a fresh break in between segments to spice up the content and break the monotony of repeated stories.`;
 }
 
