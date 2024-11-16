@@ -53,15 +53,15 @@ HOSTS:
 
 SCRIPT FORMAT:
 
-- Use "<" to separate the speaker from their dialogue.
+- Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting.
-- "<" is the delimiter. Never use ">" the reverse bracket.
+- "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
 
 The only speakers you can use are:
 ${mainHostAvatar.name}, DogWifHat
@@ -70,12 +70,12 @@ EXAMPLE SCRIPT:
 
 ${
   mainHostAvatar.name
-}<Good evening and welcome to Chain News, the latest in cryptocurrency news.\n
-DogWifHat<Hey folks, we have some great news for you today.\n
+}~Good evening and welcome to Chain News, the latest in cryptocurrency news.\n
+DogWifHat~Hey folks, we have some great news for you today.\n
 ${
   mainHostAvatar.name
-}<Our top story is about a new meme coin that's taking the market by storm.\n
-DogWifHat<That's right, folks. This coin is going to the moon!\n
+}~Our top story is about a new meme coin that's taking the market by storm.\n
+DogWifHat~That's right, folks. This coin is going to the moon!\n
 
 SCRIPT RULES:
 
@@ -127,15 +127,15 @@ export function nextSegmentPrompt(
   return `  
 SCRIPT FORMAT:
 
-- Use "<" to separate the speaker from their dialogue.
+- Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
 - Do not include any additional characters, symbols, or formatting.
-- "<" is the delimiter. Never use ">" the reverse bracket.
+- "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
 
 The only speakers you can use are:
 ${mainHostAvatar.name}, DogWifHat
@@ -240,11 +240,11 @@ SCRIPT FORMAT:
 
 You are ONLY output in this script format:
 
-Use "<" to separate the speaker from the text.
+Use "~" to separate the speaker from the text.
 
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
-SPEAKER<TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
+SPEAKER~TEXT\n
 ... etc
 
 This is required to split the lines of text in our application. Critical or will break stuff.
@@ -284,11 +284,11 @@ DogWifHat: DogWifHat
 
 ONLY output in this script format:
 
-Use "<" to separate the speaker from the text.
+Use "~" to separate the speaker from the text.
 
-SPEAKER<TEXT
-SPEAKER<TEXT
-SPEAKER<TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
 ... etc
 
 The only speakers you can use are:
@@ -331,11 +331,11 @@ DogWifHat: DogWifHat, is insightful and wise, the steady foundation of the team,
 
 ONLY output in this script format:
 
-Use "<" to separate the speaker from the text.
+Use "~" to separate the speaker from the text.
 
-SPEAKER<TEXT
-SPEAKER<TEXT
-SPEAKER<TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
 ... etc
 
 The only speakers you can use are:
@@ -369,11 +369,11 @@ DogWifHat: DogWifHat, is insightful and wise, the steady foundation of the team,
 
 ONLY output in this script format:
 
-Use "<" to separate the speaker from the text.
+Use "~" to separate the speaker from the text.
 
-SPEAKER<TEXT
-SPEAKER<TEXT
-SPEAKER<TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
+SPEAKER~TEXT
 ... etc
 
 The only speakers you can use are:
