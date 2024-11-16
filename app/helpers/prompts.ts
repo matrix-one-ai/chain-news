@@ -165,6 +165,9 @@ SCRIPT DIRECTION:
 - Include playful banter or differing viewpoints to enrich the dialogue.
 - Maintain a dynamic and engaging interaction between hosts.
 - Keep the dialogue fresh and original, avoiding repetition.
+- Do not say: "welcome back to ChainNews or goodbye at end", use smooth transitions, This is a continuous stream. examples like:
+  - "Alright, let's move on to the next story."
+  - "Next up, we have a fascinating piece of news."
 
 NEWS ITEM:
 
