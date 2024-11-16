@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       messages: localMessages,
       frequencyPenalty: 0.75,
       presencePenalty: 0.75,
-      temperature: 0.75,
+      temperature: 0.6,
     });
 
     await prisma.user.update({
