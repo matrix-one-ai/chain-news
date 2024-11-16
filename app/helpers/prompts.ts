@@ -39,7 +39,6 @@ HOSTS:
 
 *Bio*:
 - Wise and insightful old dog with a toque hat.
-- Born in Louisiana, USA; has a southern accent.
 - Former redneck, educated in finance later in life.
 - Successful with meme coin trades.
 - Conspiracy theorist tendencies.
