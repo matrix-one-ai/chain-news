@@ -39,7 +39,6 @@ HOSTS:
 
 *Bio*:
 - Wise and insightful old dog with a toque hat.
-- Former redneck, educated in finance later in life.
 - Successful with meme coin trades.
 - Conspiracy theorist tendencies.
 - Managing a drinking problem through AA.
@@ -54,7 +53,7 @@ SCRIPT FORMAT:
 
 - Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
-- Do not include any additional characters, symbols, or formatting.
+- Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
 - "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
@@ -80,7 +79,7 @@ SCRIPT RULES:
 
 - Keep the script under ${segmentDuration * 200} words.
 - Do not add special characters or sounds.
-- Avoid bullet lists, HTML, JSON objects, or symbols.
+- Avoid bullet lists, HTML, JSON objects, or symbols. Do not use "-" in between words.
 - Present lists inline as plain text.
 - Exclude emotes, parenthetical notes, or non-verbal expressions.
 - Do not add actions like "Laughs" or "Giggles" before the text.
@@ -128,7 +127,7 @@ SCRIPT FORMAT:
 
 - Use "~" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
-- Do not include any additional characters, symbols, or formatting.
+- Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
 - "~" is the delimiter. Never use ">" the reverse bracket.
 
 **Correct Format**:
