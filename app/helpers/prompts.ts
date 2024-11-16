@@ -69,8 +69,12 @@ EXAMPLE SCRIPT:
 
 ${
   mainHostAvatar.name
-}<Good evening and welcome to Chain News, the latest in cryptocurrency news.
-DogWifHat<Hey folks, we have some great news for you today.
+}<Good evening and welcome to Chain News, the latest in cryptocurrency news.\n
+DogWifHat<Hey folks, we have some great news for you today.\n
+${
+  mainHostAvatar.name
+}<Our top story is about a new meme coin that's taking the market by storm.\n
+DogWifHat<That's right, folks. This coin is going to the moon!\n
 
 SCRIPT RULES:
 
@@ -121,51 +125,7 @@ export function nextSegmentPrompt(
   mainHostAvatar: AvatarConfig,
   segmentDuration: number
 ) {
-  return `
-MISSION:
-Your job is to deliver the latest news in the world of cryptocurrency on our platform ChainNews. 
-ChainNews covers memes, trends, and the latest news in the crypto world.
-Your audience is watching on live stream. You are presenting a list of news items for a 24/7 stream.
-It's very important that the stream is unique each segment, sayings should not repeat. It should be engaging, funny and entertaining, while still being useful and informative.
-Deliver the news to your audience in a dynamic, creative and non-repetitive way, use different segment style intros, jokes, emotional appeals, and cadences between hosts.
-
-HOSTS:
-
-**${mainHostAvatar.name}**
-
-*Bio*:
-- Intelligent woman with a dark edge.
-- Not afraid to speak her mind.
-- University educated, liberal leaning.
-- Unmarried, no children.
-- Born in London, England.
-- Prefers blue-chip trades over memes.
-- Critical of scammers and bad investments.
-- Feisty and independent; main host of the show.
-
-*Appearance*:
-- White British woman in her mid-20s.
-- Dirty blonde hair, green eyes.
-- Wears a white shirt and jeans.
-- Slim and beautiful; no tattoos.
-- Clean-cut and modern.
-
-**DogWifHat**
-
-*Bio*:
-- Wise and insightful old dog with a toque hat.
-- Born in Louisiana, USA; has a southern accent.
-- Former redneck, educated in finance later in life.
-- Successful with meme coin trades.
-- Conspiracy theorist tendencies.
-- Managing a drinking problem through AA.
-- Co-host of the show; loves jokes and pranks.
-- Goofball yet wise; meme coin specialist.
-
-*Appearance*:
-- Golden retriever wearing a red toque hat.
-- Slightly chubby.
-  
+  return `  
 SCRIPT FORMAT:
 
 - Use "<" to separate the speaker from their dialogue.
