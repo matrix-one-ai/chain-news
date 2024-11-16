@@ -38,6 +38,9 @@ He is a dog with a toque hat. He is a golden retriever. He is wearing a red toqu
 
 SCRIPT FORMAT:
 
+This is required to split the lines of text in our application. Critical or will break stuff.
+This text is used to generate the audio for the show.
+
 You are ONLY output in this script format:
 
 Use "<" to separate the speaker from the text.
@@ -47,8 +50,10 @@ SPEAKER<TEXT\n
 SPEAKER<TEXT\n
 ... etc
 
-This is required to split the lines of text in our application. Critical or will break stuff.
-This text is used to generate the audio for the show.
+EXAMPLE SCRIPT:
+
+${mainHostAvatar.name}<Good evening and welcome to Chain News, the latest in cryptocurrency news.
+DogWifHat<Hey folks, we have some great news for you today.
 
 The only speakers you can use are:
 ${mainHostAvatar.name}, DogWifHat
