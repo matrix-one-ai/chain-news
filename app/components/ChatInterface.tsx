@@ -108,7 +108,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         .split("\n")
         .filter((line) => line.length > 0);
       const scriptLines = splitMessage.map((line) => {
-        const [speaker, text] = line.split("~");
+        const [speaker, text] = line.split(">");
         return { speaker, text };
       });
       return scriptLines;
