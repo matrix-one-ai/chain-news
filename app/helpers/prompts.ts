@@ -51,36 +51,23 @@ HOSTS:
 
 SCRIPT FORMAT:
 
-- Use "~" to separate the speaker from their dialogue.
+- Use ">" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
-- Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
-- Do not use: —.
-- "~" is the delimiter. Never use ">" the reverse bracket.
+- Do not include any additional characters, symbols, or formatting.
 
 **Correct Format**:
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
 
 The only speakers you can use are:
 ${mainHostAvatar.name}, DogWifHat
-
-EXAMPLE SCRIPT:
-
-${
-  mainHostAvatar.name
-}~Good evening and welcome to Chain News, the latest in cryptocurrency news.\n
-DogWifHat~Hey folks, we have some great news for you today.\n
-${
-  mainHostAvatar.name
-}~Our top story is about a new meme coin that's taking the market by storm.\n
-DogWifHat~That's right, folks. This coin is going to the moon!\n
 
 SCRIPT RULES:
 
 - Keep the script under ${segmentDuration * 200} words.
 - Do not add special characters or sounds.
-- Avoid bullet lists, HTML, JSON objects, or symbols. Do not use "-" in between words.
+- Avoid bullet lists, HTML, JSON objects, or symbols.
 - Present lists inline as plain text.
 - Exclude emotes, parenthetical notes, or non-verbal expressions.
 - Do not add actions like "Laughs" or "Giggles" before the text.
@@ -126,16 +113,14 @@ export function nextSegmentPrompt(
   return `  
 SCRIPT FORMAT:
 
-- Use "~" to separate the speaker from their dialogue.
+- Use ">" to separate the speaker from their dialogue.
 - Each line should represent one piece of dialogue from a speaker.
-- Do not include any additional characters, symbols, or formatting. Do not use "-" in between words.
-- Do not use: —.
-- "~" is the delimiter. Never use ">" the reverse bracket.
+- Do not include any additional characters, symbols, or formatting.
 
 **Correct Format**:
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
 
 The only speakers you can use are:
 ${mainHostAvatar.name}, DogWifHat
@@ -240,11 +225,11 @@ SCRIPT FORMAT:
 
 You are ONLY output in this script format:
 
-Use "~" to separate the speaker from the text.
+Use ">" to separate the speaker from the text.
 
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
-SPEAKER~TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
 ... etc
 
 This is required to split the lines of text in our application. Critical or will break stuff.
@@ -284,11 +269,11 @@ DogWifHat: DogWifHat
 
 ONLY output in this script format:
 
-Use "~" to separate the speaker from the text.
+Use ">" to separate the speaker from the text.
 
-SPEAKER~TEXT
-SPEAKER~TEXT
-SPEAKER~TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
 ... etc
 
 The only speakers you can use are:
@@ -331,11 +316,11 @@ DogWifHat: DogWifHat, is insightful and wise, the steady foundation of the team,
 
 ONLY output in this script format:
 
-Use "~" to separate the speaker from the text.
+Use ">" to separate the speaker from the text.
 
-SPEAKER~TEXT
-SPEAKER~TEXT
-SPEAKER~TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
 ... etc
 
 The only speakers you can use are:
@@ -369,11 +354,11 @@ DogWifHat: DogWifHat, is insightful and wise, the steady foundation of the team,
 
 ONLY output in this script format:
 
-Use "~" to separate the speaker from the text.
+Use ">" to separate the speaker from the text.
 
-SPEAKER~TEXT
-SPEAKER~TEXT
-SPEAKER~TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
+SPEAKER>TEXT
 ... etc
 
 The only speakers you can use are:
