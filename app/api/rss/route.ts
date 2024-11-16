@@ -275,30 +275,36 @@ export async function POST() {
 
       await prisma.news.deleteMany({
         where: {
-          provider: provider.provider,
+          provider: parsedNews.provider,
         },
       });
 
-      await prisma.news.createMany({
-        data: parsedNews.items.map((item: News) => ({
-          provider: parsedNews.provider,
-          slug: `${slug(item.title)}-${generateHash(item.title)}`,
-          providerTitle: parsedNews.providerTitle,
-          providerDescription: parsedNews.providerDescription,
-          providerUrl: parsedNews.providerUrl,
-          tokenTicker: item.tokenTicker,
-          isRSS: parsedNews.isRSS,
-          rssUrl: parsedNews.rssUrl,
-          category: item.category,
-          title: item.title,
-          description: item.description,
-          source: item.source,
-          url: item.url,
-          imageUrl: item.imageUrl,
-          content: item.content,
-          datePublished: new Date(item.datePublished),
-        })),
-      });
+      for (const item of parsedNews.items) {
+        try {
+          await prisma.news.create({
+            data: {
+              provider: parsedNews.provider,
+              slug: `${slug(item.title)}-${generateHash(item.title)}`,
+              providerTitle: parsedNews.providerTitle,
+              providerDescription: parsedNews.providerDescription,
+              providerUrl: parsedNews.providerUrl,
+              tokenTicker: item.tokenTicker,
+              isRSS: parsedNews.isRSS,
+              rssUrl: parsedNews.rssUrl,
+              category: item.category,
+              title: item.title,
+              description: item.description,
+              source: item.source,
+              url: item.url,
+              imageUrl: item.imageUrl,
+              content: item.content,
+              datePublished: new Date(item.datePublished),
+            },
+          });
+        } catch (error) {
+          console.log(`Error inserting item with title ${item.title}:`, error);
+        }
+      }
     }
     return NextResponse.json({ success: true });
   } catch (error) {
