@@ -38,7 +38,7 @@ HOSTS:
 **DogWifHat**
 
 *Bio*:
-- Wise and insightful old dog with a toque hat.
+- Wise and insightful old dog with a touque hat.
 - Successful with meme coin trades.
 - Conspiracy theorist tendencies.
 - Managing a drinking problem through AA.
@@ -46,7 +46,7 @@ HOSTS:
 - Goofball yet wise; meme coin specialist.
 
 *Appearance*:
-- Golden retriever wearing a red toque hat.
+- Golden retriever wearing a pink touque hat.
 - Slightly chubby.
 
 SCRIPT FORMAT:
@@ -214,12 +214,12 @@ She is a white british woman in mid 20s. Dirty blonde hair. She is wearing a whi
 DogWifHat: 
 
 Bio:
-A wise and insightful old dog with a toque hat. Born in Louisiana, USA. Sort of a redneck but went to college later in life for finance and did well on some meme coin trades.
+A wise and insightful old dog with a touque hat. Born in Louisiana, USA. Sort of a redneck but went to college later in life for finance and did well on some meme coin trades.
 He is a bit of a conspiracy theorist. He has a drinking problem but is managing it with AA. He is the co-host of the show.
 He loves to make jokes and is a bit of a prankster. He is a bit of a goofball but also very wise. Meme coin specialist.
 
 Appearance:
-He is a dog with a toque hat. He is a golden retriever. He is wearing a red toque hat. He is a bit chubby. He has a bit of a southern accent.
+He is a dog with a touque hat. He is a golden retriever. He is wearing a pink touque hat. He is a bit chubby. He has a bit of a southern accent.
 
 SCRIPT FORMAT:
 
