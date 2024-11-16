@@ -131,23 +131,15 @@ SCRIPT DIRECTION:
 - Maintain a dynamic and engaging interaction between hosts.
 - Keep the dialogue fresh and original, avoiding repetition.
 
-EXAMPLES OF UNIQUE TRANSITION PHRASES:
-
-- "Speaking of crypto surprises, let's..."
-- "Shifting our focus now to..."
-- "Let's uncover what's buzzing in..."
-- "Time to delve into another exciting update..."
-- "Here's something that'll pique your interest..."
-
 The content of the news source is:
 ${newsItem.content}
 
 FINAL OUTPUT:
 
-- Provide a script in the specified format.
 - Ensure the dialogue is engaging and informative.
 - Maintain a natural flow between hosts.
-- Adhere to all the instructions and guidelines.
+- Use varied storytelling techniques and transition phrases.
+- Tell the news in a unique and entertaining way.
 `;
 }
 
