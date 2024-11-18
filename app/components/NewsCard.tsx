@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Box,
   Chip,
@@ -78,7 +78,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
 
   const { isLoggedIn, isSubscribed, isAdmin } = useAuthStore();
   const { selectedNews } = useNewsStore();
-  const { isPlaying } = useSceneStore();
+  const { isPlaying, isPaused, setIsPaused } = useSceneStore();
   const [
     imageLoading,
     { toggleOn: toggleOnImageLoading, toggleOff: toggleOffImageLoading },
@@ -94,6 +94,13 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   useEffect(() => {
     toggleOnImageLoading();
   }, [newsItem?.imageUrl, toggleOnImageLoading]);
+
+  // Handler for play/pause
+  const handlePlaybackToggle = useCallback(() => {
+    if (!isPlaying || !isSelected) return;
+
+    setIsPaused(!isPaused);
+  }, [isPaused, isPlaying, isSelected, setIsPaused]);
 
   return (
     <Tooltip
@@ -222,7 +229,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                 />
               ) : (
                 <IconButton
-                  aria-label={isPlaying ? "pause" : "play"}
+                  aria-label={
+                    isSelected && isPlaying && !isPaused ? "pause" : "play"
+                  }
                   sx={{
                     color: "#201833d9",
                     backgroundColor: "error.main",
@@ -234,8 +243,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                       backgroundColor: "error.dark",
                     },
                   }}
+                  onClick={handlePlaybackToggle}
                 >
-                  {isSelected && isPlaying ? (
+                  {isSelected && isPlaying && !isPaused ? (
                     <PauseIcon sx={{ width: "20px", height: "20px" }} />
                   ) : (
                     <PlayArrowIcon sx={{ width: "20px", height: "20px" }} />

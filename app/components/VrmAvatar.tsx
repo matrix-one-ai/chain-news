@@ -22,6 +22,7 @@ import { fetchWithProgress } from "../helpers/fetchWithProgress";
 import { throttle } from "../helpers/throttle";
 import { cacheVRM, getCachedVRM } from "../helpers/indexedDb";
 import { hexStringToArrayBuffer } from "../helpers/crypto";
+import { useSceneStore } from "../zustand/store";
 
 // Constants
 const VRM_KEY_HEX = process.env.NEXT_PUBLIC_VRM_KEY as string;
@@ -42,7 +43,7 @@ interface DecryptedVRM {
 
 // Utility function to process blend shapes data
 const processBlendShapesData = (
-  blendShapesData: any[]
+  blendShapesData: any[],
 ): { frameIndex: number; blendShapeValues: number[] }[] => {
   const frames: { frameIndex: number; blendShapeValues: number[] }[] = [];
   let cumulativeFrameIndex = 0;
@@ -104,6 +105,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   rotation,
   scale,
 }) => {
+  const { isPaused } = useSceneStore();
   const [gltf, setGltf] = useState<GLTF | null>(null);
   const [mixer, setMixer] = useState<THREE.AnimationMixer | null>(null);
   const [idleClips, setIdleClips] = useState<THREE.AnimationClip[]>([]);
@@ -112,6 +114,15 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
   const [processedFrames, setProcessedFrames] = useState<ProcessedFrame[]>([]);
   const [decryptedVrm, setDecryptedVrm] = useState<DecryptedVRM | null>(null);
   const audioBlobCounterRef = useRef<number>(0);
+  const dummyIsPausedFlagRef = useRef<boolean>(isPaused);
+
+  // Update dummyIsPausedFlagRef with isPaused state, also pause mixer when isPaused is true
+  useEffect(() => {
+    dummyIsPausedFlagRef.current = isPaused;
+    if (mixer) {
+      mixer.timeScale = isPaused ? 0 : 1;
+    }
+  }, [isPaused, mixer]);
 
   const { camera } = useThree();
 
@@ -120,7 +131,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
     async (
       encryptedData: ArrayBuffer,
       key: ArrayBuffer,
-      iv: ArrayBuffer
+      iv: ArrayBuffer,
     ): Promise<Uint8Array> => {
       try {
         const algorithm = { name: "AES-CBC", iv };
@@ -129,12 +140,12 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
           key,
           algorithm,
           false,
-          ["decrypt"]
+          ["decrypt"],
         );
         const decrypted = await window.crypto.subtle.decrypt(
           algorithm,
           cryptoKey,
-          encryptedData
+          encryptedData,
         );
         return new Uint8Array(decrypted);
       } catch (error) {
@@ -142,7 +153,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         throw error;
       }
     },
-    []
+    [],
   );
 
   // Fetch and Decrypt VRM
@@ -156,7 +167,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         if (!encryptedData) {
           encryptedData = await fetchWithProgress(
             `/api/vrm/decrypt?file=${avatarKey}`,
-            throttle((prog: number) => onLoadingProgress(prog), 250)
+            throttle((prog: number) => onLoadingProgress(prog), 250),
           );
           await cacheVRM(avatarKey, encryptedData);
         } else {
@@ -181,7 +192,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         onLoadingProgress(0);
       }
     },
-    [decryptVRM, onLoadingProgress]
+    [decryptVRM, onLoadingProgress],
   );
 
   useEffect(() => {
@@ -209,7 +220,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
           (parser) =>
             new VRMLoaderPlugin(parser, {
               autoUpdateHumanBones: true,
-            })
+            }),
         );
 
         // Load VRM model
@@ -243,7 +254,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
               idleAnimations.map(async (url) => {
                 const clip = await loadMixamoAnimation(url, vrm);
                 return clip;
-              })
+              }),
             );
             setIdleClips(loadedIdleClips);
 
@@ -252,7 +263,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
               talkAnimations.map(async (url) => {
                 const clip = await loadMixamoAnimation(url, vrm);
                 return clip;
-              })
+              }),
             );
             setTalkClips(loadedTalkClips);
 
@@ -269,13 +280,13 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
           },
           (error) => {
             console.error("Error loading VRM model:", error);
-          }
+          },
         );
       } catch (error) {
         console.error("Error in loadModel:", error);
       }
     },
-    [onLoadingProgress]
+    [onLoadingProgress],
   );
 
   // Effect to load VRM model on component mount
@@ -313,12 +324,14 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
         console.log("Audio duration:", audio.duration);
         if (isNaN(audio.duration) || audio.duration === 0) {
           console.error(
-            "Audio duration is not available after canplaythrough event."
+            "Audio duration is not available after canplaythrough event.",
           );
           return;
         }
         setAudioReady(true);
-        audio.play();
+        if (!dummyIsPausedFlagRef.current) {
+          audio.play();
+        }
 
         if (shouldPlayTalkAnimation && talkClips.length > 0) {
           // Play a random talkAnimation
@@ -342,7 +355,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
             talkAction.crossFadeTo(
               mixer.clipAction(randomIdleClip).reset().play(),
               0.5,
-              true
+              true,
             );
           }, randomTalkClip.duration * 1000 - 500);
         }
@@ -393,7 +406,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
       if (!lookAt) return;
       // Calculate direction vector from head to camera
       const headBone = vrm.humanoid?.getNormalizedBoneNode(
-        VRMHumanBoneName.Head
+        VRMHumanBoneName.Head,
       );
       const cameraPosition = camera.position;
 
@@ -411,14 +424,14 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
           THREE.MathUtils.clamp(
             avatarKey === "vivian-best" ? direction.x : -direction.x,
             -maxRotationAngle,
-            maxRotationAngle
+            maxRotationAngle,
           ),
           THREE.MathUtils.clamp(
             avatarKey === "vivian-best" ? direction.y : -direction.y,
             -maxRotationAngle,
-            maxRotationAngle
+            maxRotationAngle,
           ),
-          avatarKey === "vivian-best" ? direction.z : -direction.z
+          avatarKey === "vivian-best" ? direction.z : -direction.z,
         ).normalize();
 
         headBone.lookAt(headPosition.clone().add(constrainedDirection));
@@ -459,10 +472,10 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
                     ? blendShapeName.charAt(0).toLowerCase() +
                         blendShapeName.slice(1)
                     : blendShapeName,
-                  value
+                  value,
                 );
               }
-            }
+            },
           );
 
           // Update the blendShape weights once per frame

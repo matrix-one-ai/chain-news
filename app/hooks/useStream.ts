@@ -77,7 +77,7 @@ export function useStream(): {
   const { setPrompt, addSystemMessage } = usePromptStore();
   const { isPromptUnlocked, customPrompt, setIsSettingsOpen } =
     useSettingsStore();
-  const { isPlaying, mainHostAvatar, setIsPlaying } = useSceneStore();
+  const { isPlaying, isPaused, mainHostAvatar, setIsPlaying } = useSceneStore();
   const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
 
   const initialNews = useNewsFetchBySlugOnMount();
@@ -244,21 +244,22 @@ export function useStream(): {
     };
   }, [nextLine]);
 
-  // Play audio when currentLineState changes
-  useEffect(() => {
-    if (currentLineState.audioBlob && audioRef.current) {
-      console.log(currentLineState);
+  // TODO: Not sure how this effect works, the logic of playing audio exists in VrmAvatar too
+  // // Play audio when currentLineState changes
+  // useEffect(() => {
+  //   if (currentLineState.audioBlob && audioRef.current) {
+  //     console.log(currentLineState);
 
-      const audioURL = URL.createObjectURL(currentLineState.audioBlob);
-      audioRef.current.src = audioURL;
-      audioRef.current.play();
+  //     const audioURL = URL.createObjectURL(currentLineState.audioBlob);
+  //     audioRef.current.src = audioURL;
+  //     audioRef.current.play();
 
-      // Cleanup URL after use
-      return () => {
-        URL.revokeObjectURL(audioURL);
-      };
-    }
-  }, [currentLineState.audioBlob]);
+  //     // Cleanup URL after use
+  //     return () => {
+  //       URL.revokeObjectURL(audioURL);
+  //     };
+  //   }
+  // }, [currentLineState.audioBlob]);
 
   // Handle prompt finish and start playing script
   const onPromptFinish = useCallback(
@@ -567,6 +568,17 @@ export function useStream(): {
     onNewsClick(initialNews);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialNews, isLoggedIn, isPaywallModalOpen]);
+
+  // Play/pause audio
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    if (isPaused) {
+      audioRef.current?.pause();
+    } else {
+      audioRef.current?.play();
+    }
+  }, [isPaused, isPlaying]);
 
   return {
     audioRef,
