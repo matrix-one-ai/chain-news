@@ -9,6 +9,7 @@ import {
   Badge,
   Box,
   Button,
+  Divider,
   Fade,
   IconButton,
   ListItemText,
@@ -51,29 +52,67 @@ const chainConfig = {
 };
 
 const CustomReadMore = () => (
-  <Typography
-    variant="body2"
-    sx={{ color: "#665E78", pt: 2, fontFamily: "var(--font-ibm-plex-mono)" }}
-  >
-    With the Matrix One token $MATRIX you get access to POWER UP Chain News{" "}
-    <Link href="https://www.matrix.one/" target="_blank">
-      <Typography
-        component="span"
-        sx={{
-          color: "white",
-          fontSize: "0.9rem",
-          textDecoration: "underline",
-          cursor: "pointer",
-          ":hover": {
-            color: "#FFD66E",
-          },
-          fontFamily: "var(--font-ibm-plex-mono)",
-        }}
-      >
-        Read More
-      </Typography>
-    </Link>
-  </Typography>
+  <Box>
+    <Typography
+      variant="body2"
+      sx={{
+        color: "#665E78",
+        pt: 2,
+        fontFamily: "var(--font-ibm-plex-mono)",
+        fontSize: "0.8rem",
+        textAlign: "center",
+      }}
+    >
+      With the Matrix One token $MATRIX you get access to POWER UP Chain News{" "}
+      <Link href="https://www.matrix.one/" target="_blank">
+        <Typography
+          component="span"
+          sx={{
+            color: "white",
+            fontSize: "0.8rem",
+            textDecoration: "underline",
+            cursor: "pointer",
+            ":hover": {
+              color: "#FFD66E",
+            },
+            fontFamily: "var(--font-ibm-plex-mono)",
+          }}
+        >
+          Read More
+        </Typography>
+      </Link>
+    </Typography>
+    <Divider
+      sx={{
+        margin: "1rem 0 !important",
+        borderColor: "#5C556D",
+        borderTopWidth: 0,
+      }}
+    />
+    <Typography
+      variant="subtitle1"
+      sx={{
+        color: "white",
+        textAlign: "center",
+        fontFamily: "var(--font-ibm-plex-mono)",
+        fontWeight: "bold",
+      }}
+    >
+      OR SIGN IN WITH
+    </Typography>
+
+    <Typography
+      variant="body1"
+      sx={{
+        color: "#665E78",
+        textAlign: "center",
+        fontSize: "0.8rem",
+        fontFamily: "var(--font-ibm-plex-mono)",
+      }}
+    >
+      A wallet will be automatically created for you.
+    </Typography>
+  </Box>
 );
 
 function Web3AuthLogin() {
@@ -243,6 +282,14 @@ function Web3AuthLogin() {
             const root = createRoot(container);
             root.render(<CustomReadMore />);
             observer.disconnect();
+          }
+
+          // Change the text of the button
+          const button = document.querySelector(
+            ".w3ajs-external-toggle__button"
+          );
+          if (button) {
+            button.textContent = "Connect with external Solana wallet";
           }
         }
       });

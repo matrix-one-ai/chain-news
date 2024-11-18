@@ -77,15 +77,16 @@ a {
 .w3a-modal__content {
   display: flex;
   flex-direction: column;
+  padding-top: 0 !important;
 }
 
 .w3a-modal__content > .w3ajs-external-wallet.w3a-group {
-  order: -1 !important;
+  order: -3 !important;
   margin-bottom: 20px !important;
 }
 
 .w3a-modal__content > .w3ajs-social-logins.w3a-group {
-  order: 2 !important;
+  order: -2 !important;
   margin-bottom: 20px;
 }
 
@@ -98,4 +99,47 @@ a {
   color: black !important;
   font-weight: bold !important;
   width: 100% !important;
+  border-radius: 0.5rem !important;
+
+  &:hover {
+    background-color: #f2c85f !important;
+  }
+}
+
+.w3a-header__title,
+.w3a-header__subtitle {
+  display: none !important;
+}
+
+.w3a-adapter-list .w3a-adapter-item button {
+  border-radius: 0.5rem !important;
+
+  &:hover {
+    background-color: #352d46 !important;
+  }
+}
+
+.w3a-social__policy,
+.w3a-group__title {
+  display: none !important;
+}
+
+.w3ajs-passwordless-form input,
+.w3ajs-passwordless-form button {
+  border-radius: 0.5rem !important;
+}
+
+.w3ajs-passwordless-form input {
+  background-color: #352d46 !important;
+}
+
+.w3ajs-passwordless-form button {
+  background-color: #ffd66e !important;
+  color: black !important;
+  font-weight: bold !important;
+
+  &:disabled {
+    background-color: #352d46 !important; /* Change to your desired color */
+    color: #a9a9a9 !important; /* Change to your desired color */
+  }
 }
