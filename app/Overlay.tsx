@@ -31,6 +31,7 @@ import {
 import PaywallModal from "./components/PaywallModal";
 import { useNewsFetchBySlugOnMount } from "./hooks/useNewsFetch";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import CallToAction from "./components/CallToAction";
 
 interface OverlayProps {
   audioRef: React.RefObject<HTMLAudioElement>;
@@ -74,8 +75,13 @@ const Overlay = ({
   const router = useRouter();
   const pathname = usePathname();
   const { prompt, setPrompt, addSystemMessage } = usePromptStore();
-  const { isLoggedIn, isAdmin, credits, setTriggerWeb3AuthModal } =
-    useAuthStore();
+  const {
+    isLoggedIn,
+    isAdmin,
+    credits,
+    isSubscribed,
+    setTriggerWeb3AuthModal,
+  } = useAuthStore();
   const { news, selectedNews, setSelectedNews } = useNewsStore();
   const initialNews = useNewsFetchBySlugOnMount();
 
@@ -334,7 +340,9 @@ const Overlay = ({
     addSystemMessage,
     audioRef,
     currentSegmentIndex,
+    mainHostAvatar,
     news,
+    segmentDuration,
     setAudioBlob,
     setCurrentLineState,
     setLastSegmentType,
@@ -396,6 +404,8 @@ const Overlay = ({
         zIndex: 1000,
       }}
     >
+      {!isSubscribed && <CallToAction />}
+
       {progress < 100 && (
         <div
           style={{
