@@ -86,7 +86,7 @@ const CustomReadMore = () => (
       sx={{
         margin: "1rem 0 !important",
         borderColor: "#5C556D",
-        borderTopWidth: 0,
+        borderTopWidth: "0 !important",
       }}
     />
     <Typography
