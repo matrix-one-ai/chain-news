@@ -14,6 +14,8 @@ import { useAuthStore, useOverlayStore } from "../zustand/store";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import HelioWidget from "./HelioWidget";
+import UserTOS from "./UserPage/UserTOS";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const PaywallFeature = ({ image, text }: { image: string; text: string }) => {
   return (
@@ -155,6 +157,7 @@ enum PaywallSteps {
   LOGIN,
   HELIO,
   CONCLUSION,
+  TERMS,
 }
 
 const PaywallModal = () => {
@@ -183,6 +186,7 @@ const PaywallModal = () => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           maxWidth: 1000,
+          maxHeight: 750,
           width: "100%",
           backgroundColor: "#2A223C",
           border: "2px solid #83838340",
@@ -211,131 +215,156 @@ const PaywallModal = () => {
               Unlock the PRO experience
             </Typography>
             <Stack gap={2}>
-              {paywallFeatures.map((feature, index) => (
-                <PaywallFeature key={index} {...feature} />
-              ))}
+              <Stack gap={2}>
+                {paywallFeatures.map((feature, index) => (
+                  <PaywallFeature key={index} {...feature} />
+                ))}
+              </Stack>
+
+              <Box sx={{ flexGrow: 1 }} />
+
+              {(paywallStep === PaywallSteps.TERMS ||
+                paywallStep === PaywallSteps.HELIO) && (
+                <Chip
+                  icon={<ArrowBackIcon />}
+                  label="Back"
+                  variant="outlined"
+                  onClick={() => {
+                    setPaywallStep(PaywallSteps.INTRO);
+                  }}
+                />
+              )}
             </Stack>
           </Box>
 
           {paywallStep === PaywallSteps.INTRO && (
             <>
               {!isSubscribed && (
-                <Box
-                  sx={{
+                <Fade
+                  in
+                  style={{
                     width: "100%",
                   }}
                 >
-                  <Stack
-                    sx={{
-                      justifyContent: "space-between",
-                      flexDirection: "row",
-                      gap: 2,
-                    }}
-                  >
-                    <PriceCard
-                      duration="Annual"
-                      matrixPrice={20}
-                      fiatPrice={69}
-                      onClick={() => setIsAnnual(true)}
-                      isSelected={isAnnual}
-                    />
-                    <PriceCard
-                      duration="Monthly"
-                      matrixPrice={5}
-                      fiatPrice={9.99}
-                      onClick={() => setIsAnnual(false)}
-                      isSelected={!isAnnual}
-                    />
-                  </Stack>
-
-                  <Box
-                    sx={{
-                      mt: 2,
-                      backgroundColor: "info.main",
-                      color: "black",
-                      p: 2,
-                      borderRadius: "0.5rem",
-                    }}
-                  >
+                  <Box>
                     <Stack
                       sx={{
                         justifyContent: "space-between",
-                        alignItems: "center",
                         flexDirection: "row",
                         gap: 2,
                       }}
                     >
-                      <Box>
-                        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                          Pay with $MATRIX
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            color: "#313131",
-                          }}
-                        >
-                          Pay with $MATRIX and get 20% discount.
-                        </Typography>
-                      </Box>
-                      <Button
-                        variant="outlined"
+                      <PriceCard
+                        duration="Annual"
+                        matrixPrice={20}
+                        fiatPrice={69}
+                        onClick={() => setIsAnnual(true)}
+                        isSelected={isAnnual}
+                      />
+                      <PriceCard
+                        duration="Monthly"
+                        matrixPrice={5}
+                        fiatPrice={9.99}
+                        onClick={() => setIsAnnual(false)}
+                        isSelected={!isAnnual}
+                      />
+                    </Stack>
+
+                    <Box
+                      sx={{
+                        mt: 2,
+                        backgroundColor: "info.main",
+                        color: "black",
+                        p: 2,
+                        borderRadius: "0.5rem",
+                      }}
+                    >
+                      <Stack
                         sx={{
-                          color: "black",
-                          borderColor: "black",
-                          borderRadius: "0.5rem",
-                          height: "2.5rem",
-                          textTransform: "capitalize",
-                          fontWeight: "bold",
-                          ":hover": {
-                            backgroundColor: "black",
-                            color: "white",
-                          },
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          gap: 2,
                         }}
                       >
-                        Upgrade to Pro
-                      </Button>
-                    </Stack>
+                        <Box>
+                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                            Pay with $MATRIX
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              color: "#313131",
+                            }}
+                          >
+                            Pay with $MATRIX and get 20% discount.
+                          </Typography>
+                        </Box>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "black",
+                            borderColor: "black",
+                            borderRadius: "0.5rem",
+                            height: "2.5rem",
+                            textTransform: "capitalize",
+                            fontWeight: "bold",
+                            ":hover": {
+                              backgroundColor: "black",
+                              color: "white",
+                            },
+                          }}
+                          onClick={
+                            isLoggedIn
+                              ? () => setPaywallStep(PaywallSteps.HELIO)
+                              : () => setPaywallStep(PaywallSteps.LOGIN)
+                          }
+                        >
+                          Upgrade to Pro
+                        </Button>
+                      </Stack>
+                    </Box>
+
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      size="large"
+                      sx={{
+                        mt: 2,
+                        backgroundColor: "white",
+                        color: "#631EDC",
+                        fontSize: "1.1rem",
+                        textTransform: "capitalize",
+                        fontWeight: "bold",
+                      }}
+                      fullWidth
+                      onClick={() =>
+                        setPaywallStep(
+                          isLoggedIn ? PaywallSteps.HELIO : PaywallSteps.LOGIN
+                        )
+                      }
+                    >
+                      Continue
+                    </Button>
+
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mt: 2,
+                        color: "text.secondary",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        textAlign: "center",
+                        ":hover": {
+                          color: "white",
+                        },
+                      }}
+                      onClick={() => setPaywallStep(PaywallSteps.TERMS)}
+                    >
+                      View subscription terms
+                    </Typography>
                   </Box>
-
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    size="large"
-                    sx={{
-                      mt: 2,
-                      backgroundColor: "white",
-                      color: "#631EDC",
-                      fontSize: "1.1rem",
-                      textTransform: "capitalize",
-                      fontWeight: "bold",
-                    }}
-                    fullWidth
-                    onClick={() =>
-                      setPaywallStep(
-                        isLoggedIn ? PaywallSteps.HELIO : PaywallSteps.LOGIN
-                      )
-                    }
-                  >
-                    Continue
-                  </Button>
-
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      mt: 2,
-                      color: "text.secondary",
-                      cursor: "pointer",
-                      textDecoration: "underline",
-                      textAlign: "center",
-                      ":hover": {
-                        color: "white",
-                      },
-                    }}
-                  >
-                    View subscription terms
-                  </Typography>
-                </Box>
+                </Fade>
               )}
               {isSubscribed && (
                 <Fade in>
@@ -417,6 +446,22 @@ const PaywallModal = () => {
                 </Typography>
               </Stack>
             </Fade>
+          )}
+
+          {paywallStep === PaywallSteps.TERMS && (
+            <Box
+              sx={{
+                width: "100%",
+                height: 500,
+                overflow: "auto",
+              }}
+            >
+              <Fade in>
+                <Stack justifyContent="center" alignItems="center">
+                  <UserTOS />
+                </Stack>
+              </Fade>
+            </Box>
           )}
         </Stack>
       </Box>
