@@ -19,6 +19,7 @@ import {
 } from "@/app/helpers/prompts";
 import { News } from "@prisma/client";
 import { useNewsFetchBySlugOnMount } from "./useNewsFetch";
+import { AbortableFetch } from "@/app/utils/abortablePromise";
 
 const speakerVoiceMap = {
   Sam: "en-US-AvaMultilingualNeural",
@@ -81,8 +82,6 @@ export function useStream(): {
 
   const initialNews = useNewsFetchBySlugOnMount();
 
-  const audioRef = useRef<HTMLAudioElement>(null);
-
   const [isAudioLoading, setIsAudioLoading] = useState<boolean>(false);
   const [scriptLines, setScriptLines] = useState<
     {
@@ -96,14 +95,21 @@ export function useStream(): {
   const [currentLineState, setCurrentLineState] =
     useState<LineState>(DEFAULT_LINE_STATE);
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const abortableAudioFetch = useRef<AbortableFetch | null>(null);
+  const abortableChatsFetch = useRef<AbortableFetch | null>(null);
+
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
     const maxRetries = 3;
     let attempt = 0;
 
+    // Abort previous audio fetching, if any
+    abortableAudioFetch.current?.abort();
+
     while (attempt < maxRetries) {
       try {
-        const response = await fetch("/api/speech", {
+        abortableAudioFetch.current = new AbortableFetch("/api/speech", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -113,6 +119,8 @@ export function useStream(): {
             voice: voiceId,
           }),
         });
+        const response = await abortableAudioFetch.current.fetch;
+        abortableAudioFetch.current = null;
 
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -127,13 +135,18 @@ export function useStream(): {
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
         return { blob, blendShapes };
-      } catch (error) {
-        console.error(`Error fetching audio (attempt ${attempt + 1}):`, error);
-        attempt += 1;
-        if (attempt >= maxRetries) {
-          console.error("Max retries reached. Giving up.");
-          nextLine();
-          return null;
+      } catch (error: any) {
+        if (error?.name !== "AbortError") {
+          console.error(
+            `Error fetching audio (attempt ${attempt + 1}):`,
+            error,
+          );
+          attempt += 1;
+          if (attempt >= maxRetries) {
+            console.error("Max retries reached. Giving up.");
+            nextLine();
+            return null;
+          }
         }
       }
     }
@@ -312,17 +325,24 @@ export function useStream(): {
   }, []);
 
   const fetchChats = useCallback(async () => {
+    // Abort previous fetching, if any
+    abortableChatsFetch.current?.abort();
+
     try {
-      const resp = await fetch("/api/youtube/chats", {
+      abortableChatsFetch.current = new AbortableFetch("/api/youtube/chats", {
         cache: "no-cache",
       });
+      const resp = await abortableChatsFetch.current.fetch;
+      abortableChatsFetch.current = null;
       if (resp.ok) {
         const data = await resp.json();
         console.log("got chats", data.chats);
         return data.chats;
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error?.name !== "AbortError") {
+        console.error(error);
+      }
     }
   }, []);
 
