@@ -35,6 +35,7 @@ import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
 import { ROUTE } from "@/app/constants";
 import { useRouter } from "next/navigation";
+import { createRoot } from "react-dom/client";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
 
@@ -49,6 +50,32 @@ const chainConfig = {
   logo: "https://images.toruswallet.io/sol.svg",
 };
 
+const CustomReadMore = () => (
+  <Typography
+    variant="body2"
+    sx={{ color: "#665E78", pt: 2, fontFamily: "var(--font-ibm-plex-mono)" }}
+  >
+    With the Matrix One token $MATRIX you get access to POWER UP Chain News{" "}
+    <Link href="https://www.matrix.one/" target="_blank">
+      <Typography
+        component="span"
+        sx={{
+          color: "white",
+          fontSize: "0.9rem",
+          textDecoration: "underline",
+          cursor: "pointer",
+          ":hover": {
+            color: "#FFD66E",
+          },
+          fontFamily: "var(--font-ibm-plex-mono)",
+        }}
+      >
+        Read More
+      </Typography>
+    </Link>
+  </Typography>
+);
+
 function Web3AuthLogin() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
@@ -61,7 +88,6 @@ function Web3AuthLogin() {
     imageUrl,
     isSubscribed,
     triggerWeb3AuthModal,
-    credits,
     setWalletAddress,
     setLoggedIn,
     setIsAdmin,
@@ -203,6 +229,27 @@ function Web3AuthLogin() {
       uiConsole("web3auth not initialized yet");
       return;
     }
+
+    // Inject custom element into Web3Auth modal
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === "childList") {
+          const targetElement = document.querySelector(
+            ".w3ajs-external-wallet.w3a-group"
+          );
+          if (targetElement) {
+            const container = document.createElement("div");
+            targetElement.appendChild(container);
+            const root = createRoot(container);
+            root.render(<CustomReadMore />);
+            observer.disconnect();
+          }
+        }
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
     const web3authProvider = await web3auth.connect();
 
     if (web3auth.connected) {
