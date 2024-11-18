@@ -26,6 +26,14 @@ const speakerVoiceMap = {
   DogWifHat: "en-US-AndrewMultilingualNeural",
 };
 
+const DEFAULT_LINE_STATE: LineState = {
+  lineIndex: -1,
+  speaker: "",
+  text: "",
+  audioBlob: null,
+  blendShapes: [],
+};
+
 type LineState = {
   lineIndex: number;
   speaker: string;
@@ -85,13 +93,8 @@ export function useStream(): {
   const [audioCache, setAudioCache] = useState<{
     [index: number]: { blob: Blob; blendShapes: any[] };
   }>({});
-  const [currentLineState, setCurrentLineState] = useState<LineState>({
-    lineIndex: -1,
-    speaker: "",
-    text: "",
-    audioBlob: null,
-    blendShapes: [],
-  });
+  const [currentLineState, setCurrentLineState] =
+    useState<LineState>(DEFAULT_LINE_STATE);
 
   // Fetch audio and blendShapes for a given text and voice
   const fetchAudio = useCallback(async (text: string, voiceId: string) => {
@@ -211,13 +214,7 @@ export function useStream(): {
     } else {
       // End of script
       setIsPlaying(false);
-      setCurrentLineState({
-        lineIndex: -1,
-        speaker: "",
-        text: "",
-        audioBlob: null,
-        blendShapes: [],
-      });
+      setCurrentLineState(DEFAULT_LINE_STATE);
     }
   }, [currentLineState, playCurrentLine, scriptLines.length, setIsPlaying]);
 
@@ -424,6 +421,19 @@ export function useStream(): {
     }
   }, [currentSegmentIndex, isPlaying, isStreaming, streamLoop, streamStarted]);
 
+  // Nullify current playing
+  const stopCurrentPlaying = useCallback(() => {
+    setSelectedNews(null);
+    setLastSegmentType(null);
+    setScriptLines([]);
+    setCurrentLineState(DEFAULT_LINE_STATE);
+    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+    }
+  }, [setIsPlaying, setLastSegmentType, setSelectedNews]);
+
   const onStreamStart = useCallback(() => {
     setCurrentSegmentIndex(0); // sets -1 to 0
     setStreamStarted(true);
@@ -431,45 +441,27 @@ export function useStream(): {
   }, [setCurrentSegmentIndex, setIsSettingsOpen, setStreamStarted]);
 
   const onStreamStop = useCallback(() => {
-    setStreamStarted(false);
-    setSelectedNews(null);
-    setIsStreaming(false);
+    // Stop previous playin, if any
+    stopCurrentPlaying();
 
-    setCurrentLineState((prev) => ({ ...prev, audioBlob: null }));
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-    }
+    setStreamStarted(false);
+    setIsStreaming(false);
 
     const prompt = concludeNewsPrompt();
 
     setPrompt(prompt);
     addSystemMessage(`TERMINAL: Stream concluded. Thank you for watching!`);
   }, [
+    stopCurrentPlaying,
     setStreamStarted,
-    setSelectedNews,
     setIsStreaming,
-    audioRef,
     setPrompt,
     addSystemMessage,
   ]);
 
   const onStreamNext = useCallback(() => {
-    setCurrentLineState((prev) => ({ ...prev, audioBlob: null }));
-    setSelectedNews(null);
-    setLastSegmentType(null);
-    setScriptLines([]);
-    setCurrentLineState({
-      lineIndex: 0,
-      speaker: "",
-      text: "",
-      audioBlob: null,
-      blendShapes: [],
-    });
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-    }
+    // Stop previous playin, if any
+    stopCurrentPlaying();
 
     const nextNews = news[currentSegmentIndex + 1];
 
@@ -484,43 +476,17 @@ export function useStream(): {
     mainHostAvatar,
     news,
     segmentDuration,
-    setLastSegmentType,
     setPrompt,
     setSelectedNews,
+    stopCurrentPlaying,
   ]);
-
-  // const handleStop = useCallback(() => {
-  //   setAudioBlob(null);
-  //   setSelectedNews(null);
-  //   setLastSegmentType(null);
-  //   setScriptLines([]);
-  //   setCurrentLineState({
-  //     lineIndex: 0,
-  //     speaker: "",
-  //     text: "",
-  //     audioBlob: null,
-  //     blendShapes: [],
-  //   });
-  //   if (audioRef.current) {
-  //     audioRef.current.pause();
-  //     audioRef.current.src = "";
-  //   }
-  //   setIsPlaying(false);
-  //   setIsStreaming(false);
-  // }, [
-  //   audioRef,
-  //   setAudioBlob,
-  //   setCurrentLineState,
-  //   setIsPlaying,
-  //   setIsStreaming,
-  //   setLastSegmentType,
-  //   setScriptLines,
-  //   setSelectedNews,
-  // ]);
 
   const onNewsClick = useCallback(
     (newsItem: News | null) => {
       if (newsItem === null) return;
+
+      // Stop previous playing, if any
+      stopCurrentPlaying();
 
       if (isLoggedIn) {
         if (credits <= 0 && !isAdmin) {
@@ -554,6 +520,7 @@ export function useStream(): {
       }
     },
     [
+      stopCurrentPlaying,
       isLoggedIn,
       credits,
       isAdmin,
