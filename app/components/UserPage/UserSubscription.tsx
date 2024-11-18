@@ -17,11 +17,13 @@ import { useAuthStore, useOverlayStore } from "../../zustand/store";
 import { useCallback, useEffect, useState } from "react";
 import { HelioTransaction } from "@prisma/client";
 import { truncateAddress } from "../../helpers/crypto";
+import UserNotLoggedIn from "./UserNotLoggedIn";
 
 const UserSubscription = () => {
   const [transactions, setTransactions] = useState([]);
 
-  const { isSubscribed, walletAddress, subscriptionEndTime } = useAuthStore();
+  const { isSubscribed, walletAddress, subscriptionEndTime, isLoggedIn } =
+    useAuthStore();
   const { setIsPaywallModalOpen } = useOverlayStore();
 
   const fetchTransactions = useCallback(async () => {
@@ -43,7 +45,7 @@ const UserSubscription = () => {
     }
   }, [fetchTransactions, walletAddress]);
 
-  return (
+  return isLoggedIn ? (
     <Box>
       <Typography
         variant="subtitle1"
@@ -216,6 +218,8 @@ const UserSubscription = () => {
         </Table>
       </TableContainer>
     </Box>
+  ) : (
+    <UserNotLoggedIn />
   );
 };
 
