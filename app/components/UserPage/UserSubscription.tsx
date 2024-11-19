@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Chip,
   Paper,
   Table,
   TableBody,
@@ -86,7 +85,8 @@ const UserSubscription = () => {
                 fontWeight: "bold",
               }}
             >
-              {"$20"}
+              {((transactions[0] as any)?.amount / 1000000).toFixed(3)}{" "}
+              {(transactions[0] as any)?.tokenFrom}
               <Typography
                 sx={{
                   color: "text.secondary",
@@ -95,33 +95,6 @@ const UserSubscription = () => {
               >
                 / month
               </Typography>
-            </Typography>
-
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: "bold",
-                pt: 2,
-              }}
-            >
-              {"10 $MATRIX "}
-              <Typography
-                sx={{
-                  color: "text.secondary",
-                }}
-                component={"span"}
-              >
-                / month
-              </Typography>
-              <Chip
-                label="-20%"
-                color="secondary"
-                size="small"
-                sx={{
-                  fontWeight: "bold",
-                  ml: 1,
-                }}
-              />
             </Typography>
 
             <Typography
@@ -205,10 +178,10 @@ const UserSubscription = () => {
               <TableRow key={tx.id}>
                 <TableCell>{truncateAddress(tx.senderAddress)}</TableCell>
                 <TableCell>
-                  {(Number(tx.amount) / 100000).toFixed(3)} {tx.tokenFrom}
+                  {(Number(tx.amount) / 1000000).toFixed(3)} {tx.tokenFrom}
                 </TableCell>
                 <TableCell>
-                  {(Number(tx.fee) / 100000).toFixed(3)} {tx.tokenFrom}
+                  {(Number(tx.fee) / 1000000).toFixed(3)} {tx.tokenFrom}
                 </TableCell>
                 <TableCell>{new Date(tx.createdAt).toLocaleString()}</TableCell>
                 <TableCell>{tx.transactionSuccess}</TableCell>
