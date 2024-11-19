@@ -3,11 +3,14 @@ import { NextResponse } from "next/server";
 export async function POST() {
   console.log("HELIO_PUBLIC_KEY", process.env.HELIO_PUBLIC_KEY);
   console.log("HELIO_SECRET_KEY", process.env.HELIO_SECRET_KEY);
-  console.log("HELIO_MONTHLY_PAYLINK_ID", process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID);
+  console.log(
+    "HELIO_MONTHLY_PAYLINK_ID",
+    process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID
+  );
   console.log("HELIO_WEBHOOK_URL", process.env.HELIO_WEBHOOK_URL);
 
   try {
-    const resp = await fetch(
+    const respMonth = await fetch(
       `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
       {
         method: "POST",
@@ -25,9 +28,28 @@ export async function POST() {
       }
     );
 
-    console.log(await resp.json());
+    const respYear = await fetch(
+      `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.HELIO_SECRET_KEY}`,
+          "cache-control": "no-cache",
+        },
+        body: JSON.stringify({
+          paylinkId: process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID,
+          targetUrl: `${process.env.HELIO_WEBHOOK_URL}/api/helio/webhook`,
+          events: ["CREATED"],
+        }),
+      }
+    );
 
-    if (resp.ok) {
+    console.log("monthly:", await respMonth.json());
+    console.log("yearly:", await respYear.json());
+
+    if (respMonth.ok && respYear.ok) {
       return NextResponse.json({ success: true });
     }
 
