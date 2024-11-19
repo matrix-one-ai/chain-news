@@ -76,7 +76,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   const percentChangeColor = percentChange < 0 ? "#ff2e2e" : "secondary.main";
   const plusOrMinus = percentChange < 0 ? "" : "+";
 
-  const { isLoggedIn, isSubscribed } = useAuthStore();
+  const { isLoggedIn, isSubscribed, isAdmin } = useAuthStore();
   const { selectedNews } = useNewsStore();
   const { isPlaying } = useSceneStore();
   const [
@@ -264,7 +264,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                     width="100%"
                     height={24}
                   />
-                  {!isSubscribed && (
+                  {!isSubscribed && !isAdmin && (
                     <Skeleton
                       variant="rectangular"
                       animation="wave"
@@ -292,7 +292,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                       <Typography variant="body2" fontSize={18} color="white">
                         {`$${(newsItem.usdPrice ?? 0).toFixed(2)}`}
                       </Typography>
-                      {isSubscribed && (
+                      {(isSubscribed || isAdmin) && (
                         <Typography
                           variant="body2"
                           fontSize={18}
@@ -305,7 +305,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                       )}
                     </Stack>
                   </Stack>
-                  {!isSubscribed && (
+                  {!isSubscribed && !isAdmin && (
                     <Stack
                       direction="row"
                       justifyContent="space-between"

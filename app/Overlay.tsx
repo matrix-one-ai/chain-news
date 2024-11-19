@@ -404,7 +404,7 @@ const Overlay = ({
         zIndex: 1000,
       }}
     >
-      {!isSubscribed && <CallToAction />}
+      {!isSubscribed && !isAdmin && <CallToAction />}
 
       {progress < 100 && (
         <div
