@@ -77,7 +77,8 @@ export function useStream(): {
   const { setPrompt, addSystemMessage } = usePromptStore();
   const { isPromptUnlocked, customPrompt, setIsSettingsOpen } =
     useSettingsStore();
-  const { isPlaying, isPaused, mainHostAvatar, setIsPlaying } = useSceneStore();
+  const { isPlaying, isPaused, mainHostAvatar, setIsPlaying, setIsPaused } =
+    useSceneStore();
   const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
 
   const initialNews = useNewsFetchBySlugOnMount();
@@ -522,6 +523,9 @@ export function useStream(): {
         }
 
         setSelectedNews(newsItem);
+        // Reset paused state, so that new news can be played
+        setIsPaused(false);
+
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
         } else {
@@ -556,6 +560,7 @@ export function useStream(): {
       segmentDuration,
       mainHostAvatar,
       setTriggerWeb3AuthModal,
+      setIsPaused,
     ],
   );
 
