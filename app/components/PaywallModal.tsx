@@ -256,15 +256,15 @@ const PaywallModal = () => {
                     >
                       <PriceCard
                         duration="Annual"
-                        matrixPrice={20}
-                        fiatPrice={69}
+                        matrixPrice={40}
+                        fiatPrice={100}
                         onClick={() => setIsAnnual(true)}
                         isSelected={isAnnual}
                       />
                       <PriceCard
                         duration="Monthly"
-                        matrixPrice={5}
-                        fiatPrice={9.99}
+                        matrixPrice={10}
+                        fiatPrice={20}
                         onClick={() => setIsAnnual(false)}
                         isSelected={!isAnnual}
                       />
