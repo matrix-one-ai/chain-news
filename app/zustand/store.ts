@@ -200,7 +200,7 @@ interface NewsState {
   setNews: (news: News[]) => void;
   addNews: (newNews: News[]) => void;
   setNewsSearchOptions: (
-    newsSearchOptions: AtLeast<News, "category" | "title">[]
+    newsSearchOptions: AtLeast<News, "category" | "title">[],
   ) => void;
   setPage: (page: number) => void;
   setTotalPage: (totalPage: number) => void;
@@ -239,16 +239,20 @@ export const useNewsStore = create<NewsState>((set) => ({
 
 interface SceneState {
   isPlaying: boolean;
+  isPaused: boolean;
   mainHostAvatar: AvatarConfig;
   avatarConfigs: AvatarConfig[];
   setIsPlaying: (isPlaying: boolean) => void;
+  setIsPaused: (isPaused: boolean) => void;
   setMainHostAvatar: (avatar: AvatarConfig) => void;
 }
 
 export const useSceneStore = create<SceneState>((set) => ({
   isPlaying: false,
+  isPaused: false,
   mainHostAvatar: avatarConfigs[0],
   avatarConfigs: avatarConfigs,
-  setIsPlaying: (isPlaying: boolean) => set({ isPlaying: isPlaying }),
+  setIsPlaying: (isPlaying: boolean) => set({ isPlaying }),
+  setIsPaused: (isPaused: boolean) => set({ isPaused }),
   setMainHostAvatar: (avatar: AvatarConfig) => set({ mainHostAvatar: avatar }),
 }));

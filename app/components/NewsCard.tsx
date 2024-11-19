@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Box,
   Chip,
@@ -78,7 +78,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
 
   const { isLoggedIn, isSubscribed, isAdmin } = useAuthStore();
   const { selectedNews } = useNewsStore();
-  const { isPlaying } = useSceneStore();
+  const { isPlaying, isPaused, setIsPaused } = useSceneStore();
   const [
     imageLoading,
     { toggleOn: toggleOnImageLoading, toggleOff: toggleOffImageLoading },
@@ -87,13 +87,20 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
   // Determine selected status
   const isSelected = useMemo(
     () => newsItem !== null && selectedNews?.url === newsItem?.url,
-    [newsItem, selectedNews?.url]
+    [newsItem, selectedNews?.url],
   );
 
   // Reset imageLoading status whenever news image is changed
   useEffect(() => {
     toggleOnImageLoading();
   }, [newsItem?.imageUrl, toggleOnImageLoading]);
+
+  // Handler for play/pause
+  const handlePlaybackToggle = useCallback(() => {
+    if (!isPlaying || !isSelected) return;
+
+    setIsPaused(!isPaused);
+  }, [isPaused, isPlaying, isSelected, setIsPaused]);
 
   return (
     <Tooltip
@@ -110,14 +117,18 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
           borderRadius={1.5}
           border={isSelected ? "solid 1px" : "none"}
           borderColor="#FFD66E"
-          onClick={() => onClick(newsItem)}
+          onClick={() => !isSelected && onClick(newsItem)}
         >
           <Stack
             direction="column"
             padding={2}
             gap={2}
             bgcolor={isSelected ? "#130b2b" : "#0C071C"}
-            borderRadius="6px 6px 0 0"
+            borderRadius={
+              newsItem === null || (newsItem.tokenTicker && newsItem.usdPrice)
+                ? "6px 6px 0 0"
+                : "6px"
+            }
             sx={{
               cursor: "pointer",
               ":hover": {
@@ -205,7 +216,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                   <Typography variant="body2" fontSize={11} color="#666176">
                     {/* TODO: newsItem.datePublished is string, but TS recognizes it as Date */}
                     {`${newsItem.providerTitle} | ${formatToLocalDateTime(
-                      newsItem.datePublished as unknown as string
+                      newsItem.datePublished as unknown as string,
                     )}`}
                   </Typography>
                 </>
@@ -222,7 +233,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                 />
               ) : (
                 <IconButton
-                  aria-label={isPlaying ? "pause" : "play"}
+                  aria-label={
+                    isSelected && isPlaying && !isPaused ? "pause" : "play"
+                  }
                   sx={{
                     color: "#201833d9",
                     backgroundColor: "error.main",
@@ -234,8 +247,9 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                       backgroundColor: "error.dark",
                     },
                   }}
+                  onClick={handlePlaybackToggle}
                 >
-                  {isSelected && isPlaying ? (
+                  {isSelected && isPlaying && !isPaused ? (
                     <PauseIcon sx={{ width: "20px", height: "20px" }} />
                   ) : (
                     <PlayArrowIcon sx={{ width: "20px", height: "20px" }} />
@@ -299,7 +313,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
                           color={percentChangeColor}
                         >
                           {`${plusOrMinus}${parseFloat(
-                            newsItem.percentChange24h ?? "0"
+                            newsItem.percentChange24h ?? "0",
                           ).toFixed(2)}%`}
                         </Typography>
                       )}
