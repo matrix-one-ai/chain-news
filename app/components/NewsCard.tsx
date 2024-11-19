@@ -124,7 +124,11 @@ const NewsCard: React.FC<NewsCardProps> = ({ newsItem, onClick }) => {
             padding={2}
             gap={2}
             bgcolor={isSelected ? "#130b2b" : "#0C071C"}
-            borderRadius="6px 6px 0 0"
+            borderRadius={
+              newsItem === null || (newsItem.tokenTicker && newsItem.usdPrice)
+                ? "6px 6px 0 0"
+                : "6px"
+            }
             sx={{
               cursor: "pointer",
               ":hover": {
