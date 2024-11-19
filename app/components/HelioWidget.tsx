@@ -16,8 +16,9 @@ const HelioWidget = ({ paylinkId, onSuccess }: HelioWidgetProps) => {
     () => ({
       paylinkId,
       theme: { themeMode: "dark" },
-      primaryColor: "#F76C1B",
+      primaryColor: "#AD7BFF",
       neutralColor: "#E1E6EC",
+      backgroundColor: "#0C071C",
       paymentType: "paylink",
       additionalJSON: JSON.stringify({
         web3AuthAddress: walletAddress,
