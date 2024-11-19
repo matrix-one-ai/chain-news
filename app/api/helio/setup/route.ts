@@ -46,16 +46,15 @@ export async function POST() {
       }
     );
 
-    console.log("monthly:", await respMonth.json());
-    console.log("yearly:", await respYear.json());
-
     if (respMonth.ok && respYear.ok) {
+      console.log("monthly:", await respMonth.json());
+      console.log("yearly:", await respYear.json());
       return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ success: false }, { status: 500 });
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

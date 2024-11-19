@@ -86,7 +86,7 @@ const UserSubscription = () => {
                 fontWeight: "bold",
               }}
             >
-              {"$25 "}
+              {"$20"}
               <Typography
                 sx={{
                   color: "text.secondary",
@@ -104,7 +104,7 @@ const UserSubscription = () => {
                 pt: 2,
               }}
             >
-              {"5 $MATRIX "}
+              {"10 $MATRIX "}
               <Typography
                 sx={{
                   color: "text.secondary",
