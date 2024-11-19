@@ -576,14 +576,12 @@ export function useStream(): {
 
   // Play/pause audio
   useEffect(() => {
-    if (!isPlaying) return;
-
     if (isPaused) {
       audioRef.current?.pause();
     } else {
       audioRef.current?.play();
     }
-  }, [isPaused, isPlaying]);
+  }, [isPaused]);
 
   return {
     audioRef,
