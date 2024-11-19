@@ -433,7 +433,7 @@ function Web3AuthLogin() {
               size="small"
               sx={{
                 color: "black",
-                opacity: 0.8,
+                opacity: 0.5,
                 ml: 2,
               }}
             >
