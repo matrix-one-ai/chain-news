@@ -46,7 +46,10 @@ export async function POST(res: Request) {
       where: { walletAddress: additionalJSON.web3AuthAddress },
       data: {
         credits: {
-          increment: 100,
+          increment:
+            tx.paylinkId === process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID!
+              ? 2000
+              : 100,
         },
       },
     });

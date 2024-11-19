@@ -426,6 +426,11 @@ const PaywallModal = () => {
                 }}
               >
                 <HelioWidget
+                  paylinkId={
+                    isAnnual
+                      ? process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID!
+                      : process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID!
+                  }
                   onSuccess={() => setPaywallStep(PaywallSteps.CONCLUSION)}
                 />
               </Stack>

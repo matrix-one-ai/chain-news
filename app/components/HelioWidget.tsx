@@ -5,15 +5,16 @@ import { useMemo } from "react";
 import { useAuthStore } from "../zustand/store";
 
 interface HelioWidgetProps {
+  paylinkId: string;
   onSuccess?: () => void;
 }
 
-const HelioWidget = ({ onSuccess }: HelioWidgetProps) => {
+const HelioWidget = ({ paylinkId, onSuccess }: HelioWidgetProps) => {
   const { walletAddress, setIsSubscribed, setCredits } = useAuthStore();
 
   const helioConfig = useMemo(
     () => ({
-      paylinkId: process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID,
+      paylinkId,
       theme: { themeMode: "dark" },
       primaryColor: "#F76C1B",
       neutralColor: "#E1E6EC",
@@ -24,11 +25,15 @@ const HelioWidget = ({ onSuccess }: HelioWidgetProps) => {
       onSuccess: () => {
         console.log("success");
         setIsSubscribed(true);
-        setCredits(100);
+        setCredits(
+          paylinkId === process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID
+            ? 2000
+            : 100
+        );
         onSuccess?.();
       },
     }),
-    [onSuccess, setCredits, setIsSubscribed, walletAddress]
+    [onSuccess, paylinkId, setCredits, setIsSubscribed, walletAddress]
   );
   return <HelioCheckout config={helioConfig as any} />;
 };
