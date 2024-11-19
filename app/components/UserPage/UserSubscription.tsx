@@ -21,8 +21,13 @@ import UserNotLoggedIn from "./UserNotLoggedIn";
 const UserSubscription = () => {
   const [transactions, setTransactions] = useState([]);
 
-  const { isSubscribed, walletAddress, subscriptionEndTime, isLoggedIn } =
-    useAuthStore();
+  const {
+    isSubscribed,
+    walletAddress,
+    subscriptionEndTime,
+    isLoggedIn,
+    credits,
+  } = useAuthStore();
   const { setIsPaywallModalOpen } = useOverlayStore();
 
   const fetchTransactions = useCallback(async () => {
@@ -94,6 +99,24 @@ const UserSubscription = () => {
                 component={"span"}
               >
                 / month
+              </Typography>
+            </Typography>
+
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+                mt: 2,
+              }}
+            >
+              {credits}{" "}
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                }}
+                component={"span"}
+              >
+                credits
               </Typography>
             </Typography>
 
