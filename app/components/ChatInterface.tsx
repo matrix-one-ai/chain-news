@@ -93,7 +93,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         isPromptUnlocked,
         mainHostAvatar,
         setInput,
-      ]
+      ],
     );
 
     useEffect(() => {
@@ -117,22 +117,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     const mergedMessages = [...messages, ...systemMessages]
       .sort(
         (a, b) =>
-          (a.createdAt as Date).getTime() - (b.createdAt as Date).getTime()
+          (a.createdAt as Date).getTime() - (b.createdAt as Date).getTime(),
       )
       .filter(
         (message) =>
           (message.role === "user" &&
             message.content.slice(0, 9) === "TERMINAL:") ||
-          message.role === "assistant"
+          message.role === "assistant",
       );
 
     return isVisible ? (
-      <Box
+      <Stack
         sx={{
           touchAction: "all",
           pointerEvents: "all",
           margin: "0.5rem",
           maxWidth: "400px",
+          backgroundColor: "rgba(32, 24, 51, 0.6)",
+          backdropFilter: "blur(12px)",
+          padding: "0.5rem",
+          borderRadius: "6px",
+          gap: "0.5rem",
         }}
       >
         {messages.length > 0 && (
@@ -141,9 +146,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
             style={{
               maxHeight: "300px",
               overflowY: "auto",
-              backgroundColor: "white",
-              backdropFilter: "blur(10px)",
+              backgroundColor: "#2A223C",
               padding: "10px",
+              color: "white",
+              borderRadius: "6px",
             }}
           >
             {mergedMessages.map((message, index) => (
@@ -151,8 +157,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                 <Typography component="div" variant="body1" fontWeight="bold">
                   {message.role === "user" ? (
                     <>
-                      {"Terminal:"}
-                      <Typography variant="body2" sx={{ mb: 2 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ mb: 2, color: "#76ff63" }}
+                      >
                         {message.content
                           ?.slice(9)
                           .split("\n")
@@ -166,25 +174,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                     </>
                   ) : (
                     <>
-                      <Typography component="div" variant="body2">
-                        {splitScriptLines(message.content).map(
-                          ({ speaker, text }, index) => (
+                      {splitScriptLines(message.content).map(
+                        ({ speaker, text }, index) => (
+                          <Typography
+                            key={`${text}-${index}`}
+                            variant="body1"
+                            fontWeight="bold"
+                            color={index % 2 === 0 ? "#529ef7" : "#F5A623"}
+                          >
+                            {speaker}:
                             <Typography
                               component="div"
-                              key={`${text}-${index}`}
                               variant="body2"
                               sx={{
                                 mb: 1,
+                                fontStyle: "italic",
+                                color: "white",
                               }}
                             >
-                              <Typography variant="body2" fontWeight="bold">
-                                {speaker}:
-                              </Typography>{" "}
-                              {text}
+                              {`"${text}"`}
                             </Typography>
-                          )
-                        )}
-                      </Typography>
+                          </Typography>
+                        ),
+                      )}
                     </>
                   )}
                 </Typography>
@@ -228,6 +240,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                   fullWidth
                   sx={{
                     backdropFilter: "blur(1px)",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(255, 214, 110, 0.2)",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(255, 214, 110, 1.0)",
+                    },
                   }}
                 />
 
@@ -251,9 +269,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
             </Tooltip>
           </Stack>
         </form>
-      </Box>
+      </Stack>
     ) : null;
-  }
+  },
 );
 
 ChatInterface.displayName = "ChatInterface";
