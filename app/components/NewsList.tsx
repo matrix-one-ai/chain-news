@@ -35,7 +35,7 @@ interface NewsListProps {
 }
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
-  const { isSubscribed } = useAuthStore();
+  const { isSubscribed, isAdmin } = useAuthStore();
   const { news, pageSize, fetching, selectedNews, incrementPage } =
     useNewsStore();
   const targetRef = useInfiniteScroll(incrementPage);
@@ -161,7 +161,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
                 paddingX={1}
               >
                 <TextField {...params} label="Topic" />
-                {!isSubscribed && (
+                {!isSubscribed && !isAdmin &&  (
                   <Chip
                     label="PRO"
                     sx={{
@@ -176,7 +176,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
                 )}
               </Stack>
             )}
-            disabled={!isSubscribed}
+            disabled={!isSubscribed && !isAdmin}
           />
         </Stack>
 
