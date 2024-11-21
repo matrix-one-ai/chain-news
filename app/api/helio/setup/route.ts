@@ -4,13 +4,25 @@ export async function POST() {
   console.log("HELIO_PUBLIC_KEY", process.env.HELIO_PUBLIC_KEY);
   console.log("HELIO_SECRET_KEY", process.env.HELIO_SECRET_KEY);
   console.log(
-    "HELIO_MONTHLY_PAYLINK_ID",
-    process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID
+    "NEXT_PUBLIC_HELIO_SMALL_PAYLINK",
+    process.env.NEXT_PUBLIC_HELIO_SMALL_PAYLINK
+  );
+  console.log(
+    "NEXT_PUBLIC_HELIO_LARGE_PAYLINK",
+    process.env.NEXT_PUBLIC_HELIO_LARGE_PAYLINK
+  );
+  console.log(
+    "NEXT_PUBLIC_HELIO_SMALL_MATRIX_PAYLINK",
+    process.env.NEXT_PUBLIC_HELIO_SMALL_MATRIX_PAYLINK
+  );
+  console.log(
+    "NEXT_PUBLIC_HELIO_LARGE_MATRIX_PAYLINK",
+    process.env.NEXT_PUBLIC_HELIO_LARGE_MATRIX_PAYLINK
   );
   console.log("HELIO_WEBHOOK_URL", process.env.HELIO_WEBHOOK_URL);
 
   try {
-    const respMonth = await fetch(
+    const respSmall = await fetch(
       `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
       {
         method: "POST",
@@ -21,14 +33,14 @@ export async function POST() {
           "cache-control": "no-cache",
         },
         body: JSON.stringify({
-          paylinkId: process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID,
+          paylinkId: process.env.NEXT_PUBLIC_HELIO_SMALL_PAYLINK,
           targetUrl: `${process.env.HELIO_WEBHOOK_URL}/api/helio/webhook`,
           events: ["CREATED"],
         }),
       }
     );
 
-    const respYear = await fetch(
+    const respLarge = await fetch(
       `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
       {
         method: "POST",
@@ -39,16 +51,60 @@ export async function POST() {
           "cache-control": "no-cache",
         },
         body: JSON.stringify({
-          paylinkId: process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID,
+          paylinkId: process.env.NEXT_PUBLIC_HELIO_LARGE_PAYLINK,
           targetUrl: `${process.env.HELIO_WEBHOOK_URL}/api/helio/webhook`,
           events: ["CREATED"],
         }),
       }
     );
 
-    if (respMonth.ok && respYear.ok) {
-      console.log("monthly:", await respMonth.json());
-      console.log("yearly:", await respYear.json());
+    const respSmallMatrix = await fetch(
+      `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.HELIO_SECRET_KEY}`,
+          "cache-control": "no-cache",
+        },
+        body: JSON.stringify({
+          paylinkId: process.env.NEXT_PUBLIC_HELIO_SMALL_MATRIX_PAYLINK,
+          targetUrl: `${process.env.HELIO_WEBHOOK_URL}/api/helio/webhook`,
+          events: ["CREATED"],
+        }),
+      }
+    );
+
+    const respLargeMatrix = await fetch(
+      `https://api.hel.io/v1/webhook/paylink/transaction?apiKey=${process.env.HELIO_PUBLIC_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.HELIO_SECRET_KEY}`,
+          "cache-control": "no-cache",
+        },
+        body: JSON.stringify({
+          paylinkId: process.env.NEXT_PUBLIC_HELIO_LARGE_MATRIX_PAYLINK,
+          targetUrl: `${process.env.HELIO_WEBHOOK_URL}/api/helio/webhook`,
+          events: ["CREATED"],
+        }),
+      }
+    );
+
+    if (
+      respSmall.ok &&
+      respLarge.ok &&
+      respSmallMatrix.ok &&
+      respLargeMatrix.ok
+    ) {
+      console.log("small", await respSmall.json());
+      console.log("large", await respLarge.json());
+      console.log("small matrix", await respSmallMatrix.json());
+      console.log("large matrix", await respLargeMatrix.json());
+
       return NextResponse.json({ success: true });
     }
 

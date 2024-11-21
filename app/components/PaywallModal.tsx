@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import HelioWidget from "./HelioWidget";
 import UserTOS from "./UserPage/UserTOS";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Link from "next/link";
+import { getPayTypePaylink, PayTypes } from "../helpers/helio";
 
 const PaywallFeature = ({ image, text }: { image: string; text: string }) => {
   return (
@@ -53,22 +55,23 @@ const paywallFeatures = [
 ];
 
 const PriceCard = ({
-  duration,
+  credits,
   matrixPrice,
   fiatPrice,
   isSelected,
   onClick,
 }: {
-  duration: string;
-  matrixPrice: number;
-  fiatPrice: number;
+  credits: number;
+  matrixPrice?: number;
+  fiatPrice?: number;
   isSelected: boolean;
   onClick: () => void;
 }) => {
   return (
     <Card
       sx={{
-        width: "100%",
+        minWidth: "18rem",
+        margin: "0.5rem 0",
         backgroundColor: "#34284f",
         border: "2px solid #83838340",
         borderRadius: "0.75rem",
@@ -90,12 +93,13 @@ const PriceCard = ({
             }}
           >
             <Typography gutterBottom variant="subtitle1" fontWeight="bold">
-              {duration}
+              {credits} Credits
             </Typography>
-            {duration === "Annual" && (
+
+            {credits === 2000 && (
               <Chip
                 size="small"
-                label="Save 43%"
+                label={`${matrixPrice ? "115%" : "100%"} better`}
                 color="secondary"
                 sx={{
                   fontWeight: "bold",
@@ -103,49 +107,35 @@ const PriceCard = ({
               />
             )}
           </Stack>
-          <Typography variant="h6">
-            ${fiatPrice}{" "}
-            <Typography
+
+          {fiatPrice && <Typography variant="h6">${fiatPrice} USDC</Typography>}
+
+          {matrixPrice && (
+            <Stack
               sx={{
-                color: "text.secondary",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 1,
+                flexDirection: "row",
+                pt: 1,
               }}
-              component={"span"}
             >
-              / {duration === "Annual" ? " year" : " month"}
-            </Typography>
-          </Typography>
-          <Stack
-            sx={{
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 1,
-              flexDirection: "row",
-              pt: 1,
-            }}
-          >
-            <Typography variant="h6">
-              {matrixPrice}{" "}
-              <Typography component="span" variant="h6">
-                $MATRIX
-              </Typography>{" "}
-              <Typography
-                sx={{
-                  color: "text.secondary",
-                }}
-                component={"span"}
-              >
-                / {duration === "Annual" ? " year" : " month"}
+              <Typography variant="h6">
+                ${matrixPrice}{" "}
+                <Typography component="span" variant="h6">
+                  $MATRIX
+                </Typography>
               </Typography>
-            </Typography>
-            <Chip
-              label="-20%"
-              color="secondary"
-              size="small"
-              sx={{
-                fontWeight: "bold",
-              }}
-            />
-          </Stack>
+              <Chip
+                label="-15%"
+                color="secondary"
+                size="small"
+                sx={{
+                  fontWeight: "bold",
+                }}
+              />
+            </Stack>
+          )}
         </CardContent>
       </CardActionArea>
     </Card>
@@ -163,10 +153,10 @@ enum PaywallSteps {
 const PaywallModal = () => {
   const { isLoggedIn, isSubscribed, setTriggerWeb3AuthModal } = useAuthStore();
   const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
-  const [isAnnual, setIsAnnual] = useState<boolean>(true);
   const [paywallStep, setPaywallStep] = useState<PaywallSteps>(
     PaywallSteps.INTRO
   );
+  const [payType, setPayType] = useState<PayTypes>(PayTypes.SMALL);
 
   useEffect(() => {
     if (isLoggedIn && !isSubscribed && paywallStep === PaywallSteps.LOGIN) {
@@ -249,24 +239,40 @@ const PaywallModal = () => {
                   <Box>
                     <Stack
                       sx={{
-                        justifyContent: "space-between",
+                        justifyContent: "space-around",
                         flexDirection: "row",
-                        gap: 2,
                       }}
                     >
                       <PriceCard
-                        duration="Annual"
-                        matrixPrice={40}
-                        fiatPrice={100}
-                        onClick={() => setIsAnnual(true)}
-                        isSelected={isAnnual}
+                        credits={2000}
+                        fiatPrice={99}
+                        onClick={() => setPayType(PayTypes.LARGE)}
+                        isSelected={payType === PayTypes.LARGE}
                       />
                       <PriceCard
-                        duration="Monthly"
-                        matrixPrice={10}
-                        fiatPrice={20}
-                        onClick={() => setIsAnnual(false)}
-                        isSelected={!isAnnual}
+                        credits={100}
+                        fiatPrice={19}
+                        onClick={() => setPayType(PayTypes.SMALL)}
+                        isSelected={payType === PayTypes.SMALL}
+                      />
+                    </Stack>
+                    <Stack
+                      sx={{
+                        justifyContent: "space-around",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <PriceCard
+                        credits={2000}
+                        matrixPrice={85}
+                        onClick={() => setPayType(PayTypes.LARGE_MATRIX)}
+                        isSelected={payType === PayTypes.LARGE_MATRIX}
+                      />
+                      <PriceCard
+                        credits={100}
+                        matrixPrice={15}
+                        onClick={() => setPayType(PayTypes.SMALL_MATRIX)}
+                        isSelected={payType === PayTypes.SMALL_MATRIX}
                       />
                     </Stack>
 
@@ -289,15 +295,16 @@ const PaywallModal = () => {
                       >
                         <Box>
                           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                            Pay with $MATRIX
+                            Buy with $MATRIX
                           </Typography>
                           <Typography
-                            variant="body1"
+                            variant="body2"
                             sx={{
                               color: "#313131",
                             }}
                           >
-                            Pay with $MATRIX and get 20% discount.
+                            Get 15% discount. 50% of $MATRIX revenues are
+                            burned.
                           </Typography>
                         </Box>
                         <Button
@@ -307,6 +314,7 @@ const PaywallModal = () => {
                             borderColor: "black",
                             borderRadius: "0.5rem",
                             height: "2.5rem",
+                            width: "9rem",
                             textTransform: "capitalize",
                             fontWeight: "bold",
                             ":hover": {
@@ -320,7 +328,12 @@ const PaywallModal = () => {
                               : () => setPaywallStep(PaywallSteps.LOGIN)
                           }
                         >
-                          Upgrade to Pro
+                          <Link
+                            href="https://jup.ag/swap/USDC-E1R4RF89GcKxz62DVfojxDJteLFFs8rtiXcGcrx5HbTj"
+                            target="_blank"
+                          >
+                            BUY $MATRIX
+                          </Link>
                         </Button>
                       </Stack>
                     </Box>
@@ -426,10 +439,12 @@ const PaywallModal = () => {
                 }}
               >
                 <HelioWidget
-                  paylinkId={
-                    isAnnual
-                      ? process.env.NEXT_PUBLIC_HELIO_YEARLY_PAYLINK_ID!
-                      : process.env.NEXT_PUBLIC_HELIO_MONTHLY_PAYLINK_ID!
+                  paylinkId={getPayTypePaylink(payType)}
+                  credits={
+                    payType === PayTypes.SMALL ||
+                    payType === PayTypes.SMALL_MATRIX
+                      ? 100
+                      : 2000
                   }
                   onSuccess={() => setPaywallStep(PaywallSteps.CONCLUSION)}
                 />
