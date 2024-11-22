@@ -344,6 +344,7 @@ export function useStream(): {
     } catch (error: any) {
       if (error?.name !== "AbortError") {
         console.error(error);
+        return [];
       }
     }
   }, []);
