@@ -9,11 +9,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { Autocomplete, Box, Chip, Fade, Stack, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Chip,
+  Fade,
+  IconButton,
+  Stack,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
+import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOpenOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { newsCategoryIcons } from "./NewsCard";
 import { useAuthStore, useNewsStore } from "../zustand/store";
 import { useNewsFetch } from "../hooks/useNewsFetch";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
+import { useToggle } from "../hooks/useToggle";
 
 type newsFilter = {
   label: string;
@@ -35,19 +47,21 @@ interface NewsListProps {
 }
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
+  const isMdUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
   const { isSubscribed, isAdmin } = useAuthStore();
   const { news, pageSize, fetching, selectedNews, incrementPage } =
     useNewsStore();
   const targetRef = useInfiniteScroll(incrementPage);
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [tokenPrices, setTokenPrices] = useState<any>(null);
+  const [open, { toggle: toggleOpen, set: setOpen }] = useToggle(false);
 
   useNewsFetch(selectedFilter);
 
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
     () => Array(pageSize).fill(null),
-    [pageSize]
+    [pageSize],
   );
 
   // Interpolate news data with token price data
@@ -95,7 +109,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     (_: SyntheticEvent<Element, Event>, value: newsFilter | null) => {
       setSelectedFilter(value?.label ?? null);
     },
-    []
+    [],
   );
 
   const newsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -108,6 +122,11 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
       });
     }
   }, [selectedNews]);
+
+  // Whenever screen width reaches md, open news list
+  useEffect(() => {
+    setOpen(isMdUp);
+  }, [isMdUp, setOpen]);
 
   return (
     <Fade
@@ -125,14 +144,45 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
           position: "absolute",
           top: 0,
           right: 0,
-          width: "50%",
+          width: "365px",
           padding: "16px 12px",
-          maxWidth: "365px",
+          maxWidth: "80%",
           height: "100%",
           backgroundColor: "rgba(32, 24, 51, 0.6)",
           backdropFilter: "blur(12px)",
+          transform: `${open ? "translateX(0)" : "translateX(100%)"}`,
+          transition:
+            "transform 500ms, opacity 500ms cubic-bezier(0.4, 0, 0.2, 1) !important",
         }}
       >
+        <IconButton
+          aria-label={open ? "close-news-list" : "open-new-list"}
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            transform: "translateX(-100%)",
+            color: "white",
+            backgroundColor: "rgba(32, 24, 51, 0.6)",
+            backdropFilter: "blur(12px)",
+            width: "50px",
+            height: "50px",
+            borderRadius: "unset",
+
+            "@media (hover: hover)": {
+              ":hover": {
+                backgroundColor: "error.dark",
+              },
+            },
+          }}
+          onClick={toggleOpen}
+        >
+          {open ? (
+            <CloseOutlinedIcon sx={{ width: "30px", height: "30px" }} />
+          ) : (
+            <MenuOpenOutlinedIcon sx={{ width: "30px", height: "30px" }} />
+          )}
+        </IconButton>
         {/* Filter dropdown */}
         <Stack direction="row">
           <Autocomplete
@@ -161,7 +211,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
                 paddingX={1}
               >
                 <TextField {...params} label="Topic" />
-                {!isSubscribed && !isAdmin &&  (
+                {!isSubscribed && !isAdmin && (
                   <Chip
                     label="PRO"
                     sx={{
