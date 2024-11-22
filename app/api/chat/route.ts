@@ -44,9 +44,9 @@ export async function POST(req: Request) {
     const stream = await streamText({
       model: azure("gpt-4o"),
       messages: localMessages,
-      frequencyPenalty: 1,
-      presencePenalty: 1,
-      temperature: 0.4,
+      frequencyPenalty: 0.5,
+      presencePenalty: 0.5,
+      temperature: 0.2,
     });
 
     await prisma.user.update({
