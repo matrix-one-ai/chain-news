@@ -216,9 +216,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                 setIsPaywallModalOpen(true);
               }
             }}
-            style={{
-              minWidth: "350px",
-            }}
           >
             <Stack spacing={1}>
               <Tooltip
