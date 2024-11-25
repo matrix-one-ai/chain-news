@@ -7,6 +7,7 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { sendChatMessage } from "../helpers/prompts";
 import {
@@ -36,6 +37,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     handleOnFinish,
     handleOnError,
   }) => {
+    const isLandscape = useMediaQuery("(orientation: landscape)");
     const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const { mainHostAvatar, isPlaying } = useSceneStore();
@@ -84,7 +86,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         setInput("");
         addSystemMessage(`TERMINAL:${message}`);
       },
-      [addSystemMessage, append, mainHostAvatar, setInput]
+      [addSystemMessage, append, mainHostAvatar, setInput],
     );
 
     useEffect(() => {
@@ -109,161 +111,167 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
       .sort(
         (a, b) =>
           new Date(a.createdAt as Date).getTime() -
-          new Date(b.createdAt as Date).getTime()
+          new Date(b.createdAt as Date).getTime(),
       )
       .filter(
         (message) =>
           (message.role === "user" &&
             message.content.slice(0, 9) === "TERMINAL:") ||
-          message.role === "assistant"
+          message.role === "assistant",
       );
 
     return isVisible ? (
-      <Stack
+      <Box
         sx={{
           touchAction: "all",
           pointerEvents: "all",
-          margin: "0.5rem",
-          maxWidth: "400px",
-          backgroundColor: "rgba(32, 24, 51, 0.6)",
-          backdropFilter: "blur(12px)",
           padding: "0.5rem",
-          borderRadius: "6px",
-          gap: "0.5rem",
+          width: isLandscape ? "400px" : "100%",
         }}
       >
-        {messages.length > 0 && (
-          <Box
-            ref={chatContainerRef}
-            style={{
-              maxHeight: "300px",
-              overflowY: "auto",
-              backgroundColor: "#2A223C",
-              padding: "10px",
-              color: "white",
-              borderRadius: "6px",
-            }}
-          >
-            {mergedMessages.map((message, index) => (
-              <Box key={index}>
-                <Typography component="div" variant="body1" fontWeight="bold">
-                  {message.role === "user" ? (
-                    <>
-                      <Typography
-                        variant="body2"
-                        sx={{ mb: 2, color: "#76ff63" }}
-                      >
-                        {message.content
-                          ?.slice(9)
-                          .split("\n")
-                          ?.map((line, i) => (
-                            <span key={i}>
-                              {line}
-                              <br />
-                            </span>
-                          ))}
-                      </Typography>
-                    </>
-                  ) : (
-                    <>
-                      {splitScriptLines(message.content).map(
-                        ({ speaker, text }, index) => (
-                          <Typography
-                            key={`${text}-${index}`}
-                            variant="body1"
-                            fontWeight="bold"
-                            color={index % 2 === 0 ? "#529ef7" : "#F5A623"}
-                          >
-                            {speaker}:
-                            <Typography
-                              component="div"
-                              variant="body2"
-                              sx={{
-                                mb: 1,
-                                fontStyle: "italic",
-                                color: "white",
-                              }}
-                            >
-                              {`"${text}"`}
-                            </Typography>
-                          </Typography>
-                        )
-                      )}
-                    </>
-                  )}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
-          onClick={() => {
-            if (!isLoggedIn) {
-              setTriggerWeb3AuthModal(true);
-              return;
-            }
-            if (credits <= 0 && !isAdmin) {
-              addSystemMessage("TERMINAL: You have no credits left.");
-              setIsPaywallModalOpen(true);
-            }
-          }}
-          style={{
-            minWidth: "350px",
+        <Stack
+          sx={{
+            width: "100%",
+            backgroundColor: "rgba(32, 24, 51, 0.6)",
+            backdropFilter: "blur(12px)",
+            padding: "0.5rem",
+            borderRadius: "6px",
+            gap: "0.5rem",
           }}
         >
-          <Stack spacing={1}>
-            <Tooltip
-              title="You need to login to send messages"
-              disableFocusListener={isLoggedIn}
-              disableHoverListener={isLoggedIn}
-              disableTouchListener={isLoggedIn}
-              disableInteractive={isLoggedIn}
-              placement="top"
+          {messages.length > 0 && (
+            <Box
+              ref={chatContainerRef}
+              style={{
+                maxHeight: "300px",
+                overflowY: "auto",
+                backgroundColor: "#2A223C",
+                padding: "10px",
+                color: "white",
+                borderRadius: "6px",
+              }}
             >
-              <Box>
-                <TextField
-                  multiline
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder="Enter your message"
-                  rows={4}
-                  fullWidth
-                  sx={{
-                    backdropFilter: "blur(1px)",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(255, 214, 110, 0.2)",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(255, 214, 110, 1.0)",
-                    },
-                  }}
-                />
+              {mergedMessages.map((message, index) => (
+                <Box key={index}>
+                  <Typography component="div" variant="body1" fontWeight="bold">
+                    {message.role === "user" ? (
+                      <>
+                        <Typography
+                          variant="body2"
+                          sx={{ mb: 2, color: "#76ff63" }}
+                        >
+                          {message.content
+                            ?.slice(9)
+                            .split("\n")
+                            ?.map((line, i) => (
+                              <span key={i}>
+                                {line}
+                                <br />
+                              </span>
+                            ))}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        {splitScriptLines(message.content).map(
+                          ({ speaker, text }, index) => (
+                            <Typography
+                              key={`${text}-${index}`}
+                              variant="body1"
+                              fontWeight="bold"
+                              color={index % 2 === 0 ? "#529ef7" : "#F5A623"}
+                            >
+                              {speaker}:
+                              <Typography
+                                component="div"
+                                variant="body2"
+                                sx={{
+                                  mb: 1,
+                                  fontStyle: "italic",
+                                  color: "white",
+                                }}
+                              >
+                                {`"${text}"`}
+                              </Typography>
+                            </Typography>
+                          ),
+                        )}
+                      </>
+                    )}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
 
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="submit"
-                  disabled={
-                    isLoading ||
-                    isAudioLoading ||
-                    !input ||
-                    !isLoggedIn ||
-                    (credits <= 0 && !isAdmin)
-                  }
-                  fullWidth
-                  style={{ marginTop: "10px" }}
-                >
-                  {isLoading || isAudioLoading ? "Loading..." : "Send"}
-                </Button>
-              </Box>
-            </Tooltip>
-          </Stack>
-        </form>
-      </Stack>
+          <form
+            onSubmit={handleSubmit}
+            onClick={() => {
+              if (!isLoggedIn) {
+                setTriggerWeb3AuthModal(true);
+                return;
+              }
+              if (credits <= 0 && !isAdmin) {
+                addSystemMessage("TERMINAL: You have no credits left.");
+                setIsPaywallModalOpen(true);
+              }
+            }}
+            style={{
+              minWidth: "350px",
+            }}
+          >
+            <Stack spacing={1}>
+              <Tooltip
+                title="You need to login to send messages"
+                disableFocusListener={isLoggedIn}
+                disableHoverListener={isLoggedIn}
+                disableTouchListener={isLoggedIn}
+                disableInteractive={isLoggedIn}
+                placement="top"
+              >
+                <Box>
+                  <TextField
+                    multiline
+                    value={input}
+                    onChange={handleInputChange}
+                    placeholder="Enter your message"
+                    rows={4}
+                    fullWidth
+                    sx={{
+                      backdropFilter: "blur(1px)",
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgba(255, 214, 110, 0.2)",
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgba(255, 214, 110, 1.0)",
+                      },
+                    }}
+                  />
+
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="submit"
+                    disabled={
+                      isLoading ||
+                      isAudioLoading ||
+                      !input ||
+                      !isLoggedIn ||
+                      (credits <= 0 && !isAdmin)
+                    }
+                    fullWidth
+                    style={{ marginTop: "10px" }}
+                  >
+                    {isLoading || isAudioLoading ? "Loading..." : "Send"}
+                  </Button>
+                </Box>
+              </Tooltip>
+            </Stack>
+          </form>
+        </Stack>
+      </Box>
     ) : null;
-  }
+  },
 );
 
 ChatInterface.displayName = "ChatInterface";
