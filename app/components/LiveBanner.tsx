@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography, useMediaQuery } from "@mui/material";
 import Image from "next/image";
 import Subtitle from "./Subtitle";
 
@@ -46,15 +46,17 @@ const LiveBanner = ({
   subtitleText,
   isSubtitlesVisible,
 }: LiveBannerProps) => {
+  const isLandscape = useMediaQuery("(orientation: landscape)");
+
   return (
     <Box
       style={{
         position: "absolute",
         bottom: 0,
         left: 0,
-        right: 330,
+        width: isLandscape ? "calc(100% - 365px)" : "100%",
         height: "100%",
-        zIndex: 1100,
+        zIndex: 999,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
@@ -69,12 +71,14 @@ const LiveBanner = ({
           background:
             "linear-gradient(90deg, #200F45 -10%, rgba(78, 50, 142, 0) 100%)",
           width: "100%",
-          padding: "1.5rem 2rem",
-          paddingBottom: "4rem",
+          padding: isLandscape
+            ? "1.5rem 2rem 4rem 2rem"
+            : "1rem 1rem 4rem 1rem",
         }}
       >
         <Stack
           direction="row"
+          alignItems="center"
           spacing={2}
           style={{
             borderBottom: "1.12px solid transparent",
@@ -83,35 +87,22 @@ const LiveBanner = ({
             borderImageSlice: 1,
           }}
         >
-          <Box
+          <Typography
+            variant="body1"
             style={{
               fontFamily: "var(--font-ibm-plex-sans)",
               fontWeight: 400,
               textTransform: "uppercase",
-              lineHeight: "51.25px",
               letterSpacing: "0.23em",
               color: "#a4ec78",
             }}
           >
-            <Typography
-              variant="body1"
-              style={{
-                fontFamily: "var(--font-ibm-plex-sans)",
-                fontWeight: 400,
-                textTransform: "uppercase",
-                lineHeight: "51.25px",
-                letterSpacing: "0.23em",
-              }}
-            >
-              {formatDate(new Date())}
-            </Typography>
-          </Box>
+            {formatDate(new Date())}
+          </Typography>
           <Box
             style={{
               backgroundColor: "#160e2888",
               color: "#0BC9F2",
-              margin: "0.5rem",
-              marginLeft: "1rem",
               borderRadius: "0.5rem",
             }}
           >
@@ -131,9 +122,7 @@ const LiveBanner = ({
                   height: "0.5rem",
                   backgroundColor: "#a6ed7a",
                   borderRadius: "50%",
-                  transform: "translateY(-50%)",
                   animation: "blink 4s infinite",
-                  marginTop: "0.5rem",
                 }}
               />
               <Typography
@@ -163,8 +152,8 @@ const LiveBanner = ({
           >
             <Box
               sx={{
-                height: "75px",
-                width: "160px",
+                height: isLandscape ? "75px" : "50px",
+                width: isLandscape ? "160px" : "103px",
                 borderRadius: "45px",
                 zIndex: 999,
                 background: "linear-gradient(275deg, #00d1ff, #98f040)",
@@ -190,21 +179,22 @@ const LiveBanner = ({
             <Image
               src="/images/logo-border.svg"
               alt="Chain News Logo"
-              width={150}
-              height={150}
+              width={isLandscape ? 150 : 100}
+              height={isLandscape ? 150 : 100}
               style={{
                 position: "absolute",
                 zIndex: 1000,
-                top: -37,
-                left: 5,
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
               }}
             />
           </Box>
           <Image
             src="/images/chain-news-watermark.svg"
             alt="Chain News"
-            width={200}
-            height={100}
+            width={isLandscape ? 200 : 135}
+            height={isLandscape ? 100 : 66}
             style={{
               borderLeft: "1.12px solid transparent",
               borderImage:
