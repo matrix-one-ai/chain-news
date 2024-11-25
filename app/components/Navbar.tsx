@@ -18,6 +18,7 @@ import {
   Stack,
   Toolbar,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import {
   CHAIN_NAMESPACES,
@@ -116,6 +117,7 @@ const CustomReadMore = () => (
 );
 
 function Web3AuthLogin() {
+  const isLandscape = useMediaQuery("(orientation: landscape)");
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
@@ -274,7 +276,7 @@ function Web3AuthLogin() {
       mutations.forEach((mutation) => {
         if (mutation.type === "childList") {
           const targetElement = document.querySelector(
-            ".w3ajs-external-wallet.w3a-group"
+            ".w3ajs-external-wallet.w3a-group",
           );
           if (targetElement) {
             const container = document.createElement("div");
@@ -286,7 +288,7 @@ function Web3AuthLogin() {
 
           // Change the text of the button
           const button = document.querySelector(
-            ".w3ajs-external-toggle__button"
+            ".w3ajs-external-toggle__button",
           );
           if (button) {
             button.textContent = "Connect with external Solana wallet";
@@ -351,7 +353,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -387,60 +389,66 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout]
+    [logout],
+  );
+
+  const walletAddressClipboard = useMemo(
+    () => (
+      <Stack
+        sx={{
+          flexDirection: "row",
+          backgroundColor: "#FFD66E",
+          borderRadius: isLandscape ? "0.5rem" : "0",
+          padding: isLandscape ? "0 0.75rem" : "0.3rem 0.75rem",
+        }}
+      >
+        <Stack
+          sx={{
+            justifyContent: "center",
+            flexDirection: "column",
+            touchAction: "none",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+        >
+          <Typography
+            sx={{ color: "black", mr: 1, opacity: 0.5 }}
+            variant="body2"
+            fontSize={10}
+          >
+            Your address
+          </Typography>
+          <Typography
+            sx={{ color: "black", mr: 1 }}
+            variant="body2"
+            fontSize={13}
+          >
+            {truncateAddress(walletAddress || "")}
+          </Typography>
+        </Stack>
+        <IconButton
+          onClick={() => {
+            navigator.clipboard.writeText(walletAddress || "");
+          }}
+          size="small"
+          sx={{
+            color: "black",
+            opacity: 0.5,
+            ml: 2,
+          }}
+        >
+          <CopyAllIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+    ),
+    [walletAddress, isLandscape],
   );
 
   const loggedInView = (
     <Box>
       <Fade in>
         <Stack direction="row" spacing={2}>
-          <Stack
-            sx={{
-              flexDirection: "row",
-              backgroundColor: "#FFD66E",
-              borderRadius: "0.5rem",
-              padding: "0 0.75rem",
-            }}
-          >
-            <Stack
-              sx={{
-                justifyContent: "center",
-                flexDirection: "column",
-                touchAction: "none",
-                userSelect: "none",
-                pointerEvents: "none",
-              }}
-            >
-              <Typography
-                sx={{ color: "black", mr: 1, opacity: 0.5 }}
-                variant="body2"
-                fontSize={10}
-              >
-                Your address
-              </Typography>
-              <Typography
-                sx={{ color: "black", mr: 1 }}
-                variant="body2"
-                fontSize={13}
-              >
-                {truncateAddress(walletAddress || "")}
-              </Typography>
-            </Stack>
-            <IconButton
-              onClick={() => {
-                navigator.clipboard.writeText(walletAddress || "");
-              }}
-              size="small"
-              sx={{
-                color: "black",
-                opacity: 0.5,
-                ml: 2,
-              }}
-            >
-              <CopyAllIcon fontSize="small" />
-            </IconButton>
-          </Stack>
-
+          {isLandscape && walletAddressClipboard}
           <IconButton
             onClick={handleOpenUserMenu}
             sx={{
@@ -511,6 +519,7 @@ function Web3AuthLogin() {
         open={isMenuOpen}
         onClose={handleCloseUserMenu}
       >
+        {!isLandscape && walletAddressClipboard}
         {menuItems.map(({ name, route, onClick }) => (
           <MenuItem
             key={name}
