@@ -128,6 +128,17 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     setOpen(isLandscape);
   }, [isLandscape, setOpen]);
 
+  // Handler for news click
+  const handleNewsClick = useCallback(
+    (newsItem: News | null) => {
+      if (!isLandscape) {
+        setOpen(false);
+      }
+      onNewsClick(newsItem);
+    },
+    [isLandscape, onNewsClick, setOpen],
+  );
+
   return (
     <Fade
       in={isVisible}
@@ -245,7 +256,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
               <NewsCard
                 key={`news-item-${index}`}
                 newsItem={newsItem}
-                onClick={onNewsClick}
+                onClick={handleNewsClick}
               />
             </div>
           ))}
