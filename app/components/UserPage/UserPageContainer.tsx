@@ -28,7 +28,7 @@ const TITLES: { [key: string]: string } = {
 };
 
 const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
-  const isMdUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const isLandscape = useMediaQuery("(orientation: landscape)");
   const pathname = usePathname();
   const [open, { toggleOn: toggleOnOpen, toggleOff: toggleOffOpen }] =
     useToggle(false);
@@ -59,7 +59,7 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
             height: "100%",
           }}
         >
-          {isMdUp ? (
+          {isLandscape ? (
             <UserTabs />
           ) : (
             <>

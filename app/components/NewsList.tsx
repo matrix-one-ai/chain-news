@@ -47,7 +47,7 @@ interface NewsListProps {
 }
 
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
-  const isMdUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
+  const isLandscape = useMediaQuery("(orientation: landscape)");
   const { isSubscribed, isAdmin } = useAuthStore();
   const { news, pageSize, fetching, selectedNews, incrementPage } =
     useNewsStore();
@@ -123,10 +123,10 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     }
   }, [selectedNews]);
 
-  // Whenever screen width reaches md, open news list
+  // Whenever screen orientation is landscape, open news list
   useEffect(() => {
-    setOpen(isMdUp);
-  }, [isMdUp, setOpen]);
+    setOpen(isLandscape);
+  }, [isLandscape, setOpen]);
 
   return (
     <Fade
