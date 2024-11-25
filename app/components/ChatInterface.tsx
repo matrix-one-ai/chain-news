@@ -79,21 +79,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         const form = event.currentTarget as HTMLFormElement;
         const message = (form.elements[0] as HTMLInputElement).value;
 
-        const prompt = isPromptUnlocked
-          ? customPrompt
-          : sendChatMessage(message, mainHostAvatar);
+        const prompt = sendChatMessage(message, mainHostAvatar);
         append({ role: "user", content: prompt });
         setInput("");
         addSystemMessage(`TERMINAL:${message}`);
       },
-      [
-        addSystemMessage,
-        append,
-        customPrompt,
-        isPromptUnlocked,
-        mainHostAvatar,
-        setInput,
-      ],
+      [addSystemMessage, append, mainHostAvatar, setInput]
     );
 
     useEffect(() => {
@@ -117,13 +108,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
     const mergedMessages = [...messages, ...systemMessages]
       .sort(
         (a, b) =>
-          (a.createdAt as Date).getTime() - (b.createdAt as Date).getTime(),
+          new Date(a.createdAt as Date).getTime() -
+          new Date(b.createdAt as Date).getTime()
       )
       .filter(
         (message) =>
           (message.role === "user" &&
             message.content.slice(0, 9) === "TERMINAL:") ||
-          message.role === "assistant",
+          message.role === "assistant"
       );
 
     return isVisible ? (
@@ -195,7 +187,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                               {`"${text}"`}
                             </Typography>
                           </Typography>
-                        ),
+                        )
                       )}
                     </>
                   )}
@@ -271,7 +263,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
         </form>
       </Stack>
     ) : null;
-  },
+  }
 );
 
 ChatInterface.displayName = "ChatInterface";
