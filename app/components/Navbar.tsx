@@ -20,6 +20,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import {
   CHAIN_NAMESPACES,
   IAdapter,
@@ -31,12 +32,12 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import { useAuthStore } from "../zustand/store";
+import { useAuthStore, useNavbarState } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
 import { ROUTE } from "@/app/constants";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createRoot } from "react-dom/client";
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID!;
@@ -555,6 +556,20 @@ function Web3AuthLogin() {
 }
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isLandscape = useMediaQuery("(orientation: landscape)");
+  const { toggleIsUserTabsOpen } = useNavbarState();
+
+  const isLeftMenuButtonVisible = useMemo(
+    () =>
+      !isLandscape &&
+      (pathname === ROUTE.PRIVACY ||
+        pathname === ROUTE.SUBSCRIPTION ||
+        pathname === ROUTE.TERMS ||
+        pathname === ROUTE.USER_SETTINGS),
+    [pathname, isLandscape],
+  );
+
   return (
     <AppBar
       position="static"
@@ -565,7 +580,20 @@ export default function Navbar() {
         pointerEvents: "all",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
+        {isLeftMenuButtonVisible && (
+          <IconButton
+            aria-label="open-user-page-tabs"
+            sx={{
+              color: "white",
+              width: "50px",
+              height: "50px",
+            }}
+            onClick={toggleIsUserTabsOpen}
+          >
+            <MenuOutlinedIcon sx={{ width: "30px", height: "30px" }} />
+          </IconButton>
+        )}
         <WaterMark />
         <Web3AuthLogin />
       </Toolbar>

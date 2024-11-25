@@ -1,20 +1,18 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
   Box,
   Drawer,
   Fade,
-  IconButton,
   Stack,
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import UserTabs from "./UserTabs";
 import { ROUTE } from "@/app/constants";
-import { useToggle } from "@/app/hooks/useToggle";
+import { useNavbarState } from "@/app/zustand/store";
 
 interface UserPageContainerProps {
   children: React.ReactNode;
@@ -30,9 +28,15 @@ const TITLES: { [key: string]: string } = {
 const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
   const isLandscape = useMediaQuery("(orientation: landscape)");
   const pathname = usePathname();
-  const [open, { toggleOn: toggleOnOpen, toggleOff: toggleOffOpen }] =
-    useToggle(false);
+  const { isUserTabsOpen, setIsUserTabsOpen, toggleIsUserTabsOpen } =
+    useNavbarState();
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Reset tabs open state on page change
+  useEffect(() => {
+    setIsUserTabsOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     // TODO: Implement fade-out when page is unmounted?
@@ -62,51 +66,24 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
           {isLandscape ? (
             <UserTabs />
           ) : (
-            <>
-              {!open && (
-                <IconButton
-                  aria-label="open-user-page-tabs"
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    color: "white",
-                    backgroundColor: "rgba(32, 24, 51, 0.6)",
-                    backdropFilter: "blur(12px)",
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "unset",
-
-                    "@media (hover: hover)": {
-                      ":hover": {
-                        backgroundColor: "error.dark",
-                      },
-                    },
-                  }}
-                  onClick={toggleOnOpen}
-                >
-                  <MenuOutlinedIcon sx={{ width: "25px", height: "25px" }} />
-                </IconButton>
-              )}
-              <Drawer
-                container={containerRef.current}
-                open={open}
-                onClose={toggleOffOpen}
-                sx={{
+            <Drawer
+              container={containerRef.current}
+              open={isUserTabsOpen}
+              onClose={toggleIsUserTabsOpen}
+              sx={{
+                position: "absolute",
+                "& .MuiDrawer-paper": {
                   position: "absolute",
-                  "& .MuiDrawer-paper": {
-                    position: "absolute",
-                    width: "365px",
-                    maxWidth: "80%",
-                  },
-                  "& .MuiBackdrop-root": {
-                    position: "absolute",
-                  },
-                }}
-              >
-                <UserTabs />
-              </Drawer>
-            </>
+                  width: "365px",
+                  maxWidth: "80%",
+                },
+                "& .MuiBackdrop-root": {
+                  position: "absolute",
+                },
+              }}
+            >
+              <UserTabs />
+            </Drawer>
           )}
           <Box
             sx={{
