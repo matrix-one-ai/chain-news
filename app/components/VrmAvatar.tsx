@@ -180,7 +180,7 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
 
         // Decrypt VRM
         const decryptedData = await decryptVRM(encryptedData, key, iv);
-        const blob = new Blob([decryptedData.buffer], {
+        const blob = new Blob([decryptedData.buffer as BlobPart], {
           type: "application/octet-stream",
         });
         const url = URL.createObjectURL(blob);
