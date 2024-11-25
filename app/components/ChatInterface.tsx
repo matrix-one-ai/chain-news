@@ -177,6 +177,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = memo(
                           ({ speaker, text }, index) => (
                             <Typography
                               key={`${text}-${index}`}
+                              component="div"
                               variant="body1"
                               fontWeight="bold"
                               color={index % 2 === 0 ? "#529ef7" : "#F5A623"}
