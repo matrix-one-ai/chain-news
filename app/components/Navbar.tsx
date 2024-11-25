@@ -565,9 +565,8 @@ export default function Navbar() {
         pointerEvents: "all",
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
         <WaterMark />
-        <Box sx={{ flexGrow: 1 }} />
         <Web3AuthLogin />
       </Toolbar>
     </AppBar>
