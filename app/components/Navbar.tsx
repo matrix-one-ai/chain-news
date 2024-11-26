@@ -65,8 +65,8 @@ const CustomReadMore = () => (
         textAlign: "center",
       }}
     >
-      With the Matrix One token $MATRIX you get access to POWER UP Chain News{" "}
-      <Link href="https://www.matrix.one/" target="_blank">
+      With the Matrix One token $MATRIX you get access to POWER UP Chain News
+      {/* <Link href="https://www.matrix.one/" target="_blank">
         <Typography
           component="span"
           sx={{
@@ -82,7 +82,7 @@ const CustomReadMore = () => (
         >
           Read More
         </Typography>
-      </Link>
+      </Link> */}
     </Typography>
     <Divider
       sx={{

@@ -22,7 +22,7 @@ import {
 import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOpenOutlined";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { newsCategoryIcons } from "./NewsCard";
-import { useAuthStore, useNewsStore } from "../zustand/store";
+import { useAuthStore, useNewsStore, useOverlayStore } from "../zustand/store";
 import { useNewsFetch } from "../hooks/useNewsFetch";
 import useInfiniteScroll from "../hooks/useInfiniteScroll";
 import { useToggle } from "../hooks/useToggle";
@@ -49,6 +49,8 @@ interface NewsListProps {
 const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   const isLandscape = useMediaQuery("(orientation: landscape)");
   const { isSubscribed, isAdmin } = useAuthStore();
+  const { setIsPaywallModalOpen } = useOverlayStore();
+
   const { news, pageSize, fetching, selectedNews, incrementPage } =
     useNewsStore();
   const targetRef = useInfiniteScroll(incrementPage);
@@ -61,7 +63,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
   // Dummy news while fetching news data of next page
   const dummyNews: Array<null> = useMemo(
     () => Array(pageSize).fill(null),
-    [pageSize],
+    [pageSize]
   );
 
   // Interpolate news data with token price data
@@ -109,7 +111,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
     (_: SyntheticEvent<Element, Event>, value: newsFilter | null) => {
       setSelectedFilter(value?.label ?? null);
     },
-    [],
+    []
   );
 
   const newsRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -136,7 +138,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
       }
       onNewsClick(newsItem);
     },
-    [isLandscape, onNewsClick, setOpen],
+    [isLandscape, onNewsClick, setOpen]
   );
 
   return (
@@ -214,6 +216,11 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
             }}
             clearOnBlur={false}
             onChange={handleFilterChange}
+            onClick={() => {
+              if (!isSubscribed && !isAdmin) {
+                setIsPaywallModalOpen(true);
+              }
+            }}
             renderInput={(params) => (
               <Stack
                 direction="row"
@@ -221,7 +228,7 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
                 alignItems="center"
                 paddingX={1}
               >
-                <TextField {...params} label="Topic" />
+                <TextField {...params} label="Filter Topic" />
                 {!isSubscribed && !isAdmin && (
                   <Chip
                     label="PRO"
@@ -231,7 +238,12 @@ const NewsList = memo(({ isVisible, onNewsClick }: NewsListProps) => {
                       borderRadius: 0.8,
                       fontWeight: "bold",
                       color: "black",
+                      cursor: "pointer",
+                      ":hover": {
+                        color: "white",
+                      },
                     }}
+                    onClick={() => setIsPaywallModalOpen(true)}
                     size="small"
                   />
                 )}
