@@ -256,6 +256,9 @@ function Web3AuthLogin() {
 
         if (web3auth.connected) {
           setLoggedIn(true);
+        } else {
+          // Show the Web3Auth modal if the user is not logged in
+          setTriggerWeb3AuthModal(true);
         }
       } catch (error) {
         console.error(error);
@@ -263,7 +266,7 @@ function Web3AuthLogin() {
     };
 
     init();
-  }, [setLoggedIn, mounted]);
+  }, [setLoggedIn, mounted, setTriggerWeb3AuthModal]);
 
   const uiConsole = useCallback((...args: any[]) => {
     const el = document.querySelector("#console>p");
