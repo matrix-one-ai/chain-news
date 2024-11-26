@@ -41,6 +41,50 @@ const nextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.discordapp.com",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media.licdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+      {
+        protocol: "https",
+        hostname: "platform-lookaside.fbsbx.com",
+      },
+      {
+        protocol: "https",
+        hostname: "scontent.xx.fbcdn.net",
+      },
+      {
+        protocol: "https",
+        hostname: "static-cdn.jtvnw.net",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.instagram.com",
+      },
+      {
+        protocol: "https",
+        hostname: "graph.microsoft.com",
+      },
+      {
+        protocol: "https",
+        hostname: "avatar-reddit.s3.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.slack-edge.com",
+      },
     ],
   },
 };
