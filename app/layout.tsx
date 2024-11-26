@@ -78,8 +78,8 @@ export default function RootLayout({
         </AppRouterCacheProvider>
         <Analytics />
         <CssBaseline />
-        <GoogleAnalytics gaId="GTM-553DSNX9" />
       </body>
+      <GoogleAnalytics gaId="GTM-553DSNX9" />
     </html>
   );
 }
