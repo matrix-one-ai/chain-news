@@ -1,10 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { Box, Fade, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  Fade,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import UserTabs from "./UserTabs";
 import { ROUTE } from "@/app/constants";
+import { useNavbarState } from "@/app/zustand/store";
 
 interface UserPageContainerProps {
   children: React.ReactNode;
@@ -18,12 +26,23 @@ const TITLES: { [key: string]: string } = {
 };
 
 const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
+  const isLandscape = useMediaQuery("(orientation: landscape)");
   const pathname = usePathname();
+  const { isUserTabsOpen, setIsUserTabsOpen, toggleIsUserTabsOpen } =
+    useNavbarState();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Reset tabs open state on page change
+  useEffect(() => {
+    setIsUserTabsOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     // TODO: Implement fade-out when page is unmounted?
     <Fade in>
       <Box
+        ref={containerRef}
         sx={{
           position: "absolute",
           bottom: 0,
@@ -44,7 +63,28 @@ const UserPageContainer: React.FC<UserPageContainerProps> = ({ children }) => {
             height: "100%",
           }}
         >
-          <UserTabs />
+          {isLandscape ? (
+            <UserTabs />
+          ) : (
+            <Drawer
+              container={containerRef.current}
+              open={isUserTabsOpen}
+              onClose={toggleIsUserTabsOpen}
+              sx={{
+                position: "absolute",
+                "& .MuiDrawer-paper": {
+                  position: "absolute",
+                  width: "365px",
+                  maxWidth: "80%",
+                },
+                "& .MuiBackdrop-root": {
+                  position: "absolute",
+                },
+              }}
+            >
+              <UserTabs />
+            </Drawer>
+          )}
           <Box
             sx={{
               overflowY: "auto",

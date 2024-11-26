@@ -2,10 +2,12 @@
 
 import { useMemo } from "react";
 import {
+  Box,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Stack,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -58,41 +60,53 @@ const UserTabs = () => {
     <List
       component="nav"
       sx={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        maxWidth: "365px",
         height: "100%",
         backgroundColor: "#171325",
         padding: "2rem 2rem",
       }}
     >
       {tabs.map(({ name, icon, route }, index) => (
-        <ListItemButton
+        <Stack
+          direction="column"
           key={`user-page-tab-${name}`}
-          component={Link}
-          href={route}
           sx={{
-            "&.Mui-selected": {
-              backgroundColor: "#3f3b52",
-            },
-            "&.Mui-selected:hover": {
-              backgroundColor: "#494461",
-            },
-            "&:hover": {
-              backgroundColor: "#4a465e",
-            },
-            backgroundColor: "#2D293C",
-            mb: 1,
-            width: "18rem",
-            borderRadius: "0.5rem",
             ...(index === tabs.length - 1 && {
-              position: "absolute",
-              bottom: "0",
-              transform: "translateY(-50%)",
+              height: 0,
+              flexGrow: 1,
             }),
           }}
-          selected={pathname === route}
         >
-          <ListItemIcon>{icon}</ListItemIcon>
-          <ListItemText primary={name} />
-        </ListItemButton>
+          {index === tabs.length - 1 && <Box height={0} flexGrow={1} />}
+          <ListItemButton
+            component={Link}
+            href={route}
+            sx={{
+              "&.Mui-selected": {
+                backgroundColor: "#3f3b52",
+              },
+              "&.Mui-selected:hover": {
+                backgroundColor: "#494461",
+              },
+              "&:hover": {
+                backgroundColor: "#4a465e",
+              },
+              backgroundColor: "#2D293C",
+              mb: 1,
+              width: "100%",
+              borderRadius: "0.5rem",
+              flexGrow: "unset",
+            }}
+            selected={pathname === route}
+          >
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={name} />
+          </ListItemButton>
+        </Stack>
       ))}
     </List>
   );

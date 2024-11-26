@@ -256,3 +256,16 @@ export const useSceneStore = create<SceneState>((set) => ({
   setIsPaused: (isPaused: boolean) => set({ isPaused }),
   setMainHostAvatar: (avatar: AvatarConfig) => set({ mainHostAvatar: avatar }),
 }));
+
+interface NavbarState {
+  isUserTabsOpen: boolean;
+  setIsUserTabsOpen: (isUserTabsOpen: boolean) => void;
+  toggleIsUserTabsOpen: () => void;
+}
+
+export const useNavbarState = create<NavbarState>((set) => ({
+  isUserTabsOpen: false,
+  setIsUserTabsOpen: (isUserTabsOpen: boolean) => set({ isUserTabsOpen }),
+  toggleIsUserTabsOpen: () =>
+    set((state) => ({ isUserTabsOpen: !state.isUserTabsOpen })),
+}));
