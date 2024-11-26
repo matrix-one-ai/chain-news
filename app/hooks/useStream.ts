@@ -15,6 +15,7 @@ import {
   concludeNewsPrompt,
   jokeBreakPrompt,
   nextSegmentPrompt,
+  playNewsArticle,
   startNewsPrompt,
 } from "@/app/helpers/prompts";
 import { News } from "@prisma/client";
@@ -131,7 +132,7 @@ export function useStream(): {
         const { audioData, blendShapes } = data;
 
         const audioBuffer = Uint8Array.from(atob(audioData), (c) =>
-          c.charCodeAt(0),
+          c.charCodeAt(0)
         );
         const blob = new Blob([audioBuffer], { type: "audio/ogg" });
 
@@ -140,7 +141,7 @@ export function useStream(): {
         if (error?.name !== "AbortError") {
           console.error(
             `Error fetching audio (attempt ${attempt + 1}):`,
-            error,
+            error
           );
           attempt += 1;
           if (attempt >= maxRetries) {
@@ -280,7 +281,7 @@ export function useStream(): {
         })
         .filter(
           (parsedLine) =>
-            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0,
+            parsedLine?.speaker?.length > 0 && parsedLine?.text?.length > 0
         );
       console.log(parsedLines);
       setScriptLines(parsedLines);
@@ -319,7 +320,7 @@ export function useStream(): {
         setCredits(credits - 1);
       }
     },
-    [credits, fetchAudio, isAdmin, setCredits, setIsPlaying],
+    [credits, fetchAudio, isAdmin, setCredits, setIsPlaying]
   );
 
   const onPromptError = useCallback((error: any) => {
@@ -383,7 +384,7 @@ export function useStream(): {
       setLastSegmentType("chat");
       setCurrentSegmentIndex(0); // infinite loop replay stream
       addSystemMessage(
-        `TERMINAL: Stream concluded. Starting from the beginning...`,
+        `TERMINAL: Stream concluded. Starting from the beginning...`
       );
     } else if (currentSegmentIndex === 0) {
       // Handle Start of News
@@ -395,7 +396,7 @@ export function useStream(): {
       setLastSegmentType("news");
       setCurrentSegmentIndex(currentSegmentIndex + 1);
       addSystemMessage(
-        `TERMINAL: Welcome! Starting the news...\n${newsItem.title}`,
+        `TERMINAL: Welcome! Starting the news...\n${newsItem.title}`
       );
     } else if (currentSegmentIndex % 5 === 0) {
       // Handle Joke Breaks
@@ -404,7 +405,7 @@ export function useStream(): {
       prompt = jokeBreakPrompt();
       setLastSegmentType("joke");
       addSystemMessage(
-        `TERMINAL: Joke break time! Entertaining the audience...`,
+        `TERMINAL: Joke break time! Entertaining the audience...`
       );
     } else {
       // Handle Next News Segment
@@ -414,7 +415,7 @@ export function useStream(): {
       setCurrentSegmentIndex(currentSegmentIndex + 1);
 
       addSystemMessage(
-        `TERMINAL: Moving to next article...\n${newsItem.title}`,
+        `TERMINAL: Moving to next article...\n${newsItem.title}`
       );
     }
 
@@ -530,15 +531,15 @@ export function useStream(): {
         if (isPromptUnlocked) {
           setPrompt(customPrompt);
         } else {
-          const prompt = startNewsPrompt(
+          const prompt = playNewsArticle(
             newsItem,
             segmentDuration,
-            mainHostAvatar,
+            mainHostAvatar
           );
           setPrompt(prompt);
         }
         addSystemMessage(
-          `TERMINAL: Starting news segment...\n${newsItem.title}`,
+          `TERMINAL: Starting news segment...\n${newsItem.title}`
         );
       } else {
         console.log("User not logged in");
@@ -562,7 +563,7 @@ export function useStream(): {
       mainHostAvatar,
       setTriggerWeb3AuthModal,
       setIsPaused,
-    ],
+    ]
   );
 
   // If search param has slug info initially, then the news corresponding to the slug should be played

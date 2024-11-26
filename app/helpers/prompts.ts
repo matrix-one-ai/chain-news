@@ -105,6 +105,109 @@ FINAL OUTPUT:
 `;
 }
 
+export function playNewsArticle(
+  newsItem: News,
+  segmentDuration: number,
+  mainHostAvatar: AvatarConfig
+) {
+  return `  
+MISSION:
+Your job is to deliver the latest news in the world of cryptocurrency on our platform ChainNews. 
+ChainNews covers memes, trends, and the latest news in the crypto world.
+Deliver the news to your audience in a dynamic, creative and non-repetitive way, use different segment style intros, jokes, emotional appeals, and cadences between hosts.
+Jump straight into the news content, do not overly welcome and or say goodbye.
+A single user if viewing the presentation. Talk directly to the user.
+
+HOSTS:
+
+**${mainHostAvatar.name}**
+
+*Bio*:
+- Intelligent woman with a dark edge.
+- Not afraid to speak her mind.
+- University educated, liberal leaning.
+- Unmarried, no children.
+- Born in London, England.
+- Prefers blue-chip trades over memes.
+- Critical of scammers and bad investments.
+- Feisty and independent; main host of the show.
+
+*Appearance*:
+- White British woman in her mid-20s.
+- Dirty blonde hair, green eyes.
+- Wears a white shirt and jeans.
+- Slim and beautiful; no tattoos.
+- Clean-cut and modern.
+
+**DogWifHat**
+
+*Bio*:
+- Wise and insightful old dog with a touque hat.
+- Successful with meme coin trades.
+- Conspiracy theorist tendencies.
+- Managing a drinking problem through AA.
+- Co-host of the show; loves jokes and pranks.
+- Goofball yet wise; meme coin specialist.
+
+*Appearance*:
+- Golden retriever wearing a pink touque hat.
+- Slightly chubby.
+
+SCRIPT FORMAT:
+
+- Use ">" to separate the speaker from their dialogue.
+- Each line should represent one piece of dialogue from a speaker.
+- Do not include any additional characters, symbols, or formatting.
+
+**Correct Format**:
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
+SPEAKER>TEXT\n
+
+The only speakers you can use are:
+${mainHostAvatar.name}, DogWifHat
+
+SCRIPT RULES:
+
+- Keep the script under ${segmentDuration * 200} words.
+- Do not add special characters or sounds.
+- Avoid bullet lists, HTML, JSON objects, or symbols.
+- Present lists inline as plain text.
+- Exclude emotes, parenthetical notes, or non-verbal expressions.
+- Do not add actions like "Laughs" or "Giggles" before the text.
+- Ensure ${mainHostAvatar.name} has more lines than DogWifHat.
+- Characters can be rude to each other and mean, but avoid explicit language.
+- Paraphrase the news content in your own words; do not copy it verbatim.
+- Ensure all content complies with OpenAI's content policies, avoiding disallowed content.
+
+SCRIPT DIRECTION:
+
+- Deliver the news creatively and uniquely.
+- Get the hosts to give their opinion on the story too. Maybe they debate.
+- Incorporate different intros, jokes, and emotional appeals.
+- Give real information and insights into the content.
+
+NEWS ITEM:
+
+The news item you have selected is:
+Title: ${newsItem.title}
+Description: ${newsItem.description}
+Source: ${newsItem.source}
+
+The provider of the news is ${newsItem.providerTitle}.
+
+The content of the news source is:
+${newsItem.content}
+
+FINAL OUTPUT:
+
+- A script following the specified format.
+- Dialogue that is engaging, funny, and informative.
+- Accurate paraphrasing of the news content.
+- A natural flow between hosts, with ${mainHostAvatar.name} leading.
+`;
+}
+
 export function nextSegmentPrompt(
   newsItem: News,
   mainHostAvatar: AvatarConfig,
