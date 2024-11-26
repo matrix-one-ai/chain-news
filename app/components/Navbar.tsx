@@ -32,7 +32,11 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import { useAuthStore, useNavbarState } from "../zustand/store";
+import {
+  useAppMountedStore,
+  useAuthStore,
+  useNavbarState,
+} from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
@@ -119,6 +123,7 @@ const CustomReadMore = () => (
 
 function Web3AuthLogin() {
   const isLandscape = useMediaQuery("(orientation: landscape)");
+  const { mounted } = useAppMountedStore();
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
@@ -208,6 +213,8 @@ function Web3AuthLogin() {
   ]);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const init = async () => {
       try {
         const solanaPrivateKeyPrvoider = new SolanaPrivateKeyProvider({
@@ -256,7 +263,7 @@ function Web3AuthLogin() {
     };
 
     init();
-  }, [setLoggedIn]);
+  }, [setLoggedIn, mounted]);
 
   const uiConsole = useCallback((...args: any[]) => {
     const el = document.querySelector("#console>p");
