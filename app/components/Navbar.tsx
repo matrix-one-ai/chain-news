@@ -36,6 +36,7 @@ import {
   useAppMountedStore,
   useAuthStore,
   useNavbarState,
+  useOverlayStore,
 } from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
@@ -124,6 +125,7 @@ const CustomReadMore = () => (
 function Web3AuthLogin() {
   const isLandscape = useMediaQuery("(orientation: landscape)");
   const { mounted } = useAppMountedStore();
+  const { setIsSpinnerOverlayOpen } = useOverlayStore();
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
@@ -254,6 +256,9 @@ function Web3AuthLogin() {
         await web3auth.initModal();
         setProvider(web3auth.provider);
 
+        // Hide spinner overlay
+        setIsSpinnerOverlayOpen(false);
+
         if (web3auth.connected) {
           setLoggedIn(true);
         } else {
@@ -266,7 +271,7 @@ function Web3AuthLogin() {
     };
 
     init();
-  }, [setLoggedIn, mounted, setTriggerWeb3AuthModal]);
+  }, [setLoggedIn, mounted, setTriggerWeb3AuthModal, setIsSpinnerOverlayOpen]);
 
   const uiConsole = useCallback((...args: any[]) => {
     const el = document.querySelector("#console>p");
