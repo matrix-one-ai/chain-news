@@ -81,12 +81,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 interface OverlayState {
+  isSpinnerOverlayOpen: boolean;
   isPaywallModalOpen: boolean;
+  setIsSpinnerOverlayOpen: (isSpinnerOverlayOpen: boolean) => void;
   setIsPaywallModalOpen: (isOpen: boolean) => void;
 }
 
 export const useOverlayStore = create<OverlayState>((set) => ({
+  isSpinnerOverlayOpen: true,
   isPaywallModalOpen: false,
+  setIsSpinnerOverlayOpen: (isSpinnerOverlayOpen: boolean) =>
+    set({ isSpinnerOverlayOpen }),
   setIsPaywallModalOpen: (isOpen: boolean) =>
     set({ isPaywallModalOpen: isOpen }),
 }));

@@ -32,7 +32,12 @@ import { Web3Auth } from "@web3auth/modal";
 import { SolanaPrivateKeyProvider } from "@web3auth/solana-provider";
 
 import RPC from "../helpers/solanaRPC";
-import { useAuthStore, useNavbarState } from "../zustand/store";
+import {
+  useAppMountedStore,
+  useAuthStore,
+  useNavbarState,
+  useOverlayStore,
+} from "../zustand/store";
 
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import { truncateAddress } from "../helpers/crypto";
@@ -119,6 +124,8 @@ const CustomReadMore = () => (
 
 function Web3AuthLogin() {
   const isLandscape = useMediaQuery("(orientation: landscape)");
+  const { mounted } = useAppMountedStore();
+  const { setIsSpinnerOverlayOpen } = useOverlayStore();
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
   const [provider, setProvider] = useState<IProvider | null>(null);
 
@@ -208,6 +215,8 @@ function Web3AuthLogin() {
   ]);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const init = async () => {
       try {
         const solanaPrivateKeyPrvoider = new SolanaPrivateKeyProvider({
@@ -247,8 +256,14 @@ function Web3AuthLogin() {
         await web3auth.initModal();
         setProvider(web3auth.provider);
 
+        // Hide spinner overlay
+        setIsSpinnerOverlayOpen(false);
+
         if (web3auth.connected) {
           setLoggedIn(true);
+        } else {
+          // Show the Web3Auth modal if the user is not logged in
+          setTriggerWeb3AuthModal(true);
         }
       } catch (error) {
         console.error(error);
@@ -256,7 +271,7 @@ function Web3AuthLogin() {
     };
 
     init();
-  }, [setLoggedIn]);
+  }, [setLoggedIn, mounted, setTriggerWeb3AuthModal, setIsSpinnerOverlayOpen]);
 
   const uiConsole = useCallback((...args: any[]) => {
     const el = document.querySelector("#console>p");
@@ -266,48 +281,48 @@ function Web3AuthLogin() {
     }
   }, []);
 
-  const login = useCallback(async () => {
+  useEffect(() => {
     if (!web3auth) {
       uiConsole("web3auth not initialized yet");
       return;
     }
 
-    // Inject custom element into Web3Auth modal
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "childList") {
-          const targetElement = document.querySelector(
-            ".w3ajs-external-wallet.w3a-group",
-          );
-          if (targetElement) {
-            const container = document.createElement("div");
-            targetElement.appendChild(container);
-            const root = createRoot(container);
-            root.render(<CustomReadMore />);
-            observer.disconnect();
-          }
+    const observer = new MutationObserver(() => {
+      // Inject custom element into Web3Auth modal
+      const targetElement = document.querySelector(
+        ".w3ajs-external-wallet.w3a-group"
+      );
+      if (targetElement) {
+        const container = document.createElement("div");
+        targetElement.appendChild(container);
+        const root = createRoot(container);
+        root.render(<CustomReadMore />);
+        observer.disconnect();
+      }
 
-          // Change the text of the button
-          const button = document.querySelector(
-            ".w3ajs-external-toggle__button",
-          );
-          if (button) {
-            button.textContent = "Connect with external Solana wallet";
-          }
-        }
-      });
+      // Change the text of the button
+      const button = document.querySelector(".w3ajs-external-toggle__button");
+      if (button) {
+        button.textContent = "Connect with external Solana wallet";
+      }
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
 
-    const web3authProvider = await web3auth.connect();
+    return () => {
+      observer.disconnect();
+    };
+  }, [web3auth, uiConsole]);
 
-    if (web3auth.connected) {
+  const login = useCallback(async () => {
+    const web3authProvider = await web3auth?.connect();
+
+    if (web3auth?.connected) {
       setLoggedIn(true);
     }
 
-    setProvider(web3authProvider);
-  }, [web3auth, uiConsole, setLoggedIn]);
+    setProvider(web3authProvider || null);
+  }, [web3auth, setLoggedIn]);
 
   useEffect(() => {
     if (triggerWeb3AuthModal) {
@@ -354,7 +369,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    [],
+    []
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -390,7 +405,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout],
+    [logout]
   );
 
   const walletAddressClipboard = useMemo(
@@ -442,7 +457,7 @@ function Web3AuthLogin() {
         </IconButton>
       </Stack>
     ),
-    [walletAddress, isLandscape],
+    [walletAddress, isLandscape]
   );
 
   const loggedInView = (
@@ -567,7 +582,7 @@ export default function Navbar() {
         pathname === ROUTE.SUBSCRIPTION ||
         pathname === ROUTE.TERMS ||
         pathname === ROUTE.USER_SETTINGS),
-    [pathname, isLandscape],
+    [pathname, isLandscape]
   );
 
   return (

@@ -15,6 +15,7 @@ import {
   useAuthStore,
   useLiveStreamStore,
   useNewsStore,
+  useOverlayStore,
   usePromptStore,
   useSceneStore,
   useSettingsStore,
@@ -22,6 +23,7 @@ import {
 import PaywallModal from "./components/PaywallModal";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import CallToAction from "./components/CallToAction";
+import SpinnerOverlay from "./components/SpinnerOverlay";
 
 interface OverlayProps {
   progress: number;
@@ -64,6 +66,7 @@ const Overlay = ({
     setIsSettingsOpen,
   } = useSettingsStore();
   const { isPlaying } = useSceneStore();
+  const { isSpinnerOverlayOpen } = useOverlayStore();
 
   const onSettingsClick = useCallback(() => {
     if (isLoggedIn && isAdmin) {
@@ -165,12 +168,16 @@ const Overlay = ({
         />
       )}
 
+      {/* Modals */}
       <SettingsModal
         isPlaying={isPlaying}
         onStartStream={onStreamStart}
         onStopStream={onStreamStop}
       />
       <PaywallModal />
+
+      {/* Spinner overlay */}
+      {isSpinnerOverlayOpen && <SpinnerOverlay />}
     </Box>
   );
 };

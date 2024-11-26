@@ -61,6 +61,8 @@ a {
 
 #w3a-modal {
   padding: 0.5rem !important;
+  background-color: rgba(32, 24, 51, 0.2) !important;
+  backdrop-filter: blur(12px) !important;
 }
 
 .w3a-modal__inner,
@@ -142,4 +144,8 @@ a {
     background-color: #352d46 !important; /* Change to your desired color */
     color: #a9a9a9 !important; /* Change to your desired color */
   }
+}
+
+.w3ajs-close-btn {
+  display: none !important;
 }
