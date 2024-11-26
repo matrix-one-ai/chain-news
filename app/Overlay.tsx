@@ -146,7 +146,12 @@ const Overlay = ({
         )}
 
         <ChatInterface
-          isVisible={!isStreaming && !isPlaying && !isOverlayHidden}
+          isVisible={
+            !isStreaming &&
+            !isPlaying &&
+            !isOverlayHidden &&
+            !isSpinnerOverlayOpen
+          }
           prompt={prompt}
           isAudioLoading={isAudioLoading}
           customPrompt={customPrompt}
@@ -155,7 +160,10 @@ const Overlay = ({
           handleOnError={onStreamNext}
         />
 
-        <NewsList onNewsClick={onNewsClick} isVisible={!isOverlayHidden} />
+        <NewsList
+          onNewsClick={onNewsClick}
+          isVisible={!isOverlayHidden && !isSpinnerOverlayOpen}
+        />
       </Stack>
 
       <NewsTickerBanner newsItems={news} />
