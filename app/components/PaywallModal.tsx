@@ -7,6 +7,7 @@ import {
   Chip,
   Fade,
   Modal,
+  Radio,
   Stack,
   Typography,
 } from "@mui/material";
@@ -70,7 +71,7 @@ const PriceCard = ({
   return (
     <Card
       sx={{
-        minWidth: "18rem",
+        minWidth: "18.25rem",
         margin: "0.5rem 0",
         backgroundColor: "#34284f",
         border: "2px solid #83838340",
@@ -81,61 +82,103 @@ const PriceCard = ({
       }}
       onClick={onClick}
     >
-      <CardActionArea>
-        <CardContent>
+      <CardActionArea
+        sx={{
+          flexDirection: "column",
+          height: "100%",
+          justifyContent: "space-between",
+        }}
+      >
+        <CardContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
           <Stack
             sx={{
-              justifyContent: "space-between",
+              justifyContent: "flex-start",
               flexDirection: "row",
               gap: 2,
               alignItems: "center",
-              pb: 2,
             }}
           >
-            <Typography gutterBottom variant="subtitle1" fontWeight="bold">
+            <Radio checked={isSelected} />
+            <Typography variant="subtitle1" fontWeight="bold">
               {credits} Credits
             </Typography>
-
-            {credits === 2000 && (
-              <Chip
-                size="small"
-                label={`${matrixPrice ? "115%" : "100%"} better`}
-                color="secondary"
-                sx={{
-                  fontWeight: "bold",
-                }}
-              />
-            )}
           </Stack>
 
-          {fiatPrice && <Typography variant="h6">${fiatPrice} USDC</Typography>}
-
-          {matrixPrice && (
-            <Stack
+          {credits === 2000 && (
+            <Chip
+              size="small"
+              label={"+1400 Extra"}
+              color="secondary"
               sx={{
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 1,
-                flexDirection: "row",
-                pt: 1,
+                fontWeight: "bold",
+                width: "fit-content",
               }}
-            >
-              <Typography variant="h6">
-                ${matrixPrice}{" "}
-                <Typography component="span" variant="h6">
-                  $MATRIX
-                </Typography>
-              </Typography>
-              <Chip
-                label="-15%"
-                color="secondary"
-                size="small"
-                sx={{
-                  fontWeight: "bold",
-                }}
-              />
-            </Stack>
+            />
           )}
+
+          <Box>
+            {fiatPrice && (
+              <Box
+                sx={{
+                  mt: 2,
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="span"
+                  sx={{
+                    mr: 1,
+                  }}
+                >
+                  ${fiatPrice}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  color="text.secondary"
+                >
+                  if paid in Crypto
+                </Typography>
+              </Box>
+            )}
+
+            {matrixPrice && (
+              <Stack
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 1,
+                  flexDirection: "row",
+                  pt: 1,
+                }}
+              >
+                <Typography variant="h6" component="span">
+                  ${matrixPrice}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  color="text.secondary"
+                >
+                  if paid in $MATRIX
+                </Typography>
+                <Chip
+                  label="-20%"
+                  color="secondary"
+                  size="small"
+                  sx={{
+                    fontWeight: "bold",
+                  }}
+                />
+              </Stack>
+            )}
+          </Box>
         </CardContent>
       </CardActionArea>
     </Card>
@@ -150,6 +193,11 @@ enum PaywallSteps {
   TERMS,
 }
 
+enum CreditSizes {
+  SMALL = 100,
+  LARGE = 2000,
+}
+
 const PaywallModal = () => {
   const { isLoggedIn, isSubscribed, setTriggerWeb3AuthModal } = useAuthStore();
   const { isPaywallModalOpen, setIsPaywallModalOpen } = useOverlayStore();
@@ -157,6 +205,10 @@ const PaywallModal = () => {
     PaywallSteps.INTRO
   );
   const [payType, setPayType] = useState<PayTypes>(PayTypes.SMALL);
+
+  const [selectedCreditSize, setSelectedCreditSize] = useState<CreditSizes>(
+    CreditSizes.SMALL
+  );
 
   useEffect(() => {
     if (isLoggedIn && !isSubscribed && paywallStep === PaywallSteps.LOGIN) {
@@ -239,47 +291,31 @@ const PaywallModal = () => {
                   <Box>
                     <Stack
                       sx={{
-                        justifyContent: "space-around",
+                        justifyContent: "space-between",
                         flexDirection: "row",
                       }}
                     >
                       <PriceCard
                         credits={2000}
                         fiatPrice={99}
-                        onClick={() => setPayType(PayTypes.LARGE)}
-                        isSelected={payType === PayTypes.LARGE}
+                        matrixPrice={80}
+                        onClick={() => setSelectedCreditSize(CreditSizes.LARGE)}
+                        isSelected={selectedCreditSize === CreditSizes.LARGE}
                       />
+
                       <PriceCard
                         credits={100}
                         fiatPrice={19}
-                        onClick={() => setPayType(PayTypes.SMALL)}
-                        isSelected={payType === PayTypes.SMALL}
-                      />
-                    </Stack>
-                    <Stack
-                      sx={{
-                        justifyContent: "space-around",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <PriceCard
-                        credits={2000}
-                        matrixPrice={85}
-                        onClick={() => setPayType(PayTypes.LARGE_MATRIX)}
-                        isSelected={payType === PayTypes.LARGE_MATRIX}
-                      />
-                      <PriceCard
-                        credits={100}
                         matrixPrice={15}
-                        onClick={() => setPayType(PayTypes.SMALL_MATRIX)}
-                        isSelected={payType === PayTypes.SMALL_MATRIX}
+                        onClick={() => setSelectedCreditSize(CreditSizes.SMALL)}
+                        isSelected={selectedCreditSize === CreditSizes.SMALL}
                       />
                     </Stack>
 
                     <Box
                       sx={{
                         mt: 2,
-                        backgroundColor: "info.main",
+                        backgroundColor: "#ad7aff",
                         color: "black",
                         p: 2,
                         borderRadius: "0.5rem",
@@ -294,71 +330,160 @@ const PaywallModal = () => {
                         }}
                       >
                         <Box>
-                          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                            Buy with $MATRIX
+                          <Typography
+                            variant="h6"
+                            sx={{ fontWeight: "bold", color: "white" }}
+                          >
+                            Pay With Crypto
                           </Typography>
                           <Typography
                             variant="body2"
                             sx={{
-                              color: "#313131",
+                              color: "white",
                             }}
                           >
-                            Get 15% discount. 50% of $MATRIX revenues are
-                            burned.
+                            On BTC, ETH, MATIC, BASE or SOL
                           </Typography>
                         </Box>
                         <Button
                           variant="outlined"
                           sx={{
-                            color: "black",
-                            borderColor: "black",
+                            color: "white",
+                            borderColor: "white",
                             borderRadius: "0.5rem",
                             height: "2.5rem",
-                            width: "9rem",
+                            width: "10rem",
                             textTransform: "capitalize",
                             fontWeight: "bold",
                             ":hover": {
-                              backgroundColor: "black",
-                              color: "white",
+                              backgroundColor: "white",
+                              color: "black",
                             },
                           }}
-                          onClick={
-                            isLoggedIn
-                              ? () => setPaywallStep(PaywallSteps.HELIO)
-                              : () => setPaywallStep(PaywallSteps.LOGIN)
-                          }
+                          onClick={() => {
+                            if (selectedCreditSize === CreditSizes.LARGE) {
+                              setPayType(PayTypes.LARGE);
+                            }
+                            if (selectedCreditSize === CreditSizes.SMALL) {
+                              setPayType(PayTypes.SMALL);
+                            }
+
+                            if (isLoggedIn) {
+                              setPaywallStep(PaywallSteps.HELIO);
+                            } else {
+                              setPaywallStep(PaywallSteps.LOGIN);
+                            }
+                          }}
                         >
-                          <Link
-                            href="https://jup.ag/swap/USDC-E1R4RF89GcKxz62DVfojxDJteLFFs8rtiXcGcrx5HbTj"
-                            target="_blank"
-                          >
-                            BUY $MATRIX
-                          </Link>
+                          Upgrade to Pro
                         </Button>
                       </Stack>
                     </Box>
 
-                    <Button
-                      variant="contained"
-                      color="warning"
-                      size="large"
+                    <Typography
+                      variant="body2"
                       sx={{
                         mt: 2,
-                        backgroundColor: "white",
-                        color: "#631EDC",
-                        fontSize: "1.1rem",
-                        textTransform: "capitalize",
-                        fontWeight: "bold",
+                        color: "text.secondary",
+                        textAlign: "center",
                       }}
-                      fullWidth
-                      onClick={() =>
-                        setPaywallStep(
-                          isLoggedIn ? PaywallSteps.HELIO : PaywallSteps.LOGIN
-                        )
-                      }
                     >
-                      Continue
-                    </Button>
+                      OR
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        mt: 2,
+                        backgroundColor: "#ad7aff",
+                        color: "black",
+                        p: 2,
+                        borderRadius: "0.5rem",
+                      }}
+                    >
+                      <Stack
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexDirection: "row",
+                          gap: 2,
+                        }}
+                      >
+                        <Box>
+                          <Typography
+                            variant="h6"
+                            sx={{ fontWeight: "bold", color: "white" }}
+                          >
+                            Pay With $MATRIX
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: "white",
+                            }}
+                          >
+                            Get 20% Discount.{" "}
+                            <Typography
+                              variant="body2"
+                              component="span"
+                              sx={{
+                                color: "white",
+                                textDecoration: "underline",
+                                ":hover": {
+                                  cursor: "pointer",
+                                },
+                              }}
+                            >
+                              <Link
+                                href="https://jup.ag/swap/USDC-E1R4RF89GcKxz62DVfojxDJteLFFs8rtiXcGcrx5HbTj"
+                                target="_blank"
+                              >
+                                Buy $MATRIX here
+                              </Link>
+                            </Typography>
+                          </Typography>
+                        </Box>
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "white",
+                            borderColor: "white",
+                            borderRadius: "0.5rem",
+                            height: "2.5rem",
+                            width: "10rem",
+                            textTransform: "capitalize",
+                            fontWeight: "bold",
+                            ":hover": {
+                              backgroundColor: "white",
+                              color: "black",
+                            },
+                          }}
+                          onClick={() => {
+                            if (selectedCreditSize === CreditSizes.LARGE) {
+                              setPayType(PayTypes.LARGE_MATRIX);
+                            }
+                            if (selectedCreditSize === CreditSizes.SMALL) {
+                              setPayType(PayTypes.SMALL_MATRIX);
+                            }
+
+                            if (isLoggedIn) {
+                              setPaywallStep(PaywallSteps.HELIO);
+                            } else {
+                              setPaywallStep(PaywallSteps.LOGIN);
+                            }
+                          }}
+                        >
+                          Upgrade to Pro
+                        </Button>
+                      </Stack>
+                    </Box>
+
+                    <Typography
+                      variant="body2"
+                      sx={{ mt: 2, textAlign: "center" }}
+                    >
+                      50% of all revenue is used to buy back and burn $MATRIX
+                      token.
+                    </Typography>
 
                     <Typography
                       variant="body2"
