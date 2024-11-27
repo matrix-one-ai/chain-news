@@ -344,6 +344,7 @@ function Web3AuthLogin() {
     setIsSubscribed(false);
     setSubscriptionEndTime(0);
     setCredits(0);
+    setTriggerWeb3AuthModal(true);
     router.push("/");
   }, [
     web3auth,
@@ -355,6 +356,7 @@ function Web3AuthLogin() {
     setIsSubscribed,
     setSubscriptionEndTime,
     setCredits,
+    setTriggerWeb3AuthModal,
     router,
     uiConsole,
   ]);
