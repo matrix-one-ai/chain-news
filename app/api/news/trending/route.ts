@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
         imageUrl: true,
         datePublished: true,
         content: true,
+        slug: true,
       },
       orderBy: { datePublished: "desc" },
     });
