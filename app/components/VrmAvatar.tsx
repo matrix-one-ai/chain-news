@@ -28,7 +28,13 @@ import { useSceneStore } from "../zustand/store";
 const VRM_KEY_HEX = process.env.NEXT_PUBLIC_VRM_KEY as string;
 const VRM_IV_HEX = process.env.NEXT_PUBLIC_VRM_IV as string;
 
-const idleAnimations = ["/animations/idle-1.fbx", "/animations/idle-2.fbx"];
+const idleAnimations = [
+  "/animations/idle-1.fbx",
+  "/animations/idle-2.fbx",
+  // "/animations/fan-face.fbx",
+  // "/animations/happy-idle.fbx",
+  // "/animations/look-hand.fbx",
+];
 
 const talkAnimations = [
   "/animations/talk-1.fbx",

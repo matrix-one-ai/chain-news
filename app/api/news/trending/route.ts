@@ -40,12 +40,12 @@ export async function GET(req: NextRequest) {
 
     const { text: filteredText } = await generateText({
       model: azure("gpt-4o"),
-      prompt: `Give me the top 5 breaking stories in crypto from this list:
+      prompt: `Give me the top 20 breaking stories in crypto from this list:
 ${feed
   .map((item) => `ID ${item.id}: ${item.title} - ${item.description}`)
   .join("\n")}
 
-Return the IDs in a simple array like: [1, 2, 3, 4, 5]
+Return the IDs in a simple array like: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 ${topic ? `The topic to filter for is: ${topic}` : ""}
 Make sure is not general boring blog news, only price action, major events, and partnerships. This is for investors looking for hot topics.
