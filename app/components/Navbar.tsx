@@ -285,23 +285,34 @@ function Web3AuthLogin() {
       return;
     }
 
-    const observer = new MutationObserver(() => {
-      // Inject custom element into Web3Auth modal
-      const targetElement = document.querySelector(
-        ".w3ajs-external-wallet.w3a-group"
-      );
-      if (targetElement) {
-        const container = document.createElement("div");
-        targetElement.appendChild(container);
-        const root = createRoot(container);
-        root.render(<CustomReadMore />);
-        observer.disconnect();
-      }
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        mutation.addedNodes.forEach((node) => {
+          if (
+            node instanceof Element &&
+            (node.classList.contains("w3a-modal") ||
+              node.classList.contains("w3a-modal__content"))
+          ) {
+            // Inject custom element into Web3Auth modal
+            const targetElement = document.querySelector(
+              ".w3ajs-external-wallet.w3a-group",
+            );
+            if (targetElement) {
+              const container = document.createElement("div");
+              targetElement.appendChild(container);
+              const root = createRoot(container);
+              root.render(<CustomReadMore />);
+            }
 
-      // Change the text of the button
-      const button = document.querySelector(".w3ajs-external-toggle__button");
-      if (button) {
-        button.textContent = "Connect with external Solana wallet";
+            // Change the text of the button
+            const button = document.querySelector(
+              ".w3ajs-external-toggle__button",
+            );
+            if (button) {
+              button.textContent = "Connect with external Solana wallet";
+            }
+          }
+        });
       }
     });
 
@@ -367,7 +378,7 @@ function Web3AuthLogin() {
       setIsMenuOpen(true);
       setAnchorElUser(event.currentTarget);
     },
-    []
+    [],
   );
 
   const handleCloseUserMenu = useCallback(() => {
@@ -403,7 +414,7 @@ function Web3AuthLogin() {
         onClick: logout,
       },
     ],
-    [logout]
+    [logout],
   );
 
   const walletAddressClipboard = useMemo(
@@ -455,7 +466,7 @@ function Web3AuthLogin() {
         </IconButton>
       </Stack>
     ),
-    [walletAddress, isLandscape]
+    [walletAddress, isLandscape],
   );
 
   const loggedInView = (
@@ -580,7 +591,7 @@ export default function Navbar() {
         pathname === ROUTE.SUBSCRIPTION ||
         pathname === ROUTE.TERMS ||
         pathname === ROUTE.USER_SETTINGS),
-    [pathname, isLandscape]
+    [pathname, isLandscape],
   );
 
   return (
