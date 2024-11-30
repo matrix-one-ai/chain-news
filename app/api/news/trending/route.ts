@@ -19,9 +19,15 @@ export async function GET(req: NextRequest) {
   try {
     const topic = req.nextUrl.searchParams.get("topic");
 
-    console.log(topic);
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
     const feed = await prisma.news.findMany({
+      where: {
+        createdAt: {
+          gte: oneDayAgo,
+        },
+      },
       select: {
         id: true,
         providerTitle: true,

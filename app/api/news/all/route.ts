@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
     const feed = await prisma.news.findMany({
       select: {
         id: true,
@@ -21,6 +24,11 @@ export async function GET() {
         datePublished: true,
         content: true,
         tokenTicker: true,
+      },
+      where: {
+        createdAt: {
+          gte: oneDayAgo,
+        },
       },
       orderBy: { datePublished: "desc" },
     });

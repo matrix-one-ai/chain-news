@@ -273,12 +273,6 @@ export async function POST() {
 
       await Promise.all(uploadPromises);
 
-      await prisma.news.deleteMany({
-        where: {
-          provider: parsedNews.provider,
-        },
-      });
-
       for (const item of parsedNews.items) {
         try {
           await prisma.news.create({

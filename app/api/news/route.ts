@@ -14,6 +14,9 @@ export async function GET(req: NextRequest) {
     decodeURIComponent(searchParams.get("where") || "null")
   );
 
+  const oneDayAgo = new Date();
+  oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
   try {
     const feed = await prisma.news.findMany({
       select:
@@ -33,7 +36,12 @@ export async function GET(req: NextRequest) {
               tokenTicker: true,
             }
           : select,
-      where: where === null ? {} : where,
+      where: {
+        ...(where === null ? {} : where),
+        createdAt: {
+          gte: oneDayAgo,
+        },
+      },
       ...(isNaN(page) || isNaN(pageSize)
         ? {}
         : { skip: (page - 1) * pageSize, take: pageSize }),
