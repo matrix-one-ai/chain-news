@@ -12,7 +12,7 @@ export interface AvatarConfig {
 const avatarConfigs: AvatarConfig[] = [
   {
     name: "Sam",
-    vrmKey: "woman",
+    vrmKey: "woman-2",
     rotation: [0, Math.PI, 0],
   },
   {

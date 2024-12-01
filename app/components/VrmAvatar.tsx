@@ -474,11 +474,11 @@ const VrmAvatar: React.FC<VrmAvatarProps> = ({
               const blendShapeName = getBlendShapeKey(index + 1);
               if (blendShapeName) {
                 expressionManager.setValue(
-                  avatarKey === "woman" || avatarKey === "dogwifhat-sit"
+                  avatarKey === "woman-2" || avatarKey === "dogwifhat-sit"
                     ? blendShapeName.charAt(0).toLowerCase() +
                         blendShapeName.slice(1)
                     : blendShapeName,
-                  avatarKey === "woman" ? value * 0.5 : value
+                  avatarKey === "woman-2" ? value * 0.5 : value
                 );
               }
             }
