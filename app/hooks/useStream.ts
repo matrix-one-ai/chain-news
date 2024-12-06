@@ -23,7 +23,7 @@ import { useNewsFetchBySlugOnMount } from "./useNewsFetch";
 import { AbortableFetch } from "@/app/utils/abortablePromise";
 
 const speakerVoiceMap = {
-  Sam: "en-US-AvaMultilingualNeural",
+  Sami: "en-US-AvaMultilingualNeural",
   Haiku: "en-US-JaneNeural",
   DogWifHat: "en-US-AndrewMultilingualNeural",
 };

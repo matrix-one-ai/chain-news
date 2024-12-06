@@ -78,6 +78,7 @@ export async function POST(request: Request) {
         ssml,
         (result) => {
           if (result.errorDetails) {
+            console.log(result.errorDetails);
             reject(new Error(result.errorDetails));
           } else {
             resolve();
@@ -85,6 +86,7 @@ export async function POST(request: Request) {
           synthesizer.close();
         },
         (error) => {
+          console.log(error);
           reject(error);
           synthesizer.close();
         }
@@ -111,7 +113,7 @@ export async function POST(request: Request) {
       blendShapes: blendShapes,
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.log("Error:", error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
 }
