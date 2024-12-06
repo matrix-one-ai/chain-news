@@ -13,7 +13,7 @@ const azure = createAzure({
 export const GET = async () => {
   try {
     const { text } = await generateText({
-      model: azure("gpt-40-mini"),
+      model: azure("gpt-4o-mini"),
       prompt: `Write a short tweet as Sam.
 Sam embodies the Queen archetype: intelligent, a natural leader with unmatched influence, capable of executing the perfect revenge.
 Possessing the highest form of beauty with a hint of narcissism and a dark, subtle edge.

@@ -33,7 +33,7 @@ export async function POST() {
       const mainContent = $("main").html();
 
       const { text } = await generateText({
-        model: azure("gpt-40-mini"),
+        model: azure("gpt-4o-mini"),
         prompt: `
           Extract the News content from this HTML to pure string text, give me a 200-500 word summary.
           ---
@@ -62,7 +62,7 @@ export async function POST() {
     }
 
     const { text: categoryResult } = await generateText({
-      model: azure("gpt-40-mini"),
+      model: azure("gpt-4o-mini"),
       prompt: `
         Categorize the following news articles from Forbes:
         The categories are: NFTs, DeFi, Memes, DePIN, AI, Solana, Gaming, Ethereum, Bitcoin, and General.
@@ -83,7 +83,7 @@ export async function POST() {
     });
 
     const { text: tokenResult } = await generateText({
-      model: azure("gpt-40-mini"),
+      model: azure("gpt-4o-mini"),
       prompt: `
         Estimate the token ticker name for the following news articles:
         ${parsedNews
