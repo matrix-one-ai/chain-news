@@ -196,7 +196,7 @@ export async function POST() {
       );
 
       const { text: categoryResult } = await generateText({
-        model: azure("gpt-4o"),
+        model: azure("gpt-40-mini"),
         prompt: `
           Categorize the following news articles from ${parsedNews.provider}:
           The categories are: NFTs, DeFi, Memes, DePIN, AI, Solana, Gaming, Ethereum, Bitcoin, and General.
@@ -217,7 +217,7 @@ export async function POST() {
       });
 
       const { text: tokenResult } = await generateText({
-        model: azure("gpt-4o"),
+        model: azure("gpt-40-mini"),
         prompt: `
           Estimate the token ticker name for the following news articles:
           ${parsedNews.items

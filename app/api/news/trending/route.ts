@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     });
 
     const { text: filteredText } = await generateText({
-      model: azure("gpt-4o"),
+      model: azure("gpt-40-mini"),
       prompt: `Give me the top 20 breaking stories in crypto from this list:
 ${feed
   .map((item) => `ID ${item.id}: ${item.title} - ${item.description}`)

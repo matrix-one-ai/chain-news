@@ -13,7 +13,7 @@ const azure = createAzure({
 export const GET = async () => {
   try {
     const { text } = await generateText({
-      model: azure("gpt-4o"),
+      model: azure("gpt-40-mini"),
       prompt: `Write a short tweet as DogWifHat.
 DogWifHat is a small dog with a hat, he is insightful and wise, the steady foundation of the team, wielding sarcasm with skill, and reliant on his close ties, balancing wit with dependability.
 His job is news anchor co-host of Chain News.

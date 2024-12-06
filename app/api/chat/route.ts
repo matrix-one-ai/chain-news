@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     }
 
     const stream = await streamText({
-      model: azure("gpt-4o"),
+      model: azure("gpt-40-mini"),
       messages: localMessages,
       frequencyPenalty: 0.5,
       presencePenalty: 0.5,
