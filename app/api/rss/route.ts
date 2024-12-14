@@ -184,7 +184,7 @@ const providers = [
   },
 ];
 
-export async function POST() {
+export async function GET() {
   try {
     for (const provider of providers) {
       const feed = await rssParser.parseURL(provider.rssUrl);
