@@ -187,7 +187,13 @@ const providers = [
 export async function GET() {
   try {
     for (const provider of providers) {
-      const feed = await rssParser.parseURL(provider.rssUrl);
+      let feed = null;
+      try {
+        feed = await rssParser.parseURL(provider.rssUrl);
+      } catch (e) {
+        console.log(`Error parsing ${provider.provider} RSS feed:`, e);
+        continue;
+      }
 
       const parsedNews = provider.mapFunction(
         feed,
